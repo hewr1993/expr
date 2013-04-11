@@ -1,0 +1,55 @@
+#include <stdio.h>
+
+void    Compute();
+void    Output();
+int     i, h, m, x, y;          //定义全局变量
+char    *pa, *pb, *pc;
+char    a[24][20] =             //定义会小时名次
+		{ 	"zero", "one", "two", "three",
+		    "four",	"five", "six", "seven",
+	        "eight", "nine", "ten", "eleven",
+		    "twelve", "thirteen", "fourteen", "fifteen",
+			"sixteen", "seventeen", "eighteen", "ninteen",
+			"twenty", "twenty one", "twenty two", "twenty three" 
+	    };
+char b[6][10] = //定义分钟名次
+	 { "", " ", "twenty", "thirty", "forty", "fifty" };
+
+int main(int argc, char *argv[])
+{
+    scanf("%d	%d", &h, &m);    //输入时间
+    Compute();                  //对函数进行调用
+    Output();
+    return 0;
+}
+
+void Compute()                  //计算函数
+{
+    pa = a[h];
+    if (m > 19 && m % 10 == 0)
+    {
+        x = m / 10;
+        pb = b[x];
+    }
+    else {
+		 if (m <= 19 && m!=0)pb = a[m];
+    	 else
+    	 {
+        x = m % 10;
+        y = (m - x) / 10;
+        pb = b[y];
+        pc = a[x];
+    	}
+	}
+}
+
+void Output()                   //输出函数
+{
+    if (m == 00)
+        printf("%s o'clock", pa);
+    else if (m <= 19 || m % 10 == 0)
+        printf("%s %s", pa, pb);
+    else
+        printf("%s %s %s", pa, pb, pc);
+}
+

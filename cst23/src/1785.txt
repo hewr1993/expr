@@ -1,0 +1,232 @@
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+#define INF 1000000007
+#define N1 50010
+#define N2 500010
+#define N3 101000
+#define N4 110
+#define M 1000010
+#define M2 1010
+#define M3 M2*M2
+#define L 16
+int n,m,wa,wb,he[N2],ne[M*2],ad[M*2],di[M*2],px[M],py[M],pz[M],p[M],f[N2],fp[N1][L],fw[N1][L],d[N1],fd[N2],fe[N2],fi[N2],fo[N2],lo[N3],q[N3],g[N3],q2[M],he2[N4],ne2[M2*2],ad2[M2*2],di2[M2*2],t2,he3[M2],ne3[M3],ad3[M3],di3[M3],t3,h[M2],co[M2],dz[M2],pr[M2],ed[M2],hi[M2];bool v[N3],u[M],u2[M],u3[M2];
+bool cmp(int x,int y){return pz[x]<pz[y];}
+int fa(int x){return f[x]==x?x:(f[x]=fa(f[x]));}
+void addE(int x,int y,int z)
+{
+	static int t=0;
+	++t,ne[t]=he[x],he[x]=t,ad[t]=y,di[t]=z,
+	++t,ne[t]=he[y],he[y]=t,ad[t]=x,di[t]=z;
+}
+void ff0(int x)
+{
+	for(int i=1;i<L;i++)
+		fp[x][i]=fp[fp[x][i-1]][i-1],
+		fw[x][i]=max(fw[x][i-1],fw[fp[x][i-1]][i-1]);
+	for(int p=he[x];p;p=ne[p])
+		if(ad[p]!=fp[x][0])d[ad[p]]=d[x]+1,fp[ad[p]][0]=x,fw[ad[p]][0]=di[p],ff0(ad[p]);
+}
+int goup(int x,int y)
+{
+	for(int i=0;i<L;i++)if((y>>i)&1)x=fp[x][i];
+	return x;
+}
+int lca(int x,int y)
+{
+	if(d[x]<d[y])swap(x,y);
+	x=goup(x,d[x]-d[y]);
+	if(x==y)return x;
+	for(int i=L-1;i>=0;i--)
+		if(fp[x][i]!=fp[y][i])x=fp[x][i],y=fp[y][i];
+	return fp[x][0];
+}
+int ask(int x,int y)
+{
+	int z=d[x]-d[y],S=0;
+	for(int i=0;i<L;i++)
+		if((z>>i)&1)S=max(S,fw[x][i]),x=fp[x][i];
+	return S;
+}
+int ask0(int x,int y,int z)
+{
+	int u=lca(x,y);
+	return z==max(ask(x,u),ask(y,u));
+}
+void ff0()
+{
+	scanf("%d%d%d%d",&n,&m,&wa,&wb);
+	for(int i=0;i<m;i++)scanf("%d%d%d",px+i,py+i,pz+i),p[i]=i;
+	sort(p,p+m,cmp);
+	for(int i=1;i<=n;i++)f[i]=i;
+	for(int i=0;i<m;i++)
+	{
+		int x=px[p[i]],y=py[p[i]];
+		if(fa(x)!=fa(y))f[f[x]]=f[y],u[p[i]]=1,addE(x,y,pz[p[i]]);
+	}
+	ff0(1);int S=0;
+	for(int i=0;i<m;i++)if(!u[i])S+=ask0(px[i],py[i],pz[i]);
+	printf("%d
+",S);
+}
+bool ifa(int x,int y){return fi[x]<=fi[y]&&fo[y]<=fo[x];}
+void ff1(int x)
+{
+	static int t=0;fi[x]=++t;
+	for(int p=he[x];p;p=ne[p])
+		if(ad[p]!=fd[x])fd[ad[p]]=x,fe[ad[p]]=di[p],ff1(ad[p]);
+	fo[x]=++t;
+}
+int ask1(int x,int y,int z)
+{
+	int S=0;
+	while(!ifa(x,y))
+		{if(fa(x)==x)S+=fe[x]==z,f[f[x]]=f[fd[x]];x=fa(x);}
+	swap(x,y);
+	while(!ifa(x,y))
+		{if(fa(x)==x)S+=fe[x]==z,f[f[x]]=f[fd[x]];x=fa(x);}
+	return S;
+}
+void ff1()
+{
+	scanf("%d%d%d%d",&n,&m,&wa,&wb);
+	for(int i=0;i<m;i++)scanf("%d%d%d",px+i,py+i,pz+i),p[i]=i;
+	sort(p,p+m,cmp);
+	for(int i=1;i<=n;i++)f[i]=i;
+	for(int i=0;i<m;i++)
+	{
+		int x=px[p[i]],y=py[p[i]];
+		if(fa(x)!=fa(y))f[f[x]]=f[y],u[p[i]]=1,addE(x,y,pz[p[i]]);
+	}
+	for(int i=1;i<=n;i++)f[i]=i;
+	ff1(1);int S=0;
+	for(int i=0;i<m;i++)if(!u[p[i]])S+=ask1(px[p[i]],py[p[i]],pz[p[i]]);
+	printf("%d
+",S);
+}
+void ff2(int x)
+{
+	static int t=0;lo[x]=fi[x]=++t,v[x]=1;
+	for(int p=he[x];p;p=ne[p])if(!u[di[p]])
+		if(v[ad[p]])lo[x]=min(lo[x],fi[ad[p]]);
+		else u[di[p]]=1,ff2(ad[p]),lo[x]=min(lo[x],lo[ad[p]]);
+}
+void addE2(int x,int y,int z)
+{
+	++t2,ne2[t2]=he2[x],he2[x]=t2,ad2[t2]=y,di2[t2]=z,
+	++t2,ne2[t2]=he2[y],he2[y]=t2,ad2[t2]=x,di2[t2]=z;
+}
+void ff2(int x,int y)
+{
+	static int t=0;fi[x]=++t;
+	for(int p=he2[x];p;p=ne2[p])
+		if(ad2[p]!=y)fd[ad2[p]]=x,fe[ad2[p]]=di2[p],ff2(ad2[p],x);
+	fo[x]=++t;
+}
+void addE3(int x,int y,int z)
+{
+	++t3,ne3[t3]=he3[x],he3[x]=t3,ad3[t3]=y,di3[t3]=z,
+	++t3,ne3[t3]=he3[y],he3[y]=t3,ad3[t3]=x,di3[t3]=0;
+}
+void ask2(int x,int y,int z)
+{
+	while(!ifa(x,y))
+		{if(pz[q2[fe[x]]]==pz[q2[z]])addE3(fe[x],z,INF);x=fd[x];}
+	swap(x,y);
+	while(!ifa(x,y))
+		{if(pz[q2[fe[x]]]==pz[q2[z]])addE3(fe[x],z,INF);x=fd[x];}
+}
+int sap(int s,int t,int c)
+{
+	memset(dz,0,sizeof dz),
+	memset(co,0,sizeof co),co[0]=c,
+	memcpy(h,he3,sizeof h);
+	int mf=0;
+	for(int i=s,nf=INF;dz[s]<c;)
+	{
+		bool F=1;hi[i]=nf;
+		for(int p=h[i];p;p=ne3[p])if(di3[p]&&dz[ad3[p]]+1==dz[i])
+		{
+			F=0,pr[ad3[p]]=i,ed[ad3[p]]=p,h[i]=p,
+			nf=min(nf,di3[p]),i=ad3[p];
+			if(i==t)
+			{
+				for(mf+=nf;i!=s;i=pr[i])
+					di3[ed[i]]-=nf,di3[ed[i]^1]+=nf;
+				nf=INF;
+			}
+			break;
+		}
+		if(F)
+		{
+			int mi=c-1,lo=he3[i];
+			for(int p=he3[i];p;p=ne3[p])
+				if(di3[p]&&dz[ad3[p]]<mi)mi=dz[ad3[p]],lo=p;
+			h[i]=lo,co[dz[i]]--;if(!co[dz[i]])break;
+			dz[i]=mi+1,co[dz[i]]++;
+			if(i!=s)i=pr[i],nf=hi[i];
+		}
+	}
+	return mf;
+}
+int ask2(int x)
+{
+	int le=1,ri=1,m2=0;q[1]=x,g[x]=1,v[x]=1;
+	while(le<=ri)
+	{
+		int x=q[le++];
+		for(int p=he[x];p;p=ne[p])
+			if(!u[di[p]])
+			{
+				if(!u2[di[p]])q2[m2++]=di[p],u2[di[p]]=1;
+				if(!v[ad[p]])v[ad[p]]=1,q[++ri]=ad[p],g[ad[p]]=ri;
+			}
+	}
+	int S=INF;
+	for(int i=0;i<10;i++)
+	{
+		random_shuffle(q2,q2+m2),
+		sort(q2,q2+m2,cmp);
+		for(int i=1;i<=ri;i++)f[i]=i;
+		memset(he2,0,sizeof he2),t2=0;
+		memset(u3,0,sizeof u3);
+		for(int i=0;i<m2;i++)
+		{
+			int x=g[px[q2[i]]],y=g[py[q2[i]]];
+			if(fa(x)!=fa(y))f[f[x]]=f[y],u3[i]=1,addE2(x,y,i);
+		}
+		ff2(1,0);
+		memset(he3,0,sizeof he3),t3=1;
+		int le=m2,ri=m2+1;
+		for(int i=0;i<m2;i++)
+		{
+			if(!u3[i])ask2(g[px[q2[i]]],g[py[q2[i]]],i),addE3(i,ri,wb);
+			else addE3(le,i,wa);
+		}
+		S=min(S,sap(le,ri,ri+1));
+	}
+	return S;
+}
+void ff2()
+{
+	scanf("%d%d%d%d",&n,&m,&wa,&wb);
+	for(int i=0;i<m;i++)scanf("%d%d%d",px+i,py+i,pz+i),addE(px[i],py[i],i);
+	ff2(1);
+	for(int i=0;i<m;i++)if(u[i])
+	{
+		if(fi[px[i]]>fi[py[i]])swap(px[i],py[i]);
+		if(fi[px[i]]>=lo[py[i]])u[i]=0;
+	}
+	memset(v,0,sizeof v);int S=0;
+	for(int i=1;i<=n;i++)if(!v[i])S+=ask2(i);
+	printf("%d
+",S);
+}
+int main()
+{
+	int w;scanf("mst %d",&w);
+	if(w==1||w==2)ff0();else
+	if(w==3||w==4||w==5)ff1();else ff2();
+	return 0;
+}

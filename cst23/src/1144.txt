@@ -1,0 +1,95 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+#define maxn 100
+string lowAll(string s)
+{
+	string s0 = "";
+	int i, l = s.size();
+	for (i = 0; i < l; i++)
+		if ('A' <= s[i] && s[i] <= 'Z')
+			s0 += s[i] - 'A' + 'a';
+		else if ('a' <= s[i] && s[i] <= 'z')
+			s0 += s[i];
+	return s0;
+}
+string upFirst(string s, bool &cap)
+{
+	string s0 = "";
+	int i, b = 0, l = s.size();
+	if (cap)
+	{
+		if ('a' <= s[0] && s[0] <= 'z')
+			s0 += s[0] - 'a' + 'A';
+		else
+			s0 += s[0];
+		cap = false;
+		b = 1;
+	}
+	for (i = b; i < l; i++)
+		if ('A' <= s[i] && s[i] <= 'Z')
+			s0 += s[i] - 'A' + 'a';
+		else
+			s0 += s[i];
+	return s0;
+}
+int main()
+{
+	//ifstream cin ("1144.in");
+	//ofstream cout ("1144.out");
+	int n, i, j, l;
+	string inf[maxn], f[maxn], para, ans = "", tword = "";
+	bool formal = true, cap = true;
+	cin >> n;
+	for (i = 0; i < n; i++)
+	{
+		cin >> inf[i] >> f[i];
+		inf[i] = lowAll(inf[i]);
+		f[i] = lowAll(f[i]);
+	}
+	getline(cin, para);
+	getline(cin, para);
+	//clog << para << endl;
+	l = para.size();
+	for (j = 0; j < l; j++)
+	{
+		//clog << "j = " << j << endl;
+		if ('A' <= para[j] && para[j] <= 'Z' || 'a' <= para[j] && para[j] <= 'z')
+			tword += para[j];
+		else if (tword != "")
+		{
+			tword = lowAll(tword);
+			//clog << tword << endl;
+			for (i = 0; i < n; i++)
+				if (tword == inf[i] || tword == f[i])
+					break;
+			//clog << i << ": " << inf[i] << " " << f[i] << endl;
+			if (i == n)
+				break;
+			else
+			{
+				if (tword != f[i])
+					formal = false;
+				//clog << "ok" << endl;
+				ans += upFirst(f[i], cap) + para[j];
+				tword = "";
+				//clog << "ok" << endl;
+			}
+		}
+		else
+			ans += para[j];
+		if (para[j] == '.')
+			cap = true;
+	}
+	if (j < l)
+		cout << "Spelling Mistake!" << endl;
+	else
+	{
+		cout << ans << endl;
+		if (formal)
+			cout << "Already Formal." << endl;
+	}
+	return 0;
+}
+

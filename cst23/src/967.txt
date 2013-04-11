@@ -1,0 +1,29 @@
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+using namespace std;
+
+int a[1000] = {0};
+int f(int n)
+{
+    if (a[n])
+    return a[n];
+    int q=0;
+    for (int i=1;i<=n/2;i++)
+    q+=f(i);
+   q++;
+    a[n]=q;
+    return q;
+}
+
+int main()
+{
+    int n;
+    cin>>n;
+    a[1]=1;
+    cout<<f(n)<<endl;
+    return 0;
+}
+
+

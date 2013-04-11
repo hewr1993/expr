@@ -1,0 +1,25 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#include<string.h>
+#include<math.h>
+using namespace std;
+int main()
+{
+    int position,friends,picks;
+    scanf("%d%d%d",&position,&friends,&picks);
+    int now = 1,pick = 1;
+    while (pick <= picks)
+    {
+        for (now = 1;now <= friends && pick <= picks;++pick,++now)
+            if (now == position)
+                printf("%d
+",pick);
+        for (now = friends;now > 0 && pick <= picks;++pick,--now)
+            if (now == position)
+                printf("%d
+",pick);
+    }
+    return 0;
+}

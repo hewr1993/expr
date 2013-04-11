@@ -1,0 +1,116 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+char ch[100];
+int in[100],out[100];
+int var[100];
+int p1,p2;
+void maintain(int a[])
+{
+	int i,t;
+	for(i=0;i<99;i++)
+	{
+		t=a[i]/p2;
+		a[i]=a[i]%p2;
+		a[i+1]+=t;
+	}
+	return;
+}
+void multi(int r)
+{
+	int i,j;
+	for(i=0;i<100;i++)
+	{
+		if(i==0) var[i]=1;
+		else var[i]=0;
+	}
+	for(j=0;j<r;j++)
+	{
+		for(i=0;i<100;i++)
+		{
+			var[i]*=p1;
+		}
+		maintain(var);
+	}
+	return;
+}
+void trans(int r)
+{
+	int a=in[r];
+	int i,j;
+	for(i=0;i<a;i++)
+	{
+		multi(r);
+		for(j=0;j<100;j++)
+		{
+			out[j]+=var[j];
+		}
+		maintain(out);		
+	}
+}
+int main()
+{
+	int i,q1,q2,t;
+	cin>>ch;
+	for(i=0;i<strlen(ch);i++)
+	{
+		if(ch[i]=='<') q1=i;
+		if(ch[i]=='>') q2=i;
+	}
+	if(strlen(ch)-1==q2+2) p2=10;
+	else p2=ch[q2+1]-48;
+	if(q1==q2-3) p1=10;
+	else p1=ch[q1+1]-48;
+//	cout<<q1<<" "<<q2<<endl;
+	for(i=0;i<100;i++)
+	{
+		in[i]=0;
+		out[i]=0;
+	}	
+/*
+	for(i=0;i<q1;i++)
+	{
+		cout<<ch[i];
+	}
+	cout<<endl;
+*/
+	for(i=0;i<q1;i++)
+	{
+		in[i]=ch[q1-1-i]-48;
+	}
+/*
+	for(i=0;i<q1;i++)
+	{
+		cout<<in[i];
+	}
+	cout<<endl;
+*/
+	for(i=0;i<q1;i++)
+	{
+		trans(i);
+	}	
+	for(i=99;i>=0;i--)
+	{
+		if(out[i]!=0) 
+		{
+			t=i;
+			break;
+		}	
+	}
+//	cout<<p1<<" "<<p2<<endl;
+	for(i=0;i<=q2;i++)
+	{
+		cout<<ch[i];
+	}
+	cout<<"=";
+	for(i=t;i>=0;i--)
+	{	
+		cout<<out[i];
+	}
+	cout<<"<"<<p2<<">";
+	cout<<endl;
+//	system("pause");
+	return 0;
+}
+//62797832 吕    
+

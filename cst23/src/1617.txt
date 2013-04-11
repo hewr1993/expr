@@ -1,0 +1,79 @@
+#include<iostream>
+using namespace std;
+int a[50];
+int ans,n;
+/*int b[50]={0};
+int c[1000]={0};
+int n;
+void Load(int V)
+{
+        int w=0;
+        for(int i=1;i<=n;i++)
+        {
+                if(b[i]==0)
+                {
+                        if(V<a[i])
+                        {
+                                c[w]=V-9999;
+                                w++;
+                        }
+                        else if(V==a[i])
+                        {
+                                c[w]=-9999;
+                                w++;
+                        }        
+                        else
+                        {
+                                b[i]=1;
+                                Load(V-a[i]);
+                                b[i]=0;
+                        }
+                }
+        }
+} */                                       
+        
+int min(int x,int y){return x<y ? x:y;}
+
+void dfs(int curr,int V)
+{
+        ans=min(ans,V);
+        if (curr==n) return;
+	for (int i=curr+1;i<=n;++i)
+	if (a[i]<=V) dfs(i,V-a[i]);
+}
+         
+int main()
+{
+        int V;
+        //int sum=0;
+        cin>>V;
+        cin>>n;
+        for(int i=1;i<=n;i++)
+        {
+                cin>>a[i];
+                //sum=sum+a[i];
+        }
+        /*if(sum<=V)
+        {
+                cout<<V-sum;
+        }
+        else
+        {*/        
+        ans=V;
+        dfs(0,V);
+        /*int Min=c[0];
+        for(int i=1;i<=1000;i++)
+        {
+                if(Min>c[i])
+                {
+                        Min=c[i];
+                }
+        }
+        cout<<Min+9999<<endl;
+	} */
+ cout<<ans;                              
+   //     system("pause");
+        return 0;
+}
+                      
+                                    

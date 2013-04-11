@@ -1,0 +1,63 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+using namespace std;
+struct tstudent
+{
+	char name[21];
+	char num[21];
+	char sex;
+};
+void readdata(tstudent student[], int n)
+{
+	for (int i=1; i<=n; i++)
+	{
+		cin>>student[i].name;
+		cin>>student[i].num;
+		cin>>student[i].sex;
+	}
+}
+int findstudent(tstudent student[], int n, char data[])
+{
+	if (data==NULL) return  -1;
+	else
+	{
+		for (int i=1; i<=n; i++)
+	   {
+			if (strcmp(data,student[i].name)==0
+			||strcmp(data,student[i].num)==0)
+			return i;
+		}
+	}
+}
+void solve(tstudent student[], int n, int m)
+{
+	char x[21], y[21];
+	for (int i=1; i<=m; i++)
+	{
+		cin>>x;
+		cin>>y;
+		int p=findstudent(student, n, x);
+		int q=findstudent(student, n, y);
+		if (student[p].sex==student[q].sex) cout<<'N'<<endl;
+		else cout<<'Y'<<endl;
+	}
+}
+
+int main()
+{
+	//freopen("123.txt","r",stdin);
+	int n,m;
+	tstudent student[1010];
+	cin>>n;
+	readdata(student,n);
+	cin>>m;
+	solve(student, n, m);
+	//system("Pause");
+	return 0;
+}
+
+
+
+
+

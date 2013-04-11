@@ -1,0 +1,66 @@
+#include<stdio.h>
+#include<stdlib.h>
+struct f
+    {
+        int m;
+        int n;
+        struct f * next;
+    };
+void input(struct f * h);
+struct f * lianbiao(int q);
+void input(struct f * h)
+{
+    scanf("%d",&h->m);
+    scanf("%d",&h->n);
+}
+struct f * lianbiao(int q)
+{
+    struct f * a;
+    struct f * p;
+    int i;
+    p=(struct f *)malloc(sizeof(struct f));
+    p->next=NULL;
+    for(i=1;i<=q;i++)
+    {
+        a=(struct f *)malloc(sizeof(struct f));
+        input(a);
+        a->next=p->next;
+        p->next=a;
+    }
+   return (p);
+}
+int main()
+{
+    struct f * a;
+    int b,i;
+    scanf("%d",&b);
+    
+
+    a=(struct f *)malloc(sizeof(struct f));
+        a->next=NULL;
+    a=lianbiao(b);
+      
+
+
+    int c=0;
+    int d=0;
+    struct f * k;
+    k=(struct f *)malloc(sizeof(struct f));
+    k->next=a->next;
+    
+
+
+
+  for(i=1;i<=b;i++)
+    {
+        c=c+(k->next)->m;
+        d=d+(k->next)->n;
+        k->next=(k->next)->next;
+    }
+   
+
+    printf("%d+%di
+",c,d);
+    return 0;
+}
+

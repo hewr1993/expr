@@ -1,0 +1,26 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+
+using namespace std;
+
+void revcp(char *inp, char *oup)
+{
+char a[10010],b[10010];
+    int la=0,i;
+    ifstream fin(inp);
+    fin>>a;
+    fin.close();
+    for(i=0;a[i];i++)
+    {
+        la++;
+    }
+	for(int i=0;i<la;i++){
+		b[i] = a[la-i-1];
+	}
+    ofstream fout(oup);
+    fout<<b;
+    fout.close();
+}
+

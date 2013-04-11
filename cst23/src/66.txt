@@ -1,0 +1,30 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int prm[1000]={2};
+
+int main()
+{
+    int m,p = 1;
+    cin >> m;
+    if(m < 2) {
+        cout << 0 << endl;
+        return 0;
+    }
+    else for (int i = 3; i <= m; i++) {
+             bool flag = true;
+             for (int j = 0; j < p; j++)
+                 if (i % prm[j] == 0) {
+                    flag = false;
+                    break;
+                 }
+             if (flag == true) prm[p++] = i;
+    }
+    for (int i = 0; i < p ;i++) {
+        if(i % 5 != 4) cout << prm[i] << ' ';
+        else cout << prm[i] <<endl;
+    }
+    return 0;    
+}
+

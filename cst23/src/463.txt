@@ -1,0 +1,8 @@
+#include<stdio.h>
+#include<stdlib.h>
+int main(){char s[100];char q[100];
+scanf("%s %s",s,q); 
+printf("%s%s",s,q);
+return 0;
+}
+

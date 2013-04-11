@@ -1,0 +1,22 @@
+#include<stdio.h>
+int main()
+{
+    char a[64],b[6];
+    int i,j,t,k;
+    for(i=0;i<64;i++)
+    {
+        a[i]=i;t=i;
+	    for(j=0;j<=5;j++)
+	    {
+		b[j]=t%2;
+		t=t/2;
+	    }
+	    for(k=5;k>=0;k--)
+	    {
+	        printf("%d",b[k]);
+            }
+	    printf("
+");
+	}
+    return 0;
+}

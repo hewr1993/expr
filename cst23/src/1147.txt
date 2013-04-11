@@ -1,0 +1,22 @@
+
+#include <iostream>
+using namespace std;
+int main()
+{
+    int m,n;
+    int i, k = 0, t;
+    cin >> m >> n;
+    if (m > n)
+    {
+       t = m;
+       m = n;
+       n = t;
+    }
+    for (i = 2; i <= m ; i++)
+    {
+          k = k + (m - i + 1) * (n - i + 1) * (i - 1);
+    }
+    cout << k << endl;
+    return 0;
+}
+

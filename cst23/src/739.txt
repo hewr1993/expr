@@ -1,0 +1,275 @@
+#include <ctime>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+using namespace std;
+
+#define MAXN 10010
+#define BLOCKSIZE 200
+#define BLOCKN 51
+#define MAXC 1000010
+
+int N, bN, M;
+
+int col[MAXN];
+
+int kc[BLOCKN][BLOCKN];
+
+struct Node {
+	int pos;
+	int key;
+	Node *l, *r, *p;
+	Node *last, *next;
+} node[MAXN], *root[MAXC];
+
+void Zig (Node *x)
+{
+	Node *p = x->p;
+	Node *s = x->l;
+	
+	x->l = s->r;
+	if (s->r) s->r->p = x;
+	s->r = x;
+	s->p = p;
+	x->p = s;
+	if (p)
+	{
+		if (x == p->l) p->l = s;
+		else p->r = s;
+	}
+	else
+		root[col[x->pos]] = s;
+}
+void Zag (Node *x)
+{
+	Node *p = x->p;
+	Node *s = x->r;
+	
+	x->r = s->l;
+	if (s->l) s->l->p = x;
+	s->l = x;
+	s->p = p;
+	x->p = s;
+	if (p)
+	{
+		if (x == p->l) p->l = s;
+		else p->r = s;
+	}
+	else
+		root[col[x->pos]] = s;
+}
+void Insert (Node *x, Node *&p)
+{
+	if (!p)
+	{
+		p = x;
+		if (x->next) x->next->last = x;
+		if (x->last) x->last->next = x;
+		return;
+	}
+	if (x->pos < p->pos)
+	{
+		x->next = p;
+		x->p = p;
+		Insert (x, p->l);
+		if (p->key > p->l->key) Zig (p);
+	}
+	else
+	{
+		x->last = p;
+		x->p = p;
+		Insert (x, p->r);
+		if (p->key > p->r->key) Zag (p);
+	}
+}
+Node *Merge (Node *x, Node *y, Node *p)
+{
+	if (!x || !y) 
+	{
+		if (x) {x->p = p; return x;}
+		else if (y) {y->p = p; return y;}
+		return 0;
+	}
+	if (x->key < y->key)
+	{
+		x->r = Merge (x->r, y, x);
+		x->p = p;
+		return x;
+	}
+	else
+	{
+		y->l = Merge (x, y->l, y);
+		y->p = p;
+		return y;
+	}
+}
+void Delete (Node *x)
+{
+	if (x->last) x->last->next = x->next;
+	if (x->next) x->next->last = x->last;
+	if (x->p)
+	{
+		if (x == x->p->l) x->p->l = Merge (x->l, x->r, x->p);
+		else x->p->r = Merge (x->l, x->r, x->p);
+	}
+	else
+		root[col[x->pos]] = Merge (x->l, x->r, 0);
+	x->l = x->r = x->last = x->next = x->p = 0;
+}
+
+int Init_pre[MAXN];
+
+void Init ()
+{
+//	int ttt = time (0);
+	srand (time (0));
+//	srand (1350139758);
+//	fprintf (fout, "%d
+", ttt);
+	memset (root, 0, sizeof(root));
+	memset (kc, 0, sizeof(kc));
+	
+	scanf ("%d %d", &N, &M);
+	bN = (N+BLOCKSIZE-1)/BLOCKSIZE;
+	for (int i = 0; i < N; i++)
+	{
+/*		if (i == 374)
+			int iii = i;
+		if (i == 458)
+			int iii = i;
+		if (i == 500)
+			int iii = i;*/
+		scanf ("%d", &col[i]);
+		Node *p = &node[i];
+		p->pos = i;
+		p->key = rand ();
+		p->l = p->r = p->last = p->next = p->p = 0;
+		Insert (p, root[col[i]]);
+	}
+	
+	for (int i = 0; i < N; i++)
+	{
+		Node *x = &node[i];
+		if (x->last) Init_pre[x->pos] = x->last->pos;
+		else Init_pre[x->pos] = -1;
+	}
+	
+	for (int i = 0; i < bN; i++)
+	{
+		int *kci = kc[i];
+		for (int j = i*BLOCKSIZE; j < N; j++)
+		{
+			if (!(j%BLOCKSIZE)) *(kci+(j/BLOCKSIZE)) = *(kci+(j/BLOCKSIZE)-1);
+			if (Init_pre[j] < i*BLOCKSIZE) (*(kci+(j/BLOCKSIZE)))++;
+		}
+	}
+	
+/*	for (int i = 400; i < 600; i++)
+		fprintf (fout, "%3.d ", i);
+	fprintf (fout, "
+");
+	
+	for (int i = 400; i < 600; i++)
+		fprintf (fout, "%3.d ", Init_pre[i]);
+	fprintf (fout, "
+");
+	
+	for (int i = 400; i < 600; i++)
+	{
+		int flag = 1;
+		for (int j = i-1; j >= 0; j--) if (col[j] == col[i])
+		{
+			fprintf (fout, "%3.d ", j);
+			flag = 0;
+			break;
+		}
+		if (flag)
+			fprintf (fout, " -1 ");
+	}
+	fprintf (fout, "
+");
+	
+	for (int i = 374; i != -1; i = Init_pre[i])
+		fprintf (fout, "%d
+", i);
+	fprintf (fout, "
+");*/
+}
+
+void Solve ()
+{
+	char cmd;
+	while (M--)
+	{
+		scanf ("
+%c", &cmd);
+		if (cmd == 'Q')
+		{
+			int l, r;
+			scanf ("%d %d", &l, &r);
+			l--; r--;
+			if (r-l+1 <= (BLOCKSIZE<<1))
+			{
+				int ans = 0;
+				for (int i = l; i <= r; i++)
+				{
+					Node *x = &node[i];
+					if (!x->last || x->last->pos < l) ans++;
+				}
+				printf ("%d
+", ans);
+			}
+			else
+			{
+				int bl = (l+BLOCKSIZE-1)/BLOCKSIZE, br = r/BLOCKSIZE;
+				int ans = kc[bl][br-1];
+				for (int i = l; i < bl*BLOCKSIZE; i++)
+				{
+					Node *x = &node[i];
+					if (!x->next || x->next->pos > br*BLOCKSIZE-1) ans++;
+				}
+				for (int i = br*BLOCKSIZE; i <= r; i++)
+				{
+					Node *x = &node[i];
+					if (!x->last || x->last->pos < l) ans++;
+				}
+				printf ("%d
+", ans);
+			}
+		}
+		else
+		{
+			int pos, c;
+			scanf ("%d %d", &pos, &c);
+			pos--;
+			Node *x = &node[pos];
+			int l = (x->last? x->last->pos: -1), r = (x->next? x->next->pos: N);
+			for (int i = 0; i*BLOCKSIZE <= pos; i++)
+			{
+				int *kci = kc[i];
+				for (int j = pos/BLOCKSIZE; j < bN; j++)
+					if (l < i*BLOCKSIZE && (j+1)*BLOCKSIZE-1 < r) (*(kci+j))--;
+			}
+			Delete (x);
+			col[pos] = c;
+			Insert (x, root[c]);
+			l = (x->last? x->last->pos: -1);
+			r = (x->next? x->next->pos: N);
+			for (int i = 0; i*BLOCKSIZE <= pos; i++)
+			{
+				int *kci = kc[i];
+				for (int j = pos/BLOCKSIZE; j < bN; j++)
+					if (l < i*BLOCKSIZE && (j+1)*BLOCKSIZE-1 < r) (*(kci+j))++;
+			}
+		}
+	}
+}
+
+int main ()
+{
+	Init ();
+	Solve ();
+	return 0;
+}
+

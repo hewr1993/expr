@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void dazi(char zifu[], int n, int k);
+int strln(char zi[]);
+int len;
+
+int main()
+{
+    char zi[1001];
+    gets(zi);
+    len = strln(zi);
+    dazi(zi, 0, len-1);
+    
+    //system("pause");
+    return 0;
+}
+
+int strln(char zi[])
+{
+    int i = 0, re = 0;
+    while(zi[i]!=0)
+    {
+                      re++;
+                      i++;
+    }
+    return re;
+}
+
+void dazi(char zifu[], int n, int k)
+{
+     if(n > k) return;
+     else if(n == k)
+     {
+          printf("%c", zifu[k]);
+          dazi(zifu, 0, k-1);
+     }
+     else if(n < k)
+     {
+          dazi(zifu, n+1, k);
+     }
+}
+

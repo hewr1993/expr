@@ -1,0 +1,234 @@
+#include <cstdio>
+#include <map>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+#define Sort sort
+#define Pair pair<int,int>
+
+using namespace std;
+
+const int Maxn=1600;
+
+struct Tnode
+{
+    int x,y,z,dis;
+};
+
+struct Pnode
+{
+	int a1,b1,c1,a2,b2,c2;
+};
+
+int can[Maxn][Maxn];
+vector <Tnode> a[30];
+vector <int> Map[Maxn][Maxn];
+vector <Tnode> board[30];
+Tnode center[30];
+int id[30];
+int adj[30];
+int pic[30][30];
+int dir_x[6]={0,0,0,0,1,-1};
+int dir_y[6]={1,-1,0,0,0,0};
+int dir_z[6]={0,0,1,-1,0,0};
+int n,m,nn,Test;
+char ch;
+bool Find;
+
+Tnode Make_Tnode(int x,int y,int z)
+{
+    Tnode Res;
+    Res.x=x;
+    Res.y=y;
+    Res.z=z;
+    return Res;
+}
+	
+bool Cmp(Tnode A,Tnode B)
+{
+    return A.dis<B.dis;
+}
+
+bool Cmp1(int A,int B)
+{
+    return adj[A]>adj[B] || (adj[A]==adj[B] && board[A].size()<board[B].size());
+}
+
+int Abs(int x)
+{
+    if (x<0) return -x;
+    else return x;
+}
+
+int Dist(Tnode A,Tnode B)
+{   
+    return Abs(A.x-B.x)+Abs(A.y-B.y)+Abs(A.z-B.z);
+}
+
+void Prepare()
+{
+    scanf("%d%d%d",&n,&m,&nn);
+    for (int i=0;i<n;++i)
+        for (int j=0;j<m;++j)
+            Map[i][j].clear();
+    for (int i=0;i<26;++i)
+    {
+        a[i].clear();
+        board[i].clear();
+    }
+    
+    for (int i=0;i<n;++i)
+        for (int j=0;j<m;++j)
+            for (int k=0;k<nn;++k)
+            {
+                scanf("%c",&ch);
+                while (ch<'a' || ch>'z') scanf("%c",&ch);
+                Map[i][j].push_back(ch-'a');
+                a[ch-'a'].push_back(Make_Tnode(i,j,k));
+            }
+    
+    for (int i=0;i<n;++i)
+        for (int j=0;j<m;++j)
+            for (int k=0;k<nn;++k)
+                for (int dir=0;dir<6;++dir)
+                {
+                    int nex=i+dir_x[dir];
+                    int ney=j+dir_y[dir];
+                    int nez=k+dir_z[dir];
+                    if (nex>=0 && nex<n && ney>=0 && ney<m && nez>=0 && nez<nn)
+                        if (Map[nex][ney][nez]!=Map[i][j][k])
+                        {
+                            board[Map[i][j][k]].push_back(Make_Tnode(i,j,k));
+                            break;
+                        }
+                }
+    
+    for (int i=0;i<26;++i)
+    {
+        for (int j=0;j<a[i].size();++j)
+        {
+            a[i][j].dis=0;
+            for (int k=0;k<board[i].size();++k)
+                a[i][j].dis=max(a[i][j].dis,Dist(a[i][j],board[i][k]));
+        }
+        Sort(a[i].begin(),a[i].end(),Cmp);
+    }
+    
+	memset(pic,0,sizeof(pic));
+	for (int i=0;i<n;++i)
+		for (int j=0;j<m;++j)
+			for (int k=0;k<nn;++k)
+				for (int dir=0;dir<6;++dir)
+				{
+					int nex=i+dir_x[dir];
+                    int ney=j+dir_y[dir];
+                    int nez=k+dir_z[dir];
+                    if (nex>=0 && nex<n && ney>=0 && ney<m && nez>=0 && nez<nn)
+						pic[Map[nex][ney][nez]][Map[i][j][k]]=pic[Map[i][j][k]][Map[nex][ney][nez]]=1;
+				}
+				
+	for (int i=0;i<26;++i) adj[i]=0;
+	for (int i=0;i<26;++i)
+		for (int j=0;j<26;++j)
+			if (i!=j) adj[i]+=pic[i][j];
+			
+    for (int i=0;i<26;++i) id[i]=i;
+    Sort(id,id+26,Cmp1);
+}
+
+bool Check(int x,int y)
+{
+	int X=center[x].x*m*nn+center[x].y*nn+center[x].z;
+	int Y=center[y].x*m*nn+center[y].y*nn+center[y].z;
+	if (can[X][Y]!=-1) return can[X][Y];
+
+    for (int i=0;i<board[x].size();++i)
+        if (x<y)
+        {
+            if (Dist(board[x][i],center[x])>Dist(board[x][i],center[y])) 
+			{
+				can[X][Y]=can[Y][X]=0;
+				return false;
+			}
+        }
+        else
+        {
+            if (Dist(board[x][i],center[x])>=Dist(board[x][i],center[y]))
+			{
+				can[X][Y]=can[Y][X]=0;
+				return false;
+			}
+        }
+        
+    for (int i=0;i<board[y].size();++i)
+        if (y<x)
+        {
+            if (Dist(board[y][i],center[y])>Dist(board[y][i],center[x]))
+			{
+				can[X][Y]=can[Y][X]=0;
+				return false;
+			}
+        }
+        else
+        {
+            if (Dist(board[y][i],center[y])>=Dist(board[y][i],center[x]))
+			{
+				can[X][Y]=can[Y][X]=0;
+				return false;
+			}
+        }
+        
+	can[X][Y]=can[Y][X]=1;
+    return true;
+}
+
+void Dfs(int x)
+{
+    if (x==26)
+    {
+        for (int i=0;i<26;++i)
+        {
+            if (!a[i].size()) continue;
+            ch='a'+i;
+            printf("%c %d %d %d
+",ch,center[i].x,center[i].y,center[i].z);
+        }
+        Find=true;
+        return;
+    }
+    if (!a[id[x]].size()) Dfs(x+1);
+    else
+        for (int i=0;i<a[id[x]].size();++i)
+        {
+            center[id[x]]=a[id[x]][i];
+            bool flag=true;
+            for (int j=0;j<x && flag;++j)
+                if (a[id[j]].size())
+                    flag&=Check(id[x],id[j]);
+            if (flag) Dfs(x+1);
+            if (Find) return;
+        }
+}
+            
+int main()
+{
+    //freopen("x.in","r",stdin);
+    //freopen("x.out","w",stdout);
+    
+    scanf("%d",&Test);
+    for (int ii=0;ii<Test;++ii)
+    {
+        if (ii>0) printf("
+");
+        
+        Prepare();
+        
+		for (int i=0;i<n*m*nn;++i)
+			for (int j=0;j<n*m*nn;++j)
+				can[i][j]=-1;
+        Find=false;
+        Dfs(0);
+    }
+    
+    return 0;
+}

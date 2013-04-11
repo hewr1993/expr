@@ -1,0 +1,58 @@
+//program 2131
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+struct Item
+{
+  int X,Y,Value;
+};
+
+bool operator <(Item A,Item B)
+{
+  return (A.Y==B.Y)?(A.X<B.X):(A.Y<B.Y);
+}
+
+int Data[100000];
+
+int Find(int L,int R,int X)
+{
+  int Mid=(L+R)/2;if(Data[Mid]==X)return Mid+1;
+  return (X<Data[Mid])?Find(L,Mid-1,X):Find(Mid+1,R,X);
+}
+
+int main()
+{
+  int Width,N;scanf("%d%d",&Width,&N);
+  static Item A[100000];
+  for(int i=0;i<N;i++)
+    {
+      int Time,X,Value;scanf("%d%d%d",&Time,&X,&Value);
+      A[i]=(Item){Time*2-X,Time*2+X,Value};Data[i]=A[i].X;
+    }
+  sort(A,A+N);sort(Data,Data+N);
+  int Total=1;
+  for(int i=1;i<N;i++)
+    if(Data[i]!=Data[i-1])
+      Data[Total++]=Data[i];
+  for(int i=0;i<N;i++)A[i].X=Find(0,Total-1,A[i].X);
+  static int Max[100001];
+  memset(Max,0,sizeof(Max));
+  int Ans=0;static int DP[100000];
+  for(int i=0;i<N;i++)
+    {
+      int Best=0,P=A[i].X;while(P){Best=max(Best,Max[P]);P^=P&-P;}
+      DP[i]=Best+A[i].Value;
+      P=A[i].X;while(P<=Total){Max[P]=max(Max[P],DP[i]);P+=P&-P;}
+      Ans=max(Ans,DP[i]);
+    }
+  printf("%d
+",Ans);
+  return 0;
+}
+

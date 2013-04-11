@@ -1,0 +1,85 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm>
+using namespace std;
+#define MM(a , x) memset(a , x , sizeof(a))
+#define sqr(x) ((x) * (x))
+#define abs(x) ((x > 0) ? (x) : -(x))
+#define REP(i , n) for ((i) = 0; (i) < (n); ++(i))
+#define FOR(i , a , b) for ((i) = (a); (i) <= (b); ++(i))
+#define FORD(i , a , b) for ((i) = (a); (i) >= (b); --(i))
+typedef long long LL;
+
+int n , m , tot , ans;
+int a[10] , g[10][10];
+bool vis[10];
+
+void init()
+{
+	scanf("%d" , &n);
+	MM(g , 0);
+	g[1][5] = g[1][6] = 1;
+	g[2][6] = 1;
+	g[3][7] = 1;
+	g[4][1] = g[4][8] = 1;
+	g[5][3] = g[5][4] = g[5][2] = g[5][6] = 1;
+	g[6][7] = g[6][8] = 1;
+	g[7][8] = 1;
+	g[8][5] = 1;
+}
+
+int check()
+{
+	int tp = 0;
+	tp += g[a[1]][a[5]];
+	tp += g[a[2]][a[6]];
+	tp += g[a[3]][a[7]];
+	tp += g[a[4]][a[8]];
+	tp += g[a[1]][a[2]];
+	tp += g[a[3]][a[4]];
+	tp += g[a[5]][a[6]];
+	tp += g[a[7]][a[8]];
+	tp += g[a[1]][a[3]];
+	return tp;
+}
+
+void dfs(int dep)
+{
+	int i , j , k;
+	if (dep > 8)
+	{
+		k = check();
+		if (k == n) ans++;
+		return;
+	}
+	FOR (i , 1 , 8)
+	{
+		if (vis[i]) continue;
+		a[dep] = i; vis[i] = 1;
+		dfs(dep + 1);
+		a[dep] = 0; vis[i] = 0;
+	}
+}
+
+void work()
+{
+	MM(a , 0); MM(vis , 0);
+	ans = 0;
+	dfs(1);
+	printf("%d
+" , ans);
+}
+
+int main()
+{
+	init();
+	work();
+	return 0;
+}
+

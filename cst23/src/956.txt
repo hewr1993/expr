@@ -1,0 +1,78 @@
+const
+ fx:array[1..4]of integer=(0,0,1,-1);
+ fy:array[1..4]of integer=(1,-1,0,0);
+var
+  x1,y1,x2,y2,i,j,m,n:longint;
+  o:array[0..50000,1..2]of integer;
+  map,e:array[0..201,0..201]of integer;
+  p:array[0..201,0..201]of boolean;
+  c:char;
+
+  procedure bfs;
+  var
+    h,t,nx,ny,tx,ty,i,j,k:longint;
+  begin
+    h:=1;t:=2;
+    o[h,1]:=x1;o[h,2]:=y1;
+    e[x1,y1]:=16384;
+    p[x1,y1]:=true;
+    repeat
+      nx:=o[h,1];ny:=o[h,2];
+      p[nx,ny]:=false;
+      for i:=1 to 4 do
+      begin
+        tx:=nx+fx[i];ty:=ny+fy[i];
+        if map[tx,ty]=0 then
+          if e[tx,ty]<e[nx,ny] then
+          begin
+            e[tx,ty]:=e[nx,ny];
+            if not p[tx,ty] then
+            begin
+              p[tx,ty]:=true;
+              o[t,1]:=tx;o[t,2]:=ty;
+              t:=(t+1)mod 50000;
+            end;
+          end else
+        else if map[tx,ty]=1 then
+          if e[tx,ty]<e[nx,ny] div 2 then
+          begin
+            e[tx,ty]:=e[nx,ny] div 2;
+            if not p[tx,ty] then
+            begin
+              p[tx,ty]:=true;
+              o[t,1]:=tx;o[t,2]:=ty;
+              t:=(t+1)mod 50000;
+            end;
+          end;
+      end;
+      h:=(h+1)mod 50000;
+    until h=t;
+  end;
+
+begin
+  readln(m,n);
+  for i:=1 to n do begin map[0,i]:=2;map[m+1,i]:=2;end;
+  for i:=1 to m do begin map[i,0]:=2;map[i,n+1]:=2;end;
+  for i:=1 to m do
+  begin
+    for j:=1 to n do
+    begin
+      read(c);
+      if c='.' then map[i,j]:=0
+      else if c='*' then map[i,j]:=1
+      else if c='#' then map[i,j]:=2
+      else if c='S' then begin x1:=i;y1:=j;map[i,j]:=0;end
+      else if c='E' then begin x2:=i;y2:=j;map[i,j]:=0;end;
+    end;
+    readln;
+  end;
+  bfs;
+  if e[x2,y2]=0 then writeln('There''s no wind!')
+  else begin
+    writeln(e[x2,y2]);
+    readln(i);
+    if odd(abs(x1-x2)+abs(y1-y2)) then writeln(i xor 1)
+      else writeln(i);
+  end;
+end.
+

@@ -1,0 +1,83 @@
+#include <iostream>
+#include <cstring>
+int max(char *p,int k,int len)
+{
+	char q[101];
+	int i,j,flag,s=0;
+	for(i=k;i<=len-1;i++)
+	q[i-k]=p[i];
+	for(i=0;i<=k-1;i++)
+	q[len-k+i]=p[i];
+	if(q[0]=='r')
+	{
+		for(i=0;q[i]!='b'&&i<=len-1;i++)
+		s++;
+		flag=i;
+	}
+	else if(q[0]=='b')
+	{
+		for(i=0;q[i]!='r'&&i<=len-1;i++)
+		s++;
+		flag=i;
+	}
+	else 
+	{
+		for(i=0;q[i]=='w'&&i<=len-1;i++)
+		s++;
+		j=i;flag=i;
+		if(q[j]=='r'&&flag<len-1)
+		{
+			for(i=j;q[i]!='b'&&i<=len-1;i++)
+			s++;
+			flag=i;
+		}
+		else if(q[j]=='b'&&flag<len-1)
+		{
+			for(i=j;q[i]!='r'&&i<=len-1;i++)
+			s++;
+			flag=i;
+		}
+	}
+	if(q[len-1]=='r')
+	{
+		for(i=len-1;q[i]!='b'&&i>=flag;i--)
+		s++;
+	}
+	else if(q[len-1]=='b')
+	{
+		for(i=len-1;q[i]!='r'&&i>=flag;i--)
+		s++;
+	}
+	else 
+	{
+		for(i=len-1;q[i]=='w'&&i>=flag;i--)
+		s++;
+		j=i;
+		if(q[j]=='r'&&j>flag)
+		{
+			for(i=j;q[i]!='b'&&i>=flag;i--)
+			s++;
+		}
+		else if(q[j]=='b'&&j>=flag)
+		{
+			for(i=j;q[i]!='r'&&i>=flag;i--)
+			s++;
+		}
+	}
+	return s;
+}
+
+
+using namespace std;
+int main()
+{
+	char neck[101];
+	cin>>neck;
+	int len=strlen(neck),m=0;
+	for(int i=0;i<=len-1;i++)
+	if(max(neck,i,len)>m)
+	m=max(neck,i,len);
+	cout<<m<<endl;
+	return 0;
+}
+

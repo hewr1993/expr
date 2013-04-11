@@ -1,0 +1,94 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#define M 7002
+typedef struct
+{
+	int x, y;
+} LIS;
+LIS lis[M];
+int n, q;
+int cmp(const void *a, const void *b)
+{
+	return *(int*)a - *(int*)b;
+}
+int cmpl(const void *a, const void *b)
+{
+	return (*(LIS*)a).x - (*(LIS*)b).x;
+}
+int find(int b[], int r, int x)
+{
+	int l=0, m;
+	while(l <= r)
+	{
+		m = (l+r)>>1;
+		if(x>=b[m]) l=m+1; else r=m-1;
+	}
+	return l-1;
+}
+int fx[2][M], fy[2][M];
+void init()
+{
+	int i, j;
+	int bx[M], by[M];
+	int nx=0, ny=0;
+	scanf("%d %d", &n, &q);
+	for(i=1; i<=n; i++)
+	{
+		scanf("%d %d", &lis[i].x, &lis[i].y);
+		bx[nx++] = lis[i].x;
+		by[ny++] = lis[i].y;
+	}
+	qsort(bx, nx, sizeof(int), cmp);
+	qsort(by, ny, sizeof(int), cmp);
+	for(i=0,j=1; j<nx; j++)
+		if(bx[i]!=bx[j]) bx[++i] = bx[j];
+	nx = i;
+	for(i=0,j=1; j<ny; j++)
+		if(by[i]!=by[j]) by[++i] = by[j];
+	ny = i;
+	for(i=1; i<=n; i++)
+	{
+		lis[i].x = find(bx, nx, lis[i].x) + 1;
+		lis[i].y = find(by, ny, lis[i].y) + 1;
+	}
+	qsort(lis+1, n, sizeof(LIS), cmpl);
+}
+int ans = 1;
+void solve()
+{
+	int *x, *y, *a, *b, *t;
+	register int i, j, k;
+	x = fx[1]; a = fx[0];
+	y = fy[1]; b = fy[0];
+	for(i=0; i<=n; i++) a[i]=b[i]=1;
+	for(k=2; k<=n; k++)
+	{
+		for(i=0; i<n; i++)
+		{
+			j = i+k;
+			if(j>n+1) continue;
+			x[i] = a[i];
+			if(lis[j-1].y < lis[i].y)
+				x[i] += b[i];
+			if(x[i] > q) x[i] -= q;
+			y[i] = b[i+1];
+			if(lis[i+1].y < lis[j].y)
+				y[i] += a[i+1];
+			if(y[i] > q) y[i] -= q;
+		}
+		t=x;x=a;a=t;
+		t=y;y=b;b=t;
+		ans = (ans + a[n+1-k] + b[0] - 1)%q;
+	}
+	printf("%d
+", (ans+q)%q);
+}
+int main(void)
+{
+	init();
+	solve();
+	//while(1);
+	return 0;
+}
+

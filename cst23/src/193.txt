@@ -1,0 +1,51 @@
+#include<cstdio>
+#include<cstdlib>
+#include<iostream>
+#include<cstring>
+using namespace std;
+struct ch{char c;int n;};
+int main()
+{
+    char s[300]={};
+    cin>>s;
+    int l=strlen(s);
+    ch a[128]={},t;
+    for(int i=0;i<l;i++)
+    {
+        if(s[i]>='A'&&s[i]<='Z')s[i]=s[i]+'a'-'A';
+    }
+    for(int i=0;i<128;i++)
+    {
+        a[i].c=i;
+        a[i].n=0;
+    }
+    for(int i=0;i<l;i++)
+    {
+        a[(int)s[i]].n++;
+    }
+    for(int i=0;i<127;i++)
+    {
+        for(int j=0;j<127;j++)
+        {
+            if(a[j].n<a[j+1].n)
+            {
+                t=a[j];
+                a[j]=a[j+1];
+                a[j+1]=t;
+            }
+            if(a[j].n==a[j+1].n&&a[j].c>a[j+1].c)
+            {
+                t=a[j];
+                a[j]=a[j+1];
+                a[j+1]=t;
+            }
+        }
+    }
+    for(int i=0;i<127;i++)
+    {
+        if(a[i].n==0)break;
+        if(a[i].c>='a'&&a[i].c<='z')cout<<a[i].c<<" "<<a[i].n<<endl;
+    }
+    system("pause");
+    return 0;
+}

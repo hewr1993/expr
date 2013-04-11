@@ -1,0 +1,106 @@
+//program 2137
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+const int Mod=1000000007;
+
+int Pow(int A,int B)
+{
+  if(!B)return 1;
+  int T=Pow((long long)A*A%Mod,B/2);
+  if(B&1)T=(long long)T*A%Mod;
+  return T;
+}
+
+long long X[100000];
+
+void Solve_0(int N,int K)
+{
+  static int Sum[100002];
+  Sum[0]=0;
+  for(int i=1;i<=100001;i++)
+    Sum[i]=(Sum[i-1]+Pow(i,K))%Mod;
+  int Ans=1;
+  for(int i=0;i<N;i++)
+    Ans=(long long)Ans*Sum[X[i]+1]%Mod;
+  printf("%d
+",Ans);
+}
+
+void Solve_1(int N)
+{
+  int Ans=1;
+  for(int i=0;i<N;i++)
+    {
+      int M=X[i]%Mod+1;
+      Ans=((long long)M*(M+1)/2%Mod*Ans)%Mod;
+    }
+  Ans=(long long)Ans*Ans%Mod;
+  printf("%d
+",Ans);
+}
+
+void Solve_2(int N,int K)
+{
+  static int G[32][14][14];
+  memset(G,0,sizeof(G));
+  G[0][0][0]=G[0][K][K+1]=G[0][K+1][K+1]=1;
+  for(int j=1;j<=K;j++)
+    for(int i=0;i<=j;i++)
+      {
+        G[0][i][j]=G[0][i][j-1];
+        if(i)G[0][i][j]+=G[0][i-1][j-1];
+        if(G[0][i][j]>=Mod)G[0][i][j]-=Mod;
+      }
+  for(int T=1;T<32;T++)
+    for(int k=0;k<K+2;k++)
+      for(int i=0;i<K+2;i++)
+        for(int j=0;j<K+2;j++)
+          G[T][i][j]=((long long)G[T-1][i][k]*G[T-1][k][j]+G[T][i][j])%Mod;
+  int Ans=1;
+  for(int P=0;P<N;P++)
+    {
+      long long M=X[P]+1;
+      static int A[14];
+      for(int i=0;i<=K;i++)A[i]=1;
+      A[K+1]=0;
+      for(int T=0;T<32;T++)
+        if(M&(1LL<<T))
+          {
+            static int B[14];
+            memset(B,0,sizeof(B));
+            for(int i=0;i<K+2;i++)
+              for(int j=0;j<K+2;j++)
+                B[j]=((long long)G[T][i][j]*A[i]+B[j])%Mod;
+            for(int i=0;i<K+2;i++)A[i]=B[i];
+          }
+      Ans=(long long)Ans*A[K+1]%Mod;
+    }
+  printf("%d
+",Ans);
+}
+
+int main()
+{
+  int N,K;scanf("%d%d",&N,&K);
+  long long Max=0;
+  for(int i=0;i<N;i++)
+    {
+      cin>>X[i];
+      Max=max(Max,X[i]);
+    }
+  if(Max<=100000)
+    Solve_0(N,K);
+  else if(K==3)
+    Solve_1(N);
+  else
+    Solve_2(N,K);
+  return 0;
+}
+

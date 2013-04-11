@@ -1,0 +1,35 @@
+//  main.cpp
+//  Homework - 10.10.12 - Task No.4
+//  Fiddling with reversed numbers...
+//  计22，张天成
+//  2012011267
+
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+long long int reverse(long long int);
+int main()
+{   int m=0,n=0;
+    long long int sum=0;
+    cin>>m>>n;
+    sum=reverse(m)+reverse(n);
+    cout<<reverse(sum);
+    return 0;
+}
+
+long long int reverse(long long int var)
+{   long long int rev=0;
+    int k=1;
+    long long int a=0;
+    for(long long int i=10;i<=10000000000;i=i*10)
+    {   if(var%i==var)
+            break;
+        else
+            k++;
+    }
+    a=pow(10,k+1);
+    for(long long int j=10;j<=a;j=j*10)
+        rev=rev+(((var%j)-(var%(j/10)))*10/j)*(pow(10,k)/j);
+    return rev;
+}

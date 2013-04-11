@@ -1,0 +1,130 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <algorithm>
+#define clear(x) memset(x, 0, sizeof(x))
+using namespace std;
+const int maxn = 21000;
+typedef int arr[maxn];
+arr l, r, a, dis, now, siz, big, sml, stk, val, aux[2];
+int f[maxn][12];
+int n, ans, x;
+
+int merge(int &A, int &B, int t[])
+{
+	if (!A || !B) return A + B;
+	if (t[B] > t[A]) swap(A, B);
+	r[A] = merge(r[A], B, t);
+	if (dis[r[A]] > dis[l[A]])
+		swap(r[A], l[A]);
+	dis[A] = dis[r[A]] + 1;
+	return A;
+}
+
+int work1()
+{
+	int root = 1, res = 0;
+	for (int i = 2, j; i <= n; ++i)
+		root = merge(root, j = i, a);
+	for (int i = n / 2; i ; --i)
+		root = merge(l[root], r[root], a);
+	for (int i = 1; i <= n; ++i)
+		res += abs(a[root] - a[i]);
+	return res;
+}
+
+void work(int ans[], int t[], int n)
+{
+	int top = 0;
+	clear(l), clear(r), clear(ans);
+	for (int i = 1; i <= n; ++i)
+	{
+		stk[++top] = i, ans[i] = ans[i - 1];
+		now[top] = big[top] = 0, siz[top] = 1, sml[top] = t[i];
+		while ((top > 1) && (t[stk[top]] < t[stk[top - 1]]))
+		{
+			ans[i] -= val[top - 1];
+			now[top - 1] += now[top], big[top - 1] += big[top];
+			siz[top - 1] += siz[top], sml[top - 1] += sml[top];
+			stk[--top] = merge(stk[top], stk[top + 1], t);
+			if (siz[top] > now[top] + 1)
+			{
+				--siz[top], sml[top] -= t[stk[top]];
+				++now[top], big[top] += t[stk[top]];
+				stk[top] = merge(l[stk[top]], r[stk[top]], t);
+			}
+		}
+		ans[i] += val[top] = (big[top] - now[top] * t[stk[top]]) + (siz[top] * t[stk[top]] - sml[top]);
+	}
+}
+
+int work2()
+{
+	work(aux[0], a, n);
+	for (int i = n / 2; i; --i)
+		swap(a[i], a[n - i + 1]);
+	work(aux[1], a, n);
+	return min(aux[0][n], aux[1][n]);
+}
+
+int work3()
+{
+	int res = 0x7FFFFFFF;
+	for (int k = 1; k <= 2; ++k)
+	{
+		work(aux[0], a, n);
+		for (int i = n / 2; i; --i)
+			swap(a[i], a[n - i + 1]);
+		work(aux[1], a, n);
+		for (int i = 0; i <= n; ++i)
+			res = min(res, aux[0][i] + aux[1][n - i]);
+		for (int i = 1; i <= n; ++i)
+			a[i] = -a[i];
+	}
+	return res;
+}
+
+int work4()
+{
+	int res = 0x7FFFFFFF;
+	--x;
+	for (int l = 0; l <= 1; ++l)
+	{
+		memset(f, 10, sizeof(f));
+		f[0][0] = 0;
+		for (int i = 0; i < n; ++i)
+		{
+			work(aux[0] + i, a + i, n - i);
+			for (int j = 0; j <= n; ++j)
+				a[j] = -a[j];
+			work(aux[1] + i, a + i, n - i);
+			for (int j = 0; j <= n; ++j)
+				a[j] = -a[j];
+			for (int j = i + 1; j <= n; ++j)
+				for (int k = 0; k <  x; ++k)
+					f[j][k + 1] = min(f[j][k + 1], f[i][k] + aux[k & 1][j]);
+		}
+		for (int i = 1; i <= n; ++i)
+			a[i] = -a[i];
+		for (int i = 1; i <= x; ++i)
+			res = min(res, f[n][i]);
+	}
+	return res;
+}
+
+int main()
+{
+	scanf("%d%d", &n, &x);
+	for (int i = 1; i <= n; i++)
+		scanf("%d", &a[i]);
+
+	if (x == 1) ans = work1();
+	if (x == 2) ans = work2();
+	if (x == 3) ans = work3();
+	if (x >= 4) ans = work4();
+
+	printf("%d", ans);
+
+	return 0;
+}
+

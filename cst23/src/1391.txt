@@ -1,0 +1,44 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+
+using namespace std;
+
+double a, b;
+
+int main()
+{
+    char s[128]={};
+    for(int i = 'A'; i < 'N'; i++){
+            s[i] = i + 13;
+    }
+    for(int i = 'N'; i <= 'Z'; i++){
+            s[i] = i - 13;
+    }
+    for(int i = 'a'; i < 'n'; i++){
+            s[i] = i + 13;
+    }
+    for(int i = 'n'; i <= 'z'; i++){
+            s[i] = i - 13;
+    }
+    for(int i = '0'; i < '5'; i++){
+            s[i] = i + 5;
+    }
+    for(int i = '5'; i <= '9'; i++){
+            s[i] = i - 5;
+    }
+    s[' ']=' ';
+    char p[50],q;
+    while(cin >> p){
+              for(int i = 0; i < strlen(p); i++)
+              printf("%c", s[p[i]]);
+              scanf("%c", &q);
+              if(q == ' '){
+                   printf(" ");
+              }
+    }
+    return 0;
+}
+

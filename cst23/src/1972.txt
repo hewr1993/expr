@@ -1,0 +1,216 @@
+#include<cstdio>
+#include<cmath>
+#include<iostream>
+#include<algorithm>
+
+using namespace std;
+
+const int MaxN=200010;
+const long long INF=1000000000000000000LL;
+
+int N,Q,K,P;
+
+struct point
+{
+	int x,y;
+	int p;
+	int alive;
+}p[MaxN];
+int get[MaxN];
+
+inline bool cmpx(const point &A,const point &B)
+{
+	return A.x<B.x;
+}
+
+inline bool cmpy(const point &A,const point &B)
+{
+	return A.y<B.y;
+}
+
+struct query
+{
+	int x,y;
+	int p;
+}task[MaxN];
+
+int tot;
+struct node
+{
+	int kd;
+	node *pre,*Lc,*Rc;
+	point *pv;
+	int Lx,Rx,Ly,Ry;
+}tree[MaxN],*root;
+
+long long ans[10];
+double pans[10];
+	
+long long getdis(int x1,int y1,int x2,int y2)
+{
+	long long dx=x1-x2,dy=y1-y2;
+	if (dx<0) dx=-dx;
+	if (dy<0) dy=-dy;
+	if (K==1)
+		return dx+dy;
+	else
+		return dx*dx+dy*dy;
+}
+
+long long getmindis(node *it,int px,int py)
+{
+	if (it->Lx<=px&&px<=it->Rx&&it->Ly<=py&&py<=it->Ry)
+		return 0;
+	long long dis=min(min(getdis(px,py,it->Lx,it->Ly),getdis(px,py,it->Lx,it->Ry)),min(getdis(px,py,it->Rx,it->Ly),getdis(px,py,it->Rx,it->Ry)));
+	if (it->Lx<=px&&px<=it->Rx)
+		dis=min(dis,min(getdis(px,py,px,it->Ly),getdis(px,py,px,it->Ry)));
+	if (it->Ly<=py&&py<=it->Ry)
+		dis=min(dis,min(getdis(px,py,it->Lx,py),getdis(px,py,it->Rx,py)));
+	return dis;
+}
+
+inline node *build(int kd,int L,int R)
+{
+	if (L>R) return 0;
+	node *it=&tree[++tot];
+	it->kd=kd;
+	if (!kd)
+		sort(p+L,p+R+1,cmpx);
+	else
+		sort(p+L,p+R+1,cmpy);
+	int mid=(L+R)>>1;
+	it->pv=&p[mid];
+	it->Lx=it->Rx=p[mid].x;
+	it->Ly=it->Ry=p[mid].y;
+	if (!kd)
+	{
+		it->Lc=build(1,L,mid-1);
+		it->Rc=build(1,mid+1,R);
+	}
+	else
+	{
+		it->Lc=build(0,L,mid-1);
+		it->Rc=build(0,mid+1,R);
+	}
+	if (it->Lc)
+	{
+		it->Lx=min(it->Lx,it->Lc->Lx);
+		it->Rx=max(it->Rx,it->Lc->Rx);
+		it->Ly=min(it->Ly,it->Lc->Ly);
+		it->Ry=max(it->Ry,it->Lc->Ry);
+	}
+	if (it->Rc)
+	{
+		it->Lx=min(it->Lx,it->Rc->Lx);
+		it->Rx=max(it->Rx,it->Rc->Rx);
+		it->Ly=min(it->Ly,it->Rc->Ly);
+		it->Ry=max(it->Ry,it->Rc->Ry);
+	}
+	return it;
+}
+
+inline void solve(node *it,int px,int py)
+{
+	if (!it) return;
+	long long dis;
+	if (it->pv->alive)
+	{
+		dis=getdis(it->pv->x,it->pv->y,px,py);
+		for (int i=1;i<=3;++i)
+			if (ans[i]>dis)
+			{
+				for (int j=3;j>i;--j)
+					ans[j]=ans[j-1];
+				ans[i]=dis;
+				break;
+			}
+	}
+	long long disL=INF,disR=INF;
+	if (it->Lc)
+		disL=getmindis(it->Lc,px,py);
+	if (it->Rc)
+		disR=getmindis(it->Rc,px,py);
+	if (disL<disR)
+	{
+		if (disL<ans[3]) solve(it->Lc,px,py);
+		if (disR<ans[3]) solve(it->Rc,px,py);
+	}
+	else
+	{
+		if (disR<ans[3]) solve(it->Rc,px,py);
+		if (disL<ans[3]) solve(it->Lc,px,py);
+	}
+}
+
+void init()
+{
+	cin>>N>>Q>>K>>P;
+	for (int i=1;i<=N;++i)
+	{
+		int x,y;
+		scanf("%d%d",&x,&y);
+		p[i].x=x;
+		p[i].y=y;
+		p[i].p=i;
+		p[i].alive=1;
+	}
+	for (int i=1;i<=Q;++i)
+	{
+		char s[3];
+		int x,y;
+		scanf("%s%d%d",s,&x,&y);
+		task[i].x=x;
+		task[i].y=y;
+		if (s[0]=='A')
+		{
+			task[i].p=++N;
+			p[N].x=x;
+			p[N].y=y;
+			p[N].p=N;
+		}
+	}
+	root=build(0,1,N);
+	for (int i=1;i<=N;++i)
+		get[p[i].p]=i;
+}
+
+void work()
+{
+	for (int T=1;T<=Q;++T)
+	{
+		if (task[T].p)
+		{
+			p[get[task[T].p]].alive=1;
+			continue;
+		}
+		ans[1]=ans[2]=ans[3]=INF;
+		solve(root,task[T].x,task[T].y);
+		if (K==2)
+		{
+			for (int i=1;i<=3;++i)
+				pans[i]=sqrt(ans[i]);
+		}
+		else
+		{
+			for (int i=1;i<=3;++i)
+				pans[i]=ans[i];
+		}
+		if (P==1)
+			printf("%.4lf
+",pans[1]);
+		else if (P==2)
+			printf("%.4lf %.4lf
+",pans[1],pans[2]);
+		else
+			printf("%.4lf %.4lf %.4lf
+",pans[1],pans[2],pans[3]);
+	}
+}
+
+int main()
+{
+	init();
+	work();
+	return 0;
+}
+

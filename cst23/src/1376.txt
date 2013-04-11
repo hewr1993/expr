@@ -1,0 +1,22 @@
+  #include <iostream>
+  #include <fstream>
+  #include <cstdlib>
+  #include <cstdio>
+  #include <cstring>
+  
+  using namespace std;
+  
+  void thoseyears(char *file1, char* file2)
+  {  
+      int n,m; 
+    ifstream fin(file1);
+    ofstream fout(file2);
+    while(fin>>n)
+    {
+        for(m=0;n>0;n/=10)
+        m+=n%10;
+        fout<<m<<endl; 
+    } 
+  }
+  
+

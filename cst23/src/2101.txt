@@ -1,0 +1,20 @@
+import java.io.*;
+import java.util.*;
+public class Main
+{
+   public static void main(String[] args)
+   {
+      Scanner in = new Scanner(System.in);
+      PrintWriter out = new PrintWriter(System.out);
+int n=in.nextInt(),h=in.nextInt();
+java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd"); 
+try{
+java.util.Date beginDate= format.parse(n+"-1-1"); 
+java.util.Date endDate= format.parse("2013-1-1");
+long day=(endDate.getTime()-beginDate.getTime())/(24*60*60*1000);
+      out.println(day+h);
+      out.flush();
+}catch(Exception e){}
+   }
+}
+

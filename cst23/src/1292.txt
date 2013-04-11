@@ -1,0 +1,93 @@
+/*
+Author:rj;
+Problem: tetris
+Language:C++;
+*/
+#include<iostream>
+using namespace std;
+bool map[10][10];
+int ans=0,n,Times=0;
+void Copy(bool a[][10],bool b[][10])
+{
+     int i,j;
+     for( i=1;i<=n;i++)
+     for(j=1;j<=8;j++)a[i][j]=b[i][j];
+}
+void Init()
+{
+     int i,j;
+     cin>>n;
+     for( i=1;i<=n;i++)
+          for( j=1;j<=8;j++) cin>>map[i][j];
+}
+void Print(bool a[][10])
+{
+     int i,j;
+     for( i=1;i<=n;i++)
+     {for(j=1;j<=8;j++)cout<<a[i][j]<<' ';cout<<endl;}
+}
+void DFS(int x,int y,int now,bool Map[][10])
+{
+     bool Tmap[10][10];
+     Times++;
+     int t;
+     if(now>ans)ans=now;
+
+     if(now+((n-x)*8+(8-y))/3<ans)return; //the most important cut
+
+     if(Times>2000000)return;
+     if(x>n)return;
+     Copy(Tmap,Map);
+     if(Tmap[x][y]==0&&Tmap[x][y+1]==0&&Tmap[x][y+2]==0&&y+2<=8&&y+1<=8)
+     { Tmap[x][y]=1; Tmap[x][y+1]=1; Tmap[x][y+2]=1;
+       
+       if(y<8)DFS(x,y+1,now+1,Tmap);else DFS(x+1,1,now+1,Tmap);
+       Tmap[x][y]=0; Tmap[x][y+1]=0; Tmap[x][y+2]=0;
+       }
+              
+     if(Tmap[x][y]==0&&Tmap[x][y+1]==0&&Tmap[x-1][y+1]==0&&x-1>=1&&y+1<=8)
+     { Tmap[x][y]=1;Tmap[x][y+1]=1;Tmap[x-1][y+1]=1;
+       
+       if(y<8)DFS(x,y+1,now+1,Tmap);else DFS(x+1,1,now+1,Tmap);
+       Tmap[x][y]=0;Tmap[x][y+1]=0;Tmap[x-1][y+1]=0;
+       }
+              
+     if(Tmap[x][y]==0&&Tmap[x-1][y]==0&&Tmap[x-2][y]==0&&x-1>=1&&x-2>=1)
+     { Tmap[x][y]=1;Tmap[x-1][y]=1;Tmap[x-2][y]=1;
+       
+      if(y<8)DFS(x,y+1,now+1,Tmap);else DFS(x+1,1,now+1,Tmap);
+       Tmap[x][y]=0;Tmap[x-1][y]=0;Tmap[x-2][y]=0;
+       }
+              
+     if(Tmap[x][y]==0&&Tmap[x-1][y]==0&&Tmap[x-1][y+1]==0&&x-1>=1&&y+1<=8)
+     { Tmap[x][y]=1;Tmap[x-1][y]=1;Tmap[x-1][y+1]=1;
+       
+       if(y<8)DFS(x,y+1,now+1,Tmap);else DFS(x+1,1,now+1,Tmap);
+       Tmap[x][y]=0;Tmap[x-1][y]=0;Tmap[x-1][y+1]=0;
+       }
+              
+     if(Tmap[x][y]==0&&Tmap[x][y+1]==0&&Tmap[x-1][y]==0&&x-1>=1&&y+1<=8)
+     { Tmap[x][y]=1;Tmap[x][y+1]=1;Tmap[x-1][y]=1;
+       
+       if(y<8)DFS(x,y+1,now+1,Tmap);else DFS(x+1,1,now+1,Tmap);
+       Tmap[x][y]=0;Tmap[x][y+1]=1;Tmap[x-1][y]=1;
+       }
+              
+     if(Tmap[x][y+1]==0&&Tmap[x-1][y+1]==0&&Tmap[x-1][y]==0&&x-1>=1&&y+1<=8)
+     { Tmap[x][y+1]=1;Tmap[x-1][y+1]=1;Tmap[x-1][y]=1;
+       
+      if(y<8)DFS(x,y+1,now+1,Tmap);else DFS(x+1,1,now+1,Tmap);
+       Tmap[x][y+1]=0;Tmap[x-1][y+1]=0;Tmap[x-1][y]=0;
+       }
+     if(y<8)DFS(x,y+1,now,Map);
+     else DFS(x+1,1,now,Map);
+}
+int main()
+{
+    Init();
+    DFS(1,1,0,map);
+    cout<<ans;
+     return 0;
+}
+
+

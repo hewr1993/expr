@@ -1,0 +1,26 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+int main()
+{
+	
+	cout << "Test Case 3: " << endl;
+	cout << "Before setting some ios flag
+";
+	cout << 4.345e10 << '
+' << hex << 123456789 << endl;
+	
+	cout.setf(ios::uppercase);
+
+
+	cout << "
+Before setting some ios flag
+";
+	cout << 4.345e10 << '
+' << hex << 123456789 << endl;
+	
+	return 0;
+}
+

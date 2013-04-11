@@ -1,0 +1,109 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+using namespace std;
+string s[50];
+int n;
+char c;
+bool ok=false;
+void Rep(char x,char y)
+{
+	for(int i=0;i<n;i++)
+	{	for(int j=0;j<s[i].size();j++)
+		{
+			if(s[i][j]==x)
+			{
+				s[i][j]=y;
+				ok=true;
+			}
+		}
+	}	
+}
+
+void Ins(char x,char y)
+{
+	for(int i=n-1;i>=0;i--)
+	{
+		for(int j=s[i].size()-1;j>=0;j--)
+		{
+			if(s[i][j]==x)
+			{	
+				char t;
+				int te=s[i].size();
+				t=s[i][j];
+				s[i][j]=y;
+				for(int k=te;k>j;k--)
+					s[i][k]=s[i][k-1];
+				s[i][j+1]=t;
+				for(int l=0;l<n;l++)
+				{
+					if(l==i)
+						cout<<s[l]<<s[l][te]<<" ";
+					else	
+						cout<<s[l]<<" ";
+				}cout<<endl;
+				ok=true;
+				exit(0) ;
+			}
+		}
+	}
+}
+
+void Delete(char t)
+{
+	for(int i=0;i<n;i++)
+	{
+		for(int j=0;j<s[i].size();j++)
+		{
+			if(s[i][j]==t)
+			{
+				for(int k=j;k<s[i].size();k++)
+					s[i][k]=s[i][k+1];
+				ok=true;
+				return ;
+			}
+		}
+	}
+}
+
+int main()
+{
+	for(int i=0; ;i++)
+	{
+		cin>>s[i];
+		n=i;
+		if(s[i][s[i].size()-1]=='.')
+			break;
+	}		
+	n++;
+	cin>>c;
+	if(c=='D')
+	{
+		char x;
+		cin>>x;
+		Delete(x);
+	}
+	else if(c=='I')
+	{
+		char x,y;
+		cin>>x>>y;
+		Ins(x,y);
+	}
+	else
+	{
+		char x,y;
+		cin>>x>>y;
+		Rep(x,y);
+	}
+	if(ok)
+	{
+		for(int i=0;i<n;i++)
+			cout<<s[i]<<" ";
+		cout<<endl;
+	}
+	else
+		cout<<"wrong"<<endl;
+	return 0;
+}
+

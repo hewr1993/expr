@@ -1,0 +1,23 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+
+using namespace std;
+
+int count1(char *txt)
+{
+int num=0;
+    ifstream fin(txt);
+	char a = NULL;
+	while(fin){
+		fin >> a;
+		
+		if(a==49){
+			num++;
+		}
+	};
+	fin.close();
+	return num;
+}
+

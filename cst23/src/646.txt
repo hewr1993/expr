@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int             N1(char *);
+int             N2(char *);
+int             N3(char *);
+int             N4(char *);
+
+int N5(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+int N6(char c)
+{
+    return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
+}
+
+int N7(char c)
+{
+    return (c == '$');
+}
+
+int N1(char *G)
+{
+    int sum = 0;
+    while (*G)
+    {
+        if (N5(*G) || N6(*G))
+            sum++;
+        G++;
+    }
+
+    return sum;
+}
+
+int N2(char *G)
+{
+    int sum = 0;
+    while (*G)
+    {
+        if (!N7(*G) && !N6(*G))
+            sum++;
+        G++;
+    }
+
+    return sum;
+}
+
+int N3(char *G)
+{
+    int     sum = 0;
+    char    a;
+    a = *G;
+    while (*(G++))
+    {
+        if (!N6(*G) && N6(a))
+            sum++;
+        a = *G;
+    }
+
+    return sum;
+}
+
+int N4(char *G)
+{
+    int sum = 0;
+    while (*G)
+    {
+        if (N7(*G))
+            sum++;
+        G++;
+    }
+
+    sum++;
+    return sum;
+}
+
+int main()
+{
+    int     N;
+    char    G[1001];
+    int     m;
+
+    cin >> N;
+    getchar();
+    gets(G);
+
+    switch (N)
+    {
+    case 1:
+        m = N1(G);
+        break;
+
+    case 2:
+        m = N2(G);
+        break;
+
+    case 3:
+        m = N3(G);
+        break;
+
+    case 4:
+        m = N4(G);
+        break;
+    }
+
+    cout << m << endl;
+    return 0;
+}
+

@@ -1,0 +1,33 @@
+// 文件大小：637B
+// 包含的文件如下：
+//   output1.txt，9B
+//     |  no
+//     |  yes
+//   output10.txt，8B
+//     |  no
+//     |  no
+//   output2.txt，9B
+//     |  yes
+//     |  no
+//   output3.txt，10B
+//     |  yes
+//     |  yes
+//   output4.txt，8B
+//     |  no
+//     |  no
+//   output5.txt，9B
+//     |  no
+//     |  yes
+//   output6.txt，10B
+//     |  yes
+//     |  yes
+//   output7.txt，9B
+//     |  yes
+//     |  no
+//   output8.txt，9B
+//     |  yes
+//     |  no
+//   output9.txt，8B
+//     |  no
+//     |  no
+

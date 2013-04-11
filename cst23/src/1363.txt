@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cmath>
+#include <cstring>
+using namespace std;
+#define maxn 32768 // 2^15
+#define maxm 181 // [sqrt(2^15)]
+long sq[maxm + 1];
+bool issq[maxn + 1];
+int main()
+{
+	long n, m, i1, i2, i3, ans = 0, tsum = 0;
+	cin >> n;
+	m = sqrt(n);
+	memset(issq, false, sizeof(issq));
+	for (i1 = 0; i1 <= m; i1++)
+	{
+		sq[i1] = i1 * i1;
+		issq[sq[i1]] = true;
+	}
+	issq[0] = true;
+	for (i1 = 1; sq[i1] <= n && i1 <= m; i1++)
+	{
+		tsum += sq[i1];
+		if (tsum == n)
+		{
+			ans++;
+			tsum -= sq[i1];
+			continue;
+		}
+		for (i2 = i1; tsum + sq[i2] <= n && i2 <= m; i2++)
+		{
+			tsum += sq[i2];
+			if (tsum == n)
+			{
+				ans++;
+				tsum -= sq[i2];
+				continue;
+			}
+			for (i3 = i2; tsum + sq[i3] <= n && i3 <= m; i3++)
+			{
+				tsum += sq[i3];
+				if (tsum == n)
+				{
+					ans++;
+					tsum -= sq[i3];
+					continue;
+				}
+				if (issq[n - tsum] && n - tsum >= sq[i3])
+					ans++;
+				tsum -= sq[i3];
+			}
+			tsum -= sq[i2];
+		}
+		tsum -= sq[i1];
+	}
+	cout << ans << endl;
+	return 0;
+}
+

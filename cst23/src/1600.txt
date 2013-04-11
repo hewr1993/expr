@@ -1,0 +1,42 @@
+var
+c,a,b:array[1..1000] of integer;
+s,m,n,q:integer;
+procedure pai1(i,j:integer);
+var
+z,c:integer;
+begin
+for c:=j-1 downto i do
+for z:=j downto c+1 do
+if (a[z]<=a[c])and(b[z]+1>=b[c]) then b[c]:=b[z]+1;
+end;
+procedure pai2(i,j:integer);
+var
+pa,pb:integer;
+begin
+for pa:=j-1 downto i do
+for pb :=j downto pa+1 do
+if (a[pb]>a[pa])and(c[pb]+1>c[pa]) then c[pa]:=c[pb]+1;
+end;
+
+
+begin
+n:=0;
+repeat
+n:=n+1;
+read (a[n]);
+b[n]:=1;c[n]:=1;
+until eoln;
+
+pai1(1,n);
+q:=b[1];
+for s:= 2 to n do
+if q<b[s] then q:=b[s];
+writeln(q);
+pai2(1,n);
+q:=c[1];
+for s:=2 to n do
+if q<c[s] then q:=c[s];
+writeln(q);
+end.
+
+

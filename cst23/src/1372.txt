@@ -1,0 +1,40 @@
+#include<iostream>
+#include<cstring>
+#include<cmath>
+#include<stdio.h>
+
+using namespace std;
+
+int a[101];
+
+int main()
+{
+	//memset(a, -1, sizeof(a));
+	int x, n;
+	cin >> n;
+	a[1] = 0;a[2] = 1;a[3] = 2;
+	for(int i = 4;i < 101;i++) 
+		a[i] = 100;
+	for(int i = 2;i < 100;i++)
+	{
+		if((a[i] + 1) < a[i + 1]) a[i + 1] = a[i] + 1;
+		x = i * i;
+		while(x < 101)
+		{
+			if((a[i]  + 1) < a[x]) 
+				a[x] = a[i] + 1;
+			for(int k = 1;k < 30;k++)
+				if((a[x] + 1) < a[x - k]) 
+					a[x - k] = a[x] + k;
+				else
+					break;
+			x *= i;
+		}
+	}
+	/*for(int i = 1;i < 101;i++) 
+		printf("%d %d
+", i, a[i]);*/
+	cout << a[n];
+	//system("pause");
+	return 0;
+}

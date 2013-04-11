@@ -1,0 +1,83 @@
+#include <iostream>
+using namespace std;
+
+int count1=1,countkill=0;
+int n,k;
+int a[105];
+int x;
+
+struct man
+{
+	int num;
+	man *next;
+};
+
+man *head;
+man *create()
+{
+	man *p=NULL;
+	man *q=NULL;
+	head=NULL;
+	
+
+	
+	for(int i=1;i<=n;i++)
+	{
+		p=new man;
+		p->num=i;
+		
+		if (head==NULL)
+		    head=p;
+		else q->next=p;
+		q=p;
+	}
+	if (head!=NULL)
+		q->next=head;
+	return(head);
+}
+
+void kill(man *head)
+{
+	while(head!=NULL)
+	{
+		count1++;
+		if (countkill==n-1)
+		{
+			head=head->next;
+			a[k]=head->num;
+			break;
+		}
+		if (count1%k==0)
+		{
+			head->next=head->next->next;
+			countkill++;
+			count1++;
+		}
+		head=head->next;
+	}
+}
+
+int main()
+{	
+	cin >> n >> x;
+	for (k=1;k<=n;k++)
+	{
+		kill(create());
+		count1=1,countkill=0;
+	}
+
+	for (k=1;k<=n;k++)
+	{
+		if (k==1)
+		{
+			a[1]=n;
+		}
+		
+	    if (a[k]==x)
+		cout << k << " ";
+	}
+
+	//system("pause");
+	return 0;
+}
+

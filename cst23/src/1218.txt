@@ -1,0 +1,50 @@
+#include <cstdio>
+#include <cstdlib>
+
+int n, m, sum = 0, a[7];
+char s[51][7];
+
+void work( bool f, int k )
+{
+	int i, j;
+	
+	if( k < n )
+	{
+		for( i = 1; i <= m; ++i )
+			a[k] = i, work( f, k + 1 );
+		return;
+	}
+	
+	for( i = 1; i <= m; ++i )
+	{
+		for( j = 0; j < n; ++j )
+			if( ( a[j] == i ) ^ ( s[i][j] == '1' ) )
+				break;
+		if( j >= n ) break;
+	}
+	if( i < m ) return;
+	
+	if( f )
+		++sum;
+	else
+	{
+		for( i = 0; i < n - 1; ++i )
+			printf( "%d ", a[i] );
+		printf( "%d
+", a[n - 1] );
+	}
+}
+
+int main( )
+{
+	scanf( "%d%d", &n, &m );
+	for( int i = 1; i <= m; ++i )
+		scanf( "%s", s[i] );
+	
+	work( 1, 0 );
+	printf( "%d
+", sum );
+	work( 0, 0 );
+	return 0;
+}
+

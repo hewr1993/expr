@@ -1,0 +1,15 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<iostream>
+using namespace std;
+int main()
+{
+    int h;
+    cin>>h;
+    if(h>=0&&h<=12) cout<<"good morning";
+    if(h>=13&&h<=18) cout<<"good afternoon";
+    if(h>=19&&h<=24) cout<<"good evening";
+    return 0;
+}
+

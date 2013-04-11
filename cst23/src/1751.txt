@@ -1,0 +1,87 @@
+#include<iostream>
+using namespace std;
+int n,p[51][51][51],x[51],y[51],tot,s,nx,ny,ans[501][501];
+bool r[51][51],done[51];
+int main()
+{
+	cin>>n;
+	for(int i=1;i<=n;++i)
+		for(int j=1;j<=n;++j)
+			cin>>r[i][j];
+	for(tot=n;tot;)
+	{
+		
+		s++;
+		for(int i;;)
+		{
+			bool yoo=1;
+			for(i=1;i<=n;++i)if(!done[i])
+			{
+				if(!x[s]&&!y[s])break;
+				bool can=0;
+				for(int j=1;!can&&j<=x[s];++j)
+					for(int k=1;!can&&k<=y[s];++k)if(r[p[s][j][k]][i])can=1;
+				if(can)break;
+			}
+			if(i>n)break;
+			if(!x[s]&&!y[s])
+			{
+				x[s]=x[s-1]+1;
+				y[s]=y[s-1]+1;
+				p[s][1][1]=i;
+			}
+			else
+			{
+				for(int j=1;j<=x[s]&&!done[i];++j)
+					for(int k=1;k<=y[s]&&!done[i];++k)
+					if(!p[s][j][k])
+					{
+						bool can=1;
+						for(int l=1;l<=y[s];++l)if(p[s][j][l]&&!r[p[s][j][l]][i])can=0;
+						for(int l=1;l<=x[s];++l)if(p[s][l][k]&&!r[p[s][l][k]][i])can=0;
+						if(can)
+						{
+							p[s][j][k]=i;
+							done[i]=1;
+						}
+					}
+				for(int j=1;j<=x[s]&&!done[i];++j)
+				{
+					bool can=1;
+					for(int k=1;k<=x[s];++k)
+						for(int l=1;l<=y[s];++l)
+							if(p[s][k][l]&&r[p[s][k][l]][i]!=(j==k))can=0;
+					if(can)done[p[s][j][++y[s]]=i]=1;
+				}
+				for(int j=1;j<=y[s]&&!done[i];++j)
+				{
+					bool can=1;
+					for(int k=1;k<=x[s];++k)
+						for(int l=1;l<=y[s];++l)
+							if(p[s][k][l]&&r[p[s][k][l]][i]!=(j==l))can=0;
+					if(can)done[p[s][++x[s]][j]=i]=1;
+				}
+				if(!done[i])break;
+			}
+			done[i]=1;
+			tot--;
+		}
+		if(x[s]>y[s])for(int i=1;i<=x[s];++i)
+				for(int j=1;j<=y[s];++j)
+				ans[nx+j][ny+i]=p[s][i][j];
+		else for(int i=1;i<=x[s];++i)
+				for(int j=1;j<=y[s];++j)
+				ans[nx+i][ny+j]=p[s][i][j];
+		nx+=max(x[s],y[s]);ny+=min(x[s],y[s]);
+	}
+	for(int i=1;i<=nx;++i,cout<<endl)
+		for(int j=1;j<=ny;++j)
+		{
+			cout<<ans[i][j]<<' ';
+			if(ans[i][j])x[ans[i][j]]=i,y[ans[i][j]]=j;
+		}
+	cout<<nx<<' '<<ny<<endl;
+	for(int i=1;i<=n;++i)cout<<x[i]<<' '<<y[i]<<endl;
+	return 0;
+}
+

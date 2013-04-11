@@ -1,0 +1,271 @@
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+const int MAXC=1000;
+int rowN,colN;
+bool a[MAXC+10][MAXC+10];
+bool done[MAXC+10][MAXC+10];
+int u1=-1,d1=-1,u2=-1,d2=-1,l1=-1,r1=-1,l2=-1,r2=-1;
+struct Edge{
+	int pos,st,ed;
+	Edge(int _pos,int _st,int _ed):pos(_pos),st(_st),ed(_ed){}
+};
+vector<Edge> heng,shu;
+
+void Delete(vector<Edge>& v,Edge e){
+	vector<Edge> theNew;
+	for(size_t i=0;i<v.size();i++){
+		if(v[i].pos!=e.pos)
+			theNew.push_back(v[i]);
+		else{
+			if(e.st>v[i].ed){
+				theNew.push_back(v[i]);
+			}else if(e.st>=v[i].st){
+				if(e.st>v[i].st)
+					theNew.push_back(Edge(v[i].pos,v[i].st,e.st-1));
+				if(e.ed<v[i].ed)
+					theNew.push_back(Edge(v[i].pos,e.ed+1,v[i].ed));
+			}else{
+				if(e.ed>=v[i].ed)
+					;
+				else if(e.ed<v[i].st)
+					theNew.push_back(v[i]);
+				else
+					theNew.push_back(Edge(v[i].pos,e.ed+1,v[i].ed));
+			}
+		}
+	}
+	v=theNew;
+}
+
+void Check(){
+	if(d1<0 || r1<0 || d2<0 || r2<0)return;
+	//printf("%d %d %d %d | %d %d %d %d
+",u1,d1,l1,r1,u2,d2,l2,r2);
+	
+	if(heng[u1].st>shu[l1].pos || heng[u1].ed<shu[r1].pos)return;
+	if(heng[d1].st>shu[l1].pos || heng[d1].ed<shu[r1].pos)return;
+	if(shu[l1].st>heng[u1].pos || shu[l1].ed<heng[d1].pos)return;
+	if(shu[r1].st>heng[u1].pos || shu[r1].ed<heng[d1].pos)return;
+	
+	if(heng[u2].st>shu[l2].pos || heng[u2].ed<shu[r2].pos)return;
+	if(heng[d2].st>shu[l2].pos || heng[d2].ed<shu[r2].pos)return;
+	if(shu[l2].st>heng[u2].pos || shu[l2].ed<heng[d2].pos)return;
+	if(shu[r2].st>heng[u2].pos || shu[r2].ed<heng[d2].pos)return;
+
+	//printf("%d %d %d %d | %d %d %d %d
+",u1,d1,l1,r1,u2,d2,l2,r2);
+	
+	vector<Edge> h=heng,s=shu;
+	vector<Edge> he,sh;
+	he.push_back(Edge(heng[u1].pos,shu[l1].pos,shu[r1].pos));
+	he.push_back(Edge(heng[d1].pos,shu[l1].pos,shu[r1].pos));
+	sh.push_back(Edge(shu[l1].pos,heng[u1].pos,heng[d1].pos));
+	sh.push_back(Edge(shu[r1].pos,heng[u1].pos,heng[d1].pos));
+	
+	he.push_back(Edge(heng[u2].pos,shu[l2].pos,shu[r2].pos));
+	he.push_back(Edge(heng[d2].pos,shu[l2].pos,shu[r2].pos));
+	sh.push_back(Edge(shu[l2].pos,heng[u2].pos,heng[d2].pos));
+	sh.push_back(Edge(shu[r2].pos,heng[u2].pos,heng[d2].pos));
+	
+	for(size_t i=0;i<he.size();i++)
+		Delete(h,he[i]);
+	for(size_t i=0;i<sh.size();i++)
+		Delete(s,sh[i]);
+	for(size_t i=0;i<he.size();i++)
+		for(size_t j=0;j<shu.size();j++)
+			if(shu[j].st<=he[i].pos && he[i].pos<=shu[j].ed && he[i].st<=shu[j].pos && shu[j].pos<=he[i].ed)
+				Delete(s,Edge(shu[j].pos,he[i].pos,he[i].pos));
+	for(size_t i=0;i<sh.size();i++)
+		for(size_t j=0;j<heng.size();j++)
+			if(heng[j].st<=sh[i].pos && sh[i].pos<=heng[j].ed && sh[i].st<=heng[j].pos && heng[j].pos<=sh[i].ed)
+				Delete(h,Edge(heng[j].pos,sh[i].pos,sh[i].pos));
+	
+	if(h.empty() && s.empty()){
+		puts("YES");
+		printf("%d %d %d %d
+",heng[u1].pos,shu[l1].pos,heng[d1].pos,shu[r1].pos);
+		printf("%d %d %d %d
+",heng[u2].pos,shu[l2].pos,heng[d2].pos,shu[r2].pos);
+		throw -123;
+	}
+}
+
+#define GIVE_H1(then)\
+	if(u1<0){\
+		u1=id;\
+		then\
+		u1=-1;\
+	}else if(d1<0 && heng[id].pos-heng[u1].pos>=2){\
+		d1=id;\
+		then\
+		d1=-1;\
+	}
+#define GIVE_H2(then)\
+	if(u2<0){\
+		u2=id;\
+		then\
+		u2=-1;\
+	}else if(d2<0 && heng[id].pos-heng[u2].pos>=2){\
+		d2=id;\
+		then\
+		d2=-1;\
+	}
+#define GIVE_S1(then)\
+	if(l1<0){\
+		l1=id;\
+		then\
+		l1=-1;\
+	}else if(r1<0 && shu[id].pos-shu[l1].pos>=2){\
+		r1=id;\
+		then\
+		r1=-1;\
+	}
+#define GIVE_S2(then)\
+	if(l2<0){\
+		l2=id;\
+		then\
+		l2=-1;\
+	}else if(r2<0 && shu[id].pos-shu[l2].pos>=2){\
+		r2=id;\
+		then\
+		r2=-1;\
+	}
+
+void dfsShu(int id){
+	if(id==shu.size())
+		Check();
+	else{
+		GIVE_S1(
+			GIVE_S2(
+				dfsShu(id+1);
+			)
+			dfsShu(id+1);
+		)
+		
+		GIVE_S2(
+			dfsShu(id+1);
+		)
+		
+		dfsShu(id+1);
+	}
+}
+
+void dfsHeng(int id){
+	if(id==heng.size())
+		dfsShu(0);
+	else{
+		GIVE_H1(
+			GIVE_H2(
+				dfsHeng(id+1);
+			)
+			dfsHeng(id+1);
+		)
+		
+		GIVE_H2(
+			dfsHeng(id+1);
+		)
+		
+		dfsHeng(id+1);
+	}
+}
+
+void FindEdges(){
+	for(int i=1;i<=rowN;i++){
+		int start=0;
+		for(int j=1;j<=colN+1;j++){
+			if(!a[i][j]){
+				if(start){
+					int len=j-start;
+					if(len>=3){
+						heng.push_back(Edge(i,start,j-1));
+						for(int k=start;k<j;k++)
+							done[i][k]=true;
+					}
+					start=0;
+				}
+			}else{
+				if(!start)
+					start=j;
+			}
+		}
+	}
+	
+	for(int i=1;i<=colN;i++){
+		int start=0;
+		for(int j=1;j<=rowN+1;j++){
+			if(!a[j][i]){
+				if(start){
+					int len=j-start;
+					if(len>=3){
+						shu.push_back(Edge(i,start,j-1));
+						for(int k=start;k<j;k++)
+							done[k][i]=true;
+					}
+					start=0;
+				}
+			}else{
+				if(!start)
+					start=j;
+			}
+		}
+	}
+}
+
+#define BESIDE(a,b)\
+	(abs(a.pos-b.pos)==1 && a.st==b.st && b.ed==a.ed)
+
+void RemoveEdges(vector<Edge>& v){
+	vector<Edge> theNew;
+	for(size_t i=2;i<v.size();i++)
+		if(BESIDE(v[i],v[i-1]) && BESIDE(v[i-1],v[i-2])){
+			int last;
+			for(size_t j=i;j<v.size();j++)
+				if(BESIDE(v[j],v[j-1]) && BESIDE(v[j-1],v[j-2]))
+					last=j;
+				else break;
+			int first=i-2;
+			if(last-first+1>=4){
+				//printf("erasing %d %d
+",first+2,last-1);
+				v.erase(v.begin()+first+2,v.begin()+last-1);
+			}
+			return;
+		}
+}
+
+int main(){
+	scanf("%d%d",&rowN,&colN);
+	for(int i=1;i<=rowN;i++){
+		scanf("
+");
+		for(int j=1;j<=colN;j++){
+			a[i][j]=getchar()=='#';
+		}
+	}
+	try{
+		FindEdges();
+		
+		for(int i=1;i<=rowN;i++)
+			for(int j=1;j<=colN;j++)
+				if(a[i][j] && !done[i][j])
+					throw 123;
+		
+		RemoveEdges(heng);
+		RemoveEdges(shu);
+		
+		if(heng.size()<2 || heng.size()>8 || shu.size()<2 || shu.size()>8)
+			throw 4526;
+		
+		dfsHeng(0);
+		throw 123;
+	}catch(int x){
+		//printf("%d
+",x);
+		if(x>0)
+			puts("NO");
+	}
+	return 0;
+}

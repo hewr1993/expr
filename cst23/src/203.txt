@@ -1,0 +1,22 @@
+#include<iostream>
+using namespace std;
+int result=0;
+int k;
+void solve(int *list,int len){
+	result++;
+	for(int i=1;i<=list[len-1]/2;i++){
+		list[len]=i;
+		solve(list,len+1);
+	}
+}
+
+
+int main(){
+	cin >> k;
+	int list[110];
+	list[0]=k;
+	solve(list,1);
+	cout << result;
+		return 0;
+}
+

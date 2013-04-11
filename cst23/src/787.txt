@@ -1,0 +1,29 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+
+using namespace std;
+int a[102];
+int main()
+{
+	int n;
+	int m;
+	cin>>n>>m;
+	int s;
+	s=n/m;
+	int w;
+	w=n-s*m;
+	for(int i=0;i<100;i++)
+	{
+		a[i]=w*10/m;
+		int x;
+		x=w*10-a[i]*m;
+		w=x;
+	}
+	cout<<s<<".";
+	for(int i=0;i<100;i++)
+		cout<<a[i];
+	cout<<endl;
+	return 0;
+}

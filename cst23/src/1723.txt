@@ -1,0 +1,128 @@
+{Source 
+ 
+Problem Id:1809  User Id:hccz95  
+Memory:81896K  Time:3603MS 
+Language:Pascal  Result:Accepted 
+ 
+Source}  
+  
+var     tree            : array[ 0..5000000 ] of record Ls , Rs , k , sum , max : Longint end;  
+        n , tot         : Longint ;  
+  
+function maxi( a , b : Longint )        : Longint ;  
+begin  
+        if a > b then exit( a ) else exit( b );  
+end;  
+  
+procedure add;  
+begin  
+        inc( tot );  
+        with tree[ tot ] do  
+        begin  
+            k := 0 ;  
+            Ls := -1 ; Rs := -1 ;  
+        end;  
+end;  
+  
+procedure insert( v , L , R , a , b , c : Longint );  
+var     m               : Longint ;  
+begin  
+        if ( L = a ) and ( R = b ) then  
+        begin  
+            tree[ v ].k := c ;  
+            tree[ v ].sum := ( R - L + 1 ) * tree[ v ].k ;  
+            tree[ v ].max := maxi( tree[ v ].sum , 0 );  
+            exit;  
+        end;  
+        m := ( L + R ) >> 1 ;  
+        if tree[ v ].k <> maxlongint then  
+        with tree[ v ] do  
+        begin  
+            if Ls = -1 then  
+            begin  
+                add; Ls := tot ;  
+            end;  
+            if Rs = -1 then  
+            begin  
+                add; Rs := tot ;  
+            end;  
+            tree[ Ls ].k := k ;  
+            tree[ Ls ].sum := ( m - L + 1 ) * k ;  
+            tree[ Ls ].max := maxi( tree[ Ls ].sum , 0 );  
+            tree[ Rs ].k := k ;  
+            tree[ Rs ].sum := ( R - m ) * k ;  
+            tree[ Rs ].max := maxi( tree[ Rs ].sum , 0 );  
+            k := maxlongint;  
+        end;  
+        with tree[ v ] do  
+        begin  
+        if b <= m then  
+        begin  
+            if Ls = -1 then  
+            begin  
+                add; Ls := tot ;  
+            end;  
+            insert( Ls , L , m , a , b , c );  
+        end else  
+        if a >  m then  
+        begin  
+            if Rs = -1 then  
+            begin  
+                add; Rs := tot ;  
+            end;  
+            insert( Rs , m+1 , R , a , b , c );  
+        end else  
+        begin  
+            insert( Ls , L , m , a , m , c );  
+            insert( Rs , m+1 , R , m+1 , b , c );  
+        end;  
+        sum := tree[ Ls ].sum + tree[ Rs ].sum ;  
+        max := maxi( maxi( tree[ Ls ].max , tree[ Ls ].sum + tree[ Rs ].max ) , 0 );  
+        end;  
+end;  
+  
+function count( v , L , R , h : Longint )       : Longint ;  
+var     m , tmp         : Longint ;  
+begin  
+        if tree[ v ].k <> maxlongint then  
+        begin  
+            if tree[ v ].k > 0 then  
+            begin  
+                tmp := L + h div tree[ v ].k ;  
+                if tmp > R + 1 then tmp := R + 1 ;  
+            end else  
+                tmp := R + 1 ;  
+            exit( tmp );  
+        end;  
+        m := ( L + R ) >> 1 ;  
+        with tree[ v ] do  
+        if h >= tree[ Ls ].max then  
+            exit( count( Rs , m+1 , R , h - tree[ Ls ].sum ) ) else  
+            exit( count( Ls , L , m , h ) );  
+end;  
+  
+procedure main;  
+var     a , b , c       : Longint ;  
+        ch              : Char ;  
+begin  
+        readln( n );  
+        add;  
+        while true do  
+        begin  
+            read( ch );  
+            if ch = 'E' then exit;  
+            if ch = 'Q' then  
+            begin  
+                readln( c );  
+                writeln( count( 1 , 1 , n , c ) - 1 );  
+            end else  
+            begin  
+                readln( a , b , c );  
+                insert( 1 , 1 , n , a , b , c );  
+            end;  
+        end;  
+end;  
+  
+begin  
+        main;  
+end.  

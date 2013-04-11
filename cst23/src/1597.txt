@@ -1,0 +1,18 @@
+program sdhf(input,output);
+const
+	maxn=200;
+	maxm=6;
+var
+	f:array[0 .. maxm,0 .. maxn,0 .. maxn]of longint;
+	n,m,i,j,k,l,ans:longint;
+begin
+	readln(n,m);
+	f[0,0,0]:=1;
+	for i:=1 to m do
+	for j:=0 to n do
+	for k:=0 to j-(i-1) do
+	for l:=0 to k do
+	f[i,j,k]:=f[i,j,k]+f[i-1,j-k,l];
+	for i:=0 to n do inc(ans,f[m,n,i]);
+	writeln(ans);
+end.

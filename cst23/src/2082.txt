@@ -1,0 +1,205 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
+#include <iostream>
+#pragma comment(linker, "/STACK:102400000,102400000")
+
+using namespace std;
+
+#define two(i) (1 << (i))
+typedef long long LL;
+const int MaxN = 100005;
+const int MaxM = MaxN * 2;
+const int MaxL = 18;
+const int Inf = 0x3F3F3F3F;
+
+struct Edge
+{
+	int v;
+	Edge* nxt;
+} ememo[MaxN], *cur, *g[MaxN];
+int val[MaxN], fa[MaxN], dep[MaxN], n, m;
+int dp[MaxN][MaxL], root;
+
+void add(int u, int v)
+{
+	cur->v = v;
+	cur->nxt = g[u];
+	g[u] = cur++;
+}
+
+void dfs(int u)
+{
+	dep[u] = dep[fa[u]] + 1;
+	dp[u][0] = fa[u];
+	for (int i = 1; i < MaxL; ++i)
+		dp[u][i] = dp[dp[u][i - 1]][i - 1];
+	for (Edge* it = g[u]; it; it = it->nxt)
+		dfs(it->v);
+}
+
+struct Node
+{
+	Node *c[2], *p;
+	int key, mn;
+} memo[MaxM], *pt[MaxM], *nil;
+
+void init(Node* x, int key)
+{
+	x->c[0] = x->c[1] = x->p = nil;
+	x->key = x->mn = key;
+}
+
+void update(Node* x)
+{
+	x->mn = min(x->key, min(x->c[0]->mn, x->c[1]->mn));
+}
+
+void rotate(Node* x, int f)
+{
+	Node* y = x->p;
+	y->c[f ^ 1] = x->c[f], x->p = y->p;
+	if (x->c[f] != nil) x->c[f]->p = y;
+	if (y->p != nil) y->p->c[y->p->c[1] == y] = x;
+	x->c[f] = y, y->p = x;
+	update(y);
+}
+
+void splay(Node* x, Node* f)
+{
+	Node* y;
+	int t;
+	while (x->p != f)
+	{
+		if (x->p->p == f)
+			rotate(x, x->p->c[0] == x);
+		else
+		{
+			y = x->p;
+			t = (y->p->c[0] == y);
+			if (y->c[t] == x) rotate(x, t ^ 1), rotate(x, t);
+			else rotate(y, t), rotate(x, t);
+		}
+	}
+	update(x);
+}
+
+Node* getMax(Node* x)
+{
+	while (x->c[1] != nil)
+		x = x->c[1];
+	return x;
+}
+
+int getLCA(int u, int v)
+{
+	if (dep[u] < dep[v]) swap(u, v);
+	for (int i = MaxL - 1; i >= 0; --i)
+		if (dep[u] - dep[v] >= two(i))
+			u = dp[u][i];
+	if (u == v) return u;
+	for (int i = MaxL - 1; i >= 0; --i)
+		if (dp[u][i] != dp[v][i])
+		{
+			u = dp[u][i];
+			v = dp[v][i];
+		}
+	return dp[u][0];
+}
+
+int getStep(int u, int d)
+{
+	for (int i = 0; i < MaxL; ++i)
+		if (d & two(i))
+			u = dp[u][i];
+	return u;
+}
+
+int main()
+{
+	int u, v, ret;
+	char op[5];
+	Node *lhs, *rhs;
+
+	//freopen("in.txt", "r", stdin);
+
+	while (scanf("%d%d", &n, &m) == 2)
+	{
+		memset(g, 0, sizeof(g));
+		cur = ememo;
+		pt[0] = nil = memo;
+		init(pt[0], Inf);
+		for (int i = 1; i <= n; ++i)
+		{
+			scanf("%d%d", &fa[i], &val[i]);
+			if (fa[i]) add(fa[i], i);
+			pt[i] = &memo[i];
+			pt[i + n] = &memo[i + n];
+			init(pt[i], val[i]), init(pt[i + n], Inf);
+			pt[i]->c[1] = pt[i + n], pt[i + n]->p = pt[i];
+			update(pt[i]);
+		}
+		for (int i = 1; i <= n; ++i)
+			if (fa[i])
+			{
+				u = fa[i];
+				v = i;
+				splay(pt[u], nil);
+				splay(pt[v], nil), splay(pt[v + n], pt[v]);
+				lhs = pt[u], rhs = pt[u]->c[1];
+				lhs->c[1] = pt[v];
+				pt[v + n]->c[1] = rhs;
+				pt[v]->p = lhs;
+				rhs->p = pt[v + n];
+				update(pt[v + n]);
+				update(pt[v]);
+				update(lhs);
+				splay(pt[v], nil);
+			}
+		root = 1;
+		dfs(root);
+		for (int i = 0; i < m; ++i)
+		{
+			scanf("%s", op);
+			if (op[0] == 'V')
+			{
+				scanf("%d%d", &u, &v);
+				splay(pt[u], nil);
+				pt[u]->key = v;
+				update(pt[u]);
+			}
+			else if (op[0] == 'E')
+			{
+				scanf("%d", &root);
+			}
+			else
+			{
+				scanf("%d", &u);
+				if (u == root)
+				{
+					splay(pt[u], nil);
+					ret = pt[u]->mn;
+				}
+				else if (getLCA(u, root) == u)
+				{
+					v = getStep(root, dep[root] - dep[u] - 1);
+					splay(pt[v], nil);
+					splay(pt[v + n], pt[v]);
+					ret = min(pt[v]->c[0]->mn, pt[v + n]->c[1]->mn);
+				}
+				else
+				{
+					splay(pt[u], nil);
+					splay(pt[u + n], pt[u]);
+					ret = min(pt[u]->key, pt[u + n]->c[0]->mn);
+				}
+				printf("%d
+", ret);
+			}
+		}
+	}
+    return 0;
+}
+

@@ -1,0 +1,58 @@
+#include<cstdio>
+#include<iostream>
+
+using namespace std;
+
+const int MaxN=17;
+const int MOD=1000000007;
+const int MaxP=1<<MaxN;
+
+int n;
+int c[MaxN][MaxN],pow[MaxN],v[MaxP];
+
+int G[MaxP],F[MaxP],b[MaxP];
+
+void init()
+{
+	cin>>n;
+	for (int i=0;i<n;++i)
+		for (int j=0;j<n;++j)
+			cin>>c[i][j];
+	for (int i=pow[0]=1;i<=n;++i)
+		v[pow[i]=pow[i-1]<<1]=i;
+	for (int s=0;s<pow[n];++s)
+	{
+		G[s]=1;
+		for (int i=0;i<n;++i)
+			for (int j=i+1;j<n;++j)
+				if ((s&pow[i])&&(s&pow[j]))
+					G[s]=(long long)G[s]*(c[i][j]+1)%MOD;
+	}
+}
+
+int solve(int);
+
+void check(int s,int t,int ns)
+{
+	if (s==ns) return;
+	F[s]=(F[s]-(long long)solve(ns)*G[s^ns])%MOD;
+	for (;t;t^=t&-t)
+		check(s,t^(t&-t),ns|(t&-t));
+}
+
+int solve(int s)
+{
+	if (b[s]) return F[s];
+	b[s]=1;
+	F[s]=G[s];
+	check(s,s^(s&-s),s&-s);
+	return F[s];
+}
+
+int main()
+{
+	init();
+	cout<<(solve(pow[n]-1)+MOD)%MOD<<endl;
+	return 0;
+}
+

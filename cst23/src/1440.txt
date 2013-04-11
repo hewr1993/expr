@@ -1,0 +1,62 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+int i=0,j=0,k=0,l=0,n=0,m=0;
+string str1,str2;
+char a[10],b[10],c[10];
+void handle(int l1, int r1,int l2, int r2)
+{
+     int i=0,j=0;
+     //if (l>r) return;
+     //if (r==0) return; 
+     //c[m]=b[r];
+     //cout<<r<<endl;
+     //cout<<m<<endl;
+     //cout<<c[m]<<endl; 
+     //m=m+1;
+     //for (i=1;i<=n;i++)
+     //    if (a[i]==b[r])
+     //       {j=i; break;}
+     //if (a[j+1]==b[l]) return;
+     //for (i=1;i<=n;i++)
+     //    if (b[i]==a[j-1])
+     //    {
+     //       handle(l,i);
+     //       j=i;
+     ////       break;
+     //    }
+     //        
+     //handle(j+1,r-1);
+     for (i=l1;i<=r1;i++)
+         if (a[i]==b[r2])
+            {j=i; break;}
+     c[m]=b[r2];
+     m=m+1;
+     if (j-1>=l1) handle(l1,j-1,l2,l2+j-l1-1);
+     if (j+1<=r1) handle(j+1,r1,l2+j-l1,r2-1); 
+}
+int main()
+{
+    cin>>str1>>str2;
+    n=str1.size();
+    for (i=1;i<=n;i++)
+    {
+        a[i]=str1[i-1];
+        b[i]=str2[i-1];
+    }
+    m=1;
+    a[0]='9';
+    b[0]='9';
+    //cout<<n<<endl;
+    c[1]=b[n];
+    handle(1,n,1,n);
+   // cout<<n<<endl;
+    for (int i=1;i<=n;i++) 
+        cout<<c[i];
+    cout<<endl;
+    //cout<<c[1]<<endl;
+   // cout<<str1<<" "<<str2;
+    //system("pause");
+    return 0;
+}
+

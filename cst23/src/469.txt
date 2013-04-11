@@ -1,0 +1,56 @@
+#include <iostream>
+using namespace std;
+
+struct Date
+{
+	int year;
+	int month;
+	int day;
+};
+
+bool isLeepYear(int year);
+
+int main()
+{
+	Date date;
+	cin >> date.year >> date.month >> date.day;
+	int daysInMonth[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	int number = date.day;
+	for (int i = 0; i < date.month; ++i)
+	{
+		number += daysInMonth[i];
+	}
+	if (date.month < 3)
+	{
+		cout << number << "
+";
+	}
+	else
+	{
+		if (isLeepYear(date.year))
+		{
+			cout << number + 1 << "
+";
+		}
+		else
+		{
+			cout << number << "
+";
+		}
+	}
+	return 0;
+}
+
+bool isLeepYear(int year)
+{
+	if ((year % 4) == 0 && (year % 100) !=0)
+	{
+		return true;
+	}
+	if (year % 400 == 0)
+	{
+		return true;
+	}
+	return false;
+}
+

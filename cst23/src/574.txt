@@ -1,0 +1,23 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<iostream>
+using namespace std;
+
+int main()
+{
+int n;
+int t=0;
+int i,s=0; 
+cin>>n;
+for(i=5;i<=n; i*=5)
+{      
+   
+    t++;
+    s+=n/i;
+     if(i==1220703125) break;
+}
+printf("%d",s); 
+return 0;
+}
+

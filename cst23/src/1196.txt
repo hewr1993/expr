@@ -1,0 +1,30 @@
+#include <cstdio>
+#include <algorithm>
+#include <functional>
+#include <cstring>
+using namespace std;
+
+char a[1002], b[1002];
+
+int main()
+{
+    gets(a);
+    gets(b);
+    char *aa = a + strlen(a);
+    char *bb = b + strlen(b);
+    reverse(a, aa);
+    reverse(b, bb);
+    transform(a, aa, a, bind2nd(minus<int>(), '0'));
+    transform(b, bb, b, bind2nd(minus<int>(), '0'));
+    for (int i = 0; i < 1000; ++i) {
+        a[i] += b[i];
+        a[i+1] += a[i]/10;
+        a[i] %= 10;
+    }
+    char *p = a+1002;
+    while (!p[-1]) --p;
+    reverse(a, p);
+    transform(a, p, a, bind2nd(plus<int>(), '0'));
+    puts(a);
+}
+

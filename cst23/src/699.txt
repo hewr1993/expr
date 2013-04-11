@@ -1,0 +1,115 @@
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <complex>
+#include <algorithm>
+
+using namespace std;
+
+typedef complex<int> point;
+typedef long long LL;
+
+vector<point> p, ret, all;
+int N;
+
+inline LL cross(point a,point b){
+    return a.real()*(LL)b.imag()-a.imag()*(LL)b.real();
+}
+
+int cmp(point a,point b){
+    if(a.imag() < b.imag()) return true;
+        else return false;
+}
+
+int construct(bool flag){
+    ret.clear();
+    vector<point> ret1, ret2;
+    int sgn=1;
+    if(flag)
+        sgn*=-1;
+
+    for(int i=0;i<p.size();i++)
+        p[i].imag()*=-1;
+    sort(p.begin(),p.end(),cmp);
+
+    int tmaxx=-2000000000;
+    int tminx=2000000000;
+    
+    int i = 0;
+    while (i < p.size()){
+        int j = i;
+	while ((j < p.size() - 1) && (p[j + 1].imag() == p[i].imag())) j++;
+        int k;
+        int minx = 2000000000;
+        int maxx = -2000000000;
+        for(k = i; k <= j; k++){
+            minx = min(minx,p[k].real());
+            maxx = max(maxx,p[k].real());
+        }
+        if (maxx > tmaxx){
+            point __p;
+            if (tmaxx != -2000000000){
+                __p.imag() = p[i].imag() * sgn;
+                __p.real() = tmaxx;
+                ret1.push_back(__p);
+            }
+            __p.imag() = p[i].imag() * sgn;
+            __p.real() = maxx;
+            ret1.push_back(__p);
+            tmaxx = maxx;
+        }
+        if (minx < tminx){
+            point __p;
+            if (tminx != 2000000000){
+                __p.imag() = p[i].imag() * sgn;
+                __p.real() = tminx;
+                ret2.push_back(__p);
+            }
+            __p.imag() = p[i].imag() * sgn;
+            __p.real() = minx;
+            ret2.push_back(__p);
+            tminx = minx;
+        }
+        i = j+1;
+    }
+    ret.clear();
+    for(int i=ret2.size()-1;i>=0;i--)
+        ret.push_back(ret2[i]);
+    for(int i=0;i<ret1.size();i++)
+        ret.push_back(ret1[i]);
+}
+
+int main(){
+
+    scanf("%d",&N);
+    for(int i=0;i<N;i++){
+        int x,y;
+        scanf("%d%d",&x,&y);
+        p.push_back(point(x,y));
+    }
+
+    construct(false);
+    all = ret;
+
+    construct(true);
+    reverse(ret.begin(),ret.end());
+    for(int i=0;i<ret.size();i++)
+        all.push_back(ret[i]);
+
+    LL length=0 ,area=0;
+    all.push_back(all[0]);
+    for(int i=0;i+1<all.size();i++){
+        if(all[i].real()==all[i+1].real())
+            length+=abs(all[i].imag()-all[i+1].imag());
+        else
+            length+=abs(all[i].real()-all[i+1].real());
+        area+=cross(all[i],all[i+1]);
+    }
+    cout << length << endl;
+    cout << abs(area/2) << endl;
+
+    return 0;
+}
+

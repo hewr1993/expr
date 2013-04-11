@@ -1,0 +1,118 @@
+# include<iostream>
+using namespace std;
+int main()
+{
+   int sum=0, l=0;
+   char tmp;
+   char a[101] ;char b[101];
+   cin>>l;
+   cin>>a;
+   cin>>b;
+   for(int i=0;i<l;i++)
+   {
+           if(a[i]<b[i])
+           {tmp=a[i];
+           a[i]=b[i];
+           b[i]=tmp;
+           }
+      if(a[i]==b[i])
+                   sum=sum; 
+      if((a[i]=='1')&&(b[i]=='0'))
+                   sum=sum+4;
+      if((a[i]=='2')&&(b[i]=='0'))
+                   sum=sum+3;
+      if((a[i]=='2')&&(b[i]=='1'))
+                   sum=sum+5;
+      if((a[i]=='3')&&(b[i]=='0'))
+                   sum=sum+3;             
+      if((a[i]=='3')&&(b[i]=='1'))
+                   sum=sum+3;
+      if((a[i]=='3')&&(b[i]=='2'))
+                   sum=sum+2;
+      if((a[i]=='4')&&(b[i]=='0'))
+                   sum=sum+4;
+      if((a[i]=='4')&&(b[i]=='1'))
+                   sum=sum+2;
+      if((a[i]=='4')&&(b[i]=='2'))
+                   sum=sum+5;     
+      if((a[i]=='4')&&(b[i]=='3'))
+                   sum=sum+3; 
+      if((a[i]=='5')&&(b[i]=='0'))
+                   sum=sum+3; 
+      if((a[i]=='5')&&(b[i]=='1'))
+                   sum=sum+5; 
+      if((a[i]=='5')&&(b[i]=='2'))
+                   sum=sum+4; 
+      if((a[i]=='5')&&(b[i]=='3'))
+                   sum=sum+2;
+      if((a[i]=='5')&&(b[i]=='4'))
+                   sum=sum+3; 
+      if((a[i]=='6')&&(b[i]=='0'))
+                   sum=sum+2; 
+      if((a[i]=='6')&&(b[i]=='1'))
+                   sum=sum+6;
+       if((a[i]=='6')&&(b[i]=='2'))
+                   sum=sum+3; 
+       if((a[i]=='6')&&(b[i]=='3'))
+                   sum=sum+3; 
+        if((a[i]=='6')&&(b[i]=='4'))
+                   sum=sum+4; 
+        if((a[i]=='6')&&(b[i]=='5'))
+                   sum=sum+1;
+        if((a[i]=='7')&&(b[i]=='0'))
+                   sum=sum+3; 
+         if((a[i]=='7')&&(b[i]=='1'))
+                   sum=sum+1;                                                                                              
+         if((a[i]=='7')&&(b[i]=='2'))
+                   sum=sum+4;                                                                                                      
+          if((a[i]=='7')&&(b[i]=='3'))
+                   sum=sum+2; 
+          if((a[i]=='7')&&(b[i]=='4'))
+                   sum=sum+3;          
+          if((a[i]=='7')&&(b[i]=='5'))
+                   sum=sum+4;          
+          if((a[i]=='7')&&(b[i]=='6'))
+                   sum=sum+5; 
+                   
+          if((a[i]=='8')&&(b[i]=='0'))
+                   sum=sum+1;          
+          if((a[i]=='8')&&(b[i]=='1'))
+                   sum=sum+5;          
+          if((a[i]=='8')&&(b[i]=='2'))
+                   sum=sum+2;          
+          if((a[i]=='8')&&(b[i]=='3'))
+                   sum=sum+2;         
+          if((a[i]=='8')&&(b[i]=='4'))
+                   sum=sum+3;         
+          if((a[i]=='8')&&(b[i]=='5'))
+                   sum=sum+2;                   
+          if((a[i]=='8')&&(b[i]=='6'))
+                   sum=sum+1; 
+          if((a[i]=='8')&&(b[i]=='7'))
+                   sum=sum+4;
+                   
+                   
+          if((a[i]=='9')&&(b[i]=='0'))
+                   sum=sum+2;
+          if((a[i]=='9')&&(b[i]=='1'))
+                   sum=sum+4;
+          if((a[i]=='9')&&(b[i]=='2'))
+                   sum=sum+3;
+          if((a[i]=='9')&&(b[i]=='3'))
+                   sum=sum+1;
+          if((a[i]=='9')&&(b[i]=='4'))
+                   sum=sum+2;
+          if((a[i]=='9')&&(b[i]=='5'))
+                   sum=sum+1;
+          if((a[i]=='9')&&(b[i]=='6'))
+                   sum=sum+2;
+          if((a[i]=='9')&&(b[i]=='7'))
+                   sum=sum+3;
+          if((a[i]=='9')&&(b[i]=='8'))
+                   sum=sum+1; 
+        } 
+        cout<<sum<<endl;  
+    
+   //system("pause");    
+       return 0;
+}         

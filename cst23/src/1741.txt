@@ -1,0 +1,79 @@
+var n,i,a,b,c,head,tail,t:longint;
+    s:string;
+    st:array[1..1594323,1..2] of longint;
+    p:array[0..1594322] of boolean;
+function tn(x,p:longint):longint;
+ var i,a,b,c,t:longint;
+begin
+ t:=x;c:=0;
+ for i:=2 to p do
+  begin
+   c:=c*3+t mod 3;
+   t:=t div 3;
+  end;
+ a:=t mod 3;
+ t:=t div 3;
+ b:=t mod 3;
+ t:=t div 3;
+ t:=t*3+a;
+ t:=t*3+b;
+ for i:=2 to p do
+  begin
+   t:=t*3+c mod 3;
+   c:=c div 3;
+  end;
+ tn:=t;
+end;
+function find(x:longint):boolean;
+ var i:longint;
+begin
+ for i:=0 to n-4 do
+  begin
+   if x mod 81=59 then exit(true);
+   x:=x div 3;
+  end;
+ exit(false);
+end;
+procedure bfs;
+begin
+ st[1,1]:=0;
+ st[1,2]:=0;
+ head:=1;
+ tail:=2;
+ for i:=1 to n do
+  begin
+   t:=ord(s[i])-48;
+   st[1,1]:=st[1,1]*3;
+   st[1,1]:=st[1,1]+t;
+  end;
+ t:=st[1,1];
+ if find(t) then begin writeln(0); exit; end;
+ p[st[1,1]]:=true;
+ repeat
+  for i:=1 to n-1 do
+   begin
+    t:=tn(st[head,1],i);
+    if find(t) then begin writeln(st[head,2]+1); exit; end;
+    if not p[t] then
+     begin
+      st[tail,1]:=t;
+      st[tail,2]:=st[head,2]+1;
+      p[t]:=true;
+      tail:=tail+1;
+     end;
+   end;
+  head:=head+1;
+ until head=tail;
+end;
+begin
+ readln(n);
+ readln(s);
+ for i:=1 to n do
+  begin
+   if s[i]='0' then inc(a);
+   if s[i]='1' then inc(b);
+   if s[i]='2' then inc(c);
+  end;
+ if (a=0)or(b=0)or(c<2) then writeln(-1) else bfs;
+end.
+

@@ -1,0 +1,82 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int kMaxN = 20, kMaxM = 12, kMaxS = 1 << (kMaxM + 1), kMod = 123456791;
+int n, m, f[2][kMaxS][2], des, src;
+char grid[kMaxN + 1][kMaxM + 1];
+
+#define GB(x, p) ((x) >> (p) & 1)
+#define CB(x, p, b) { \
+	(x) = (x) + (((b) - GB(x, p)) << (p)); \
+}
+
+#define UPT(x, y) { \
+	(x) += (y); \
+	if ((x) >= kMod) (x) -= kMod; \
+}
+
+int main() {
+	scanf("%d%d", &n, &m);
+	for (int i = 0; i < n; ++ i) {
+		scanf("%s", grid[i]);
+		grid[i][m] = '#';
+	}
+	for (int j = 0; j <= m; ++ j) grid[n][j] = '#';
+	des = 0, src = 1;
+	f[des][0][0] = 1;
+	int upper = (1 << (m + 1)) - 1;
+	for (int i = 0; i < n; ++ i) {
+		for (int j = 0; j < m; ++ j) {
+			swap(des, src);
+			memset(f[des], 0, sizeof(f[des]));
+			for (int s = 0; s <= upper; ++ s)
+				for (int r = 0; r < 2; ++ r)
+					if (f[src][s][r]) {
+						int p = GB(s, j), q = GB(s, j + 1), val = f[src][s][r], v;
+						if (grid[i][j] == '.') {
+							if (p == 0 && q == 0) {
+								if (grid[i + 1][j] == '.' && grid[i][j + 1] == '.') {
+									v = s;
+									CB(v, j, 1) CB(v, j + 1, 1);
+									UPT(f[des][v][r], val);
+								}
+							}
+							else if (p == 1 && q == 1) {
+								v = s;
+								CB(v, j, 0) CB(v, j + 1, 0);
+								UPT(f[des][v][r ^ 1], val);
+							}
+							else {
+								if (grid[i + 1][j] == '.') {
+									v = s;
+									CB(v, j, 1) CB(v, j + 1, 0);
+									UPT(f[des][v][r ^ q], val);
+								}
+								if (grid[i][j + 1] == '.') {
+									v = s;
+									CB(v, j, 0) CB(v, j + 1, 1);
+									UPT(f[des][v][r ^ q], val);
+								}
+							}
+						}
+						else {
+							if (p == 0 && q == 0 && ((grid[i][j] == '*' && r) || (grid[i][j] == '#' && !r)))
+								UPT(f[des][s][r], val);
+						}
+					}
+		}
+		swap(des, src);
+		memset(f[des], 0, sizeof(f[des]));
+		for (int s = 0; s <= upper; ++ s)
+			for (int r = 0; r < 2; ++ r)
+				UPT(f[des][(s << 1) & upper][0], f[src][s][r]);
+	}
+	printf("%d
+", f[des][0][0]);
+	return 0;
+}
+

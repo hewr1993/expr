@@ -1,0 +1,242 @@
+/*
+Author: LJQ
+PROG: Bomb
+DATE: 2012.6.15
+*/
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+const int maxd = 21;
+const int maxn = 100005;
+
+struct Tpoint{
+	int x, y;
+	Tpoint(){}
+	Tpoint(int _x, int _y){
+		x = _x; y = _y;
+	}
+} P[maxn];
+
+int A[maxd][maxn];
+int ret0, ret1;
+int n;
+
+void init()
+{
+	scanf("%d", &n);
+	for (int i = 0; i < n; i ++) scanf("%d%d", &P[i].x, &P[i].y);
+}
+
+int Fabs(int x){
+	return x < 0 ? -x : x;
+}
+
+int Dist(int a, int b){
+	return Fabs(P[a].x - P[b].x) + Fabs(P[a].y - P[b].y);
+}
+
+int Len3(int a, int b, int c){
+	return Dist(a, b) + Dist(a, c) + Dist(b, c);
+}
+
+int Fmax(int x, int y){
+	return x > y ? x : y;
+}
+
+int Fmin(int x, int y){
+	return x < y ? x : y;
+}
+
+void work0(){
+	int M[10];
+	for (int i = 0; i < 8; i ++) M[i] = 0;
+	int sx[10], sy[10];
+	sx[0] = sx[1] = sx[4] = 1, sx[2] = sx[3] = sx[6] = -1, sx[5] = sx[7] = 0;
+	sy[0] = sy[2] = sy[5] = 1, sy[1] = sy[3] = sy[7] = -1, sy[4] = sy[6] = 0;
+	//x+y, x-y, -x+y, -x-y, x, y, -x, -y
+	for (int i = 1; i < n; i ++)
+		for (int j = 0; j < 8; j ++)
+			if (P[i].x * sx[j] + P[i].y * sy[j] > P[M[j]].x * sx[j] + P[M[j]].y * sy[j]) M[j] = i;
+	ret0 = 0;
+	for (int i = 0; i < 8; i ++)
+		for (int j = i+1; j < 8; j ++)
+			for (int k = j+1; k < 8; k ++)
+				ret0 = Fmax(ret0, Len3(M[i], M[j], M[k]));
+}
+
+int lt[maxn], rt[maxn];
+
+bool cmp_x(int a, int b){
+	return P[a].x < P[b].x || (P[a].x == P[b].x && P[a].y < P[b].y);
+}
+
+bool cmp_y(int a, int b){
+	return P[a].y < P[b].y || (P[a].y == P[b].y && P[a].x < P[b].x);
+}
+
+int lx, rx, ls, rs, cur;
+
+int findl(int y){//find j that P[lt[j]].y <= y AND j is maximum
+	int L = 0, r = ls-1;
+	if (P[lt[L]].y > y) return -1;
+	while (L < r){
+		int mid = (L + r + 1) >> 1;
+		if (P[lt[mid]].y > y) r = mid - 1;
+			else L = mid;
+	}
+	return L;
+}
+
+int findr(int y){
+	int L = 0, r = rs-1;
+	if (P[rt[L]].y > y) return -1;
+	while (L < r){
+		int mid = (L + r + 1) >> 1;
+		if (P[rt[mid]].y > y) r = mid - 1;
+			else L = mid;
+	}
+	return L;
+}
+
+int nx, ny, curt;
+
+//for each i <= cur satisfying Yi <= ny
+
+void Solvel_0(){//ny < y0 <= y1
+	for (int i = cur+1; i < rs; i ++){
+		if (((rx - nx) << 1) + ((P[rt[i]].y - ny) << 1) >= ret1) break;
+		int xi = P[rt[i]].x;
+		for (int j = i+1; j < rs; j ++){
+			if (((xi - nx) << 1) + ((P[rt[j]].y - ny) << 1) >= ret1) break;
+			ret1 = Fmin(ret1, Len3(curt, rt[i], rt[j]));
+		}
+	}
+}
+
+void Solvel_1(){//y0 <= ny < y1
+	for (int i = cur; i >= 0; i --){
+		if (((rx - nx) << 1) + ((ny - P[rt[i]].y) << 1) >= ret1) break;
+		int xi = P[rt[i]].x, yi = P[rt[i]].y;
+		for (int j = cur+1; j < rs; j ++){
+			if (((xi - nx) << 1) + ((P[rt[j]].y - yi) << 1) >= ret1) break;
+			ret1 = Fmin(ret1, Len3(curt, rt[i], rt[j]));
+		}
+	}
+}
+
+void Solvel_2(){//y0 <= y1 <= ny
+	for (int i = cur; i >= 0; i --){
+		if (((rx - nx) << 1) + ((ny - P[rt[i]].y) << 1) >= ret1) break;
+		int xi = P[rt[i]].x;
+		for (int j = i-1; j >= 0; j --){
+			if (((xi - nx) << 1) + ((ny - P[rt[j]].y) << 1) >= ret1) break;
+			ret1 = Fmin(ret1, Len3(curt, rt[i], rt[j]));
+		}
+	}
+}
+
+void Solver_0(){//ny < y0 <= y1
+	for (int i = cur+1; i < ls; i ++){
+		if (((nx - lx) << 1) + ((P[lt[i]].y - ny) << 1) >= ret1) break;
+		int xi = P[lt[i]].x;
+		for (int j = i+1; j < ls; j ++){
+			if (((nx - xi) << 1) + ((P[lt[j]].y - ny) << 1) >= ret1) break;
+			ret1 = Fmin(ret1, Len3(curt, lt[i], lt[j]));
+		}
+	}
+}
+
+void Solver_1(){//y0 <= ny < y1
+	for (int i = cur; i >= 0; i --){
+		if (((nx - lx) << 1) + ((ny - P[lt[i]].y) << 1) >= ret1) break;
+		int xi = P[lt[i]].x, yi = P[lt[i]].y;
+		for (int j = cur+1; j < ls; j ++){
+			if (((nx - xi) << 1) + ((P[lt[j]].y - yi) << 1) >= ret1) break;
+			ret1 = Fmin(ret1, Len3(curt, lt[i], lt[j]));
+		}
+	}
+}
+
+void Solver_2(){//y0 <= y1 <= ny
+	for (int i = cur; i >= 0; i --){
+		if (((nx - lx) << 1) + ((ny - P[lt[i]].y) << 1) >= ret1) break;
+		int xi = P[lt[i]].x;
+		for (int j = i-1; j >= 0; j --){
+			if (((nx - xi) << 1) + ((ny - P[lt[j]].y) << 1) >= ret1) break;
+			ret1 = Fmin(ret1, Len3(curt, lt[i], lt[j]));
+		}
+	}
+}
+
+void calc(int d, int L, int r){
+	if (r - L + 1 <= 6){
+		for (int i = L; i < r; i ++)
+			for (int j = i+1; j < r; j ++)
+				for (int k = j+1; k <= r; k ++)
+					ret1 = Fmin(ret1, Len3(A[d][i], A[d][j], A[d][k]));
+		return;
+	}
+	int mid = (L + r) >> 1;
+	for (int i = L; i <= r; i ++) A[d+1][i] = A[d][i];
+	calc(d + 1, L, mid);
+	calc(d + 1, mid + 1, r);
+	ls = 0, rs = 0, rx = P[A[d][mid+1]].x, lx = P[A[d][mid]].x;
+	for (int p = mid; p >= L; p --)
+		if (((rx - P[A[d][p]].x) << 1) >= ret1) break;
+			else lt[ls ++] = A[d][p];
+	for (int p = mid+1; p <= r; p ++)
+		if (((P[A[d][p]].x - lx) << 1) >= ret1) break;
+			else rt[rs ++] = A[d][p];
+	//Lt: 1, Rt: 2
+	sort(rt, rt + rs, cmp_y);
+	for (int i = 0; i < ls; i ++){
+		cur = findr(P[lt[i]].y); curt = lt[i];
+		nx = P[lt[i]].x, ny = P[lt[i]].y;
+		Solvel_0(); Solvel_1(); Solvel_2();
+	}
+	//Lt: 2, Rt: 1
+	sort(lt, lt + ls, cmp_y);
+	sort(rt, rt + rs, cmp_x);
+	for (int i = 0; i < rs; i ++){
+		cur = findl(P[rt[i]].y); curt = rt[i];
+		nx = P[rt[i]].x, ny = P[rt[i]].y;
+		Solver_0(); Solver_1(); Solver_2();
+	}
+}
+
+void work1()
+{
+	ret1 = ret0;
+	for (int i = 0; i < n; i ++) A[0][i] = i;
+	sort(A[0], A[0] + n, cmp_y);
+	for (int i = 0; i < n-2; i ++)
+		ret1 = Fmin(ret1, Len3(A[0][i], A[0][i+1], A[0][i+2]));
+	sort(A[0], A[0] + n, cmp_x);
+	for (int i = 0; i < n-2; i ++)
+		ret1 = Fmin(ret1, Len3(A[0][i], A[0][i+1], A[0][i+2]));
+	calc(0, 0, n-1);
+}
+
+void work()
+{
+	work0();
+	work1();
+}
+
+void print()
+{
+	printf("%d
+%d
+", ret0, ret1);
+}
+
+int main()
+{
+	init();
+	work();
+	print();
+	return 0;
+}
+

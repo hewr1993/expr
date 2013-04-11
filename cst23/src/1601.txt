@@ -1,0 +1,93 @@
+//A1121. 回文数
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+bool judge(char*a,int n)
+{
+//	cout << "Now Jusging: ";
+//	for (int i = 0; i<n;i++) cout << *(a+i);
+//	cout << endl;
+	for(int i = 0;i<n;i++)
+	{
+		if (*(a+i)!=*(a+n-1-i)) return 0;
+	}
+	return 1;
+}
+
+char DtoP (int y){
+	char x = 'A';
+	if (y<10) return y + 48;
+	else return x + y - 10;
+}
+
+int HtoD(char a)
+{
+	if (a<58) return a - 48;
+	else return  a - 55;
+}
+void add(char*b,int *n , int p)
+{
+	char temp[50];
+	for (int i = 0;i<*n;i++) temp[i] = *(b+i);
+	bool jin=0;
+	for (int i = 0;i<*n;i++)
+	{
+		int mi;
+		mi = HtoD(temp[*n-1-i])+HtoD(*(b+i));
+		if (jin)
+		{
+			mi++;
+			jin=0;
+		}
+		if (mi>=p)
+		{
+			mi-=p;
+			jin = 1;
+		}
+		*(b+i)=DtoP(mi);
+	}
+	
+	if (jin)
+	{
+		*(b+*n) = (char) '1';
+		*n +=1;
+	}
+//	for (int i = 0; i<*n;i++) cout << *(b+i);
+//	cout << endl;
+//	cout << *n << endl;
+}
+
+int main ()
+{
+	char in[50]={0};
+	int p,n=0;
+	cin >> p;
+	cin.ignore(1024,'
+');
+	cin.get(in[0]);
+	while (in[n]!='
+'){
+		n++;
+		cin.get(in[n]);
+	}
+	char b[50] = {0};
+	for (int i = 0;i<n;i++) b[i] = in[n-1-i];
+//	cout << n << endl;
+	
+	if(judge (&(b[0]),n))
+	{
+		cout  << "STEP=0";
+		return 0;
+	}
+	int counter = 1;
+	while (counter<=30)
+	{
+		add (&(b[0]),&n,p);
+		if (judge(&b[0],n)) break;
+		counter++;
+	}
+	if (counter != 31)cout << "STEP=" << counter;
+	else cout <<"Impossible!";
+	return 0;
+}

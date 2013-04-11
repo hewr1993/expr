@@ -1,0 +1,47 @@
+program a1123;
+const maxn=40;
+type arr1=array[0..maxn]of longint;
+     arr2=array[0..1000]of longint;
+var a,aa : arr1;
+    d : arr2;
+    n,m,ans,i : longint;
+
+procedure dfs(u,s : longint; a : arr1; d : arr2);
+var c : arr2; i,j,k,t,p,q : longint;
+begin
+  if u>m then begin
+    if s>ans then begin
+      move(a,aa,sizeof(a)); ans := s;
+    end;
+    exit;
+  end;
+  t := 1;
+  while d[t]<>0 do inc(t);
+  for i := a[u-1]+1 to t+1 do begin
+    a[u] := i; move(d,c,sizeof(d));
+    for j := 1 to n do begin
+      k := i*j;
+      for p := 0 to 1000-k do
+        if ((c[p]+j<c[p+k])or(c[p+k]=0))and(c[p]+j<=n)and((c[p]>0)or(p=0)) then
+          c[p+k] := c[p]+j;
+    end;
+    k := s;
+    while c[k]<>0 do inc(k); dec(k);
+    dfs(u+1,k,a,c);
+  end;
+end;
+
+begin
+  readln(n,m);
+  if m=1 then begin
+    writeln(1); writeln('MAX=',n);
+    exit;
+  end;
+  fillchar(d,sizeof(d),0); fillchar(a,sizeof(a),0);
+  a[1] := 1;
+  for i := 1 to n do d[i] := i;
+  dfs(2,n,a,d);
+  for i := 1 to m do write(aa[i],' '); writeln;
+  writeln('MAX=',ans);
+end.
+

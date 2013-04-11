@@ -1,0 +1,80 @@
+#include<iostream>
+using namespace std;
+
+struct xx
+{
+    int a;
+    int b;
+};
+
+void shuru(xx*yy,int n)
+{
+    int i=0;
+    for(i=0;i<n;i++)
+        cin>>yy[i].a>>yy[i].b;
+}
+
+void paixu(xx*yy,int n)
+{
+    int i,j;
+    for(i=0;i<n-1;i++)
+        for(j=0;j<n-1-i;j++)
+            if(yy[j].a>yy[j+1].a)
+            {
+                xx h=yy[j];
+                yy[j]=yy[j+1];
+                yy[j+1]=h;
+            }
+}
+
+void sort(xx*yy,int i,int n)
+{
+    if(yy[i].b>yy[i+1].b)
+    {
+        yy[i+1].b=yy[i].b;
+        yy[i].b=yy[i+1].a;
+    }
+    else
+    {
+        if(yy[i].b>yy[i+1].a)
+            yy[i].b=yy[i+1].a;
+    }
+    if(i<n-2)
+        sort(yy,i+1,n);
+}
+
+int count(xx*yy,int n,int L)
+{
+    int i,sum=L;
+    for(i=0;i<n;i++)
+    {
+        sum=sum+yy[i].a-yy[i].b;
+    }
+    return sum;
+}
+
+void Try(int*dd,int k)
+{
+    int L,n,m;
+    cin>>L>>n>>m;
+    xx*yy=new xx[m+n];
+    shuru(yy,m+n);
+    paixu(yy,m+n);
+    sort(yy,0,m+n);
+    *(dd+k)=count(yy,m+n,L);
+    delete[] yy;
+}
+
+int main()
+{
+    int t,i;
+    cin>>t;
+    int*dd=new int[t];
+    for(i=0;i<t;i++)
+        Try(dd,i);
+    for(i=0;i<t;i++)
+        cout<<dd[i]<<endl;
+    return 0;
+}
+
+

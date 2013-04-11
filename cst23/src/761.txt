@@ -1,0 +1,66 @@
+#include <iostream>
+using namespace std;
+
+struct men
+{
+	int num;
+	men *next;
+};
+
+men *head,*tail;
+
+void create(int nn)
+{
+	int i;
+	men *p,*q;
+	p = new men;
+	p -> num = 1;
+	p -> next = NULL;
+	head = p;
+	q = p;
+	for (i = 2;i <= nn;i++)
+	{
+		p = new men;
+		p -> num = i;
+		q -> next = p;
+		q = p;
+		p -> next = NULL;
+	}
+	tail = q;
+	tail -> next = head;
+}
+
+void select(int mm)
+{
+	int x = 0;
+	men *p,*q;
+	q = tail;
+	do {
+		p = q -> next;
+		x++;
+		if (x % mm == 0)
+		{
+			q -> next = p -> next;
+			delete p;
+			p = NULL;
+		}
+		else
+		{
+			q = p;
+		}
+	} while(q != q -> next);
+	head = q;
+}
+
+int main()
+{
+	int n,m;
+	head = NULL;
+	cin >> n >> m;
+	create(n);
+	select(m);
+	cout << head -> num << endl;
+	delete head;
+	return 0;
+}
+

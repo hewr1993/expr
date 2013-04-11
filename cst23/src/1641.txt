@@ -1,0 +1,316 @@
+#include <cstdio>
+#include <cstdlib>
+#include <map>
+#include <vector>
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+const int MAXN = 400001, MAXM = 400001;
+const int NONE = 0x3f3f3f3f;
+int n, sx, sy, ex, ey, NOW;;
+struct Tpoint{
+    int x, y, who;
+    bool operator < (const Tpoint & A) const
+    {
+        return x == A.x ? y < A.y : x < A.x;
+    }
+    bool operator == (const Tpoint & A) const
+    {
+        return x == A.x && y == A.y;
+    }
+};
+int dis(Tpoint A, Tpoint B)
+{
+    return abs(A.x - B.x) + abs(A.y - B.y);
+}
+bool cmpX(Tpoint A, Tpoint B) 
+{
+    return A.x == B.x ? A.y < B.y : A.x < B.x;
+}
+bool cmpY(Tpoint A, Tpoint B)
+{
+    return A.y == B.y ? A.x < B.x : A.y < B.y;
+} 
+Tpoint makepoint(int x, int y)
+{
+    Tpoint temp; temp.x = x; temp.y = y;
+    return temp;
+}
+vector<Tpoint> V[100001][4];
+map<Tpoint, int> S;
+struct Theapnode{
+    int v; long long d;
+    bool operator < (const Theapnode & A) const { return d < A.d; }
+};
+struct Theap{
+    int size;
+    Theapnode heap[MAXN];
+    int hpos[MAXN];
+    Theapnode & operator [] (int k) { return heap[k]; }
+    void swap(int a, int b)
+    {
+        std::swap(heap[a], heap[b]);
+        hpos[heap[a].v] = a; hpos[heap[b].v] = b;
+    }
+    void up(int a)
+    {
+        while(a != 1){
+            if (heap[a] < heap[a >> 1]) swap(a, a >> 1); else break;
+            a >>= 1;
+            }
+    }
+    void down(int a)
+    {
+        a = a << 1;
+        while(a <= size){
+            if (a < size && heap[a + 1] < heap[a]) ++a;
+            if (heap[a] < heap[a >> 1]) swap(a, a >> 1); else break;
+            a <<= 1;
+            }
+    }
+} H;
+struct TGraph{
+    int tot, n, s, t, e[MAXN], next[MAXM], v[MAXM];
+    long long w[MAXM];
+    Theap H;
+    void clear() { tot = 0; memset(e, 0, sizeof(e)); }
+    void add(int a, int b, long long c)
+    {
+        ++tot; next[tot] = e[a]; e[a] = tot; v[tot] = b; w[tot] = c;
+        ++tot; next[tot] = e[b]; e[b] = tot; v[tot] = a; w[tot] = c;
+    }
+    void relax(int p, long long dis)
+    {
+        if (H.hpos[p] > H.size) return;
+        H[H.hpos[p]].d = min(H[H.hpos[p]].d, dis);
+        H.up(H.hpos[p]);
+    }
+    void Dijkstra()
+    {
+        for (int i = 1; i <= n; i++) H[i].d = 0x7fffffffffffffffll, H[i].v = i, H.hpos[i] = i;
+        H[s].d = 0; H.swap(1, s); H.size = n;
+        while(H.size){
+            Theapnode t = H[1];
+            H.swap(1, H.size); --H.size; H.down(1);
+            if (t.d == 0x7fffffffffffffffll) continue;
+            for (int i = e[t.v]; i; i = next[i])
+                relax(v[i], t.d + w[i]);
+            }
+        t = H.hpos[t];
+        if (H[t].d == 0x7fffffffffffffffll) cout << "No Path" << endl; else cout << H[t].d << endl; 
+    }       
+} G;
+struct Taddpoint{
+    Tpoint data[MAXN]; int num;
+    void clear() { S.clear(); num = 0; }
+    int addpoint(Tpoint a)
+    {
+        if (S.count(a)) return S[a];
+        S[a] = num + 1;
+        data[++num] = a; data[num].who = num;
+        return num;
+    }
+    void solve()
+    {
+        G.s = 1; G.t = 2; G.n = num;
+        G.Dijkstra();
+    }
+} AP;
+struct Tsegmentree{ 
+    int same[MAXN << 2], data[MAXN];
+    void clear() { memset(same, 0x3f, sizeof(same)); }
+    void push(int idx)
+    {
+        if (same[idx] != NONE){
+            same[idx * 2] = same[idx * 2 + 1] = same[idx];
+            }
+        same[idx] = NONE;
+    }
+    int query(int idx, int l, int r, int x)
+    {
+        if (l == r) return same[idx];
+        int m = l + r >> 1;
+        push(idx);
+        if (x <= data[m]) return query(idx * 2, l, m, x);
+        else return query(idx * 2 + 1, m + 1, r, x);
+    }
+    void change(int idx, int l, int r, int ll, int rr, int num)
+    {
+        if (ll <= data[l] && rr >= data[r]){
+            same[idx] = num; return;
+            }
+        push(idx);
+        int m = l + r >> 1;
+        if (ll <= data[m]) change(idx * 2, l, m, ll, rr, num);
+        if (rr > data[m]) change(idx * 2 + 1, m + 1, r, ll, rr, num);
+    }
+} T;
+struct Tscanpoint{
+    int x, y1, y2, who; bool kind;
+     
+};
+bool cmpS(Tscanpoint A, Tscanpoint B)
+{
+    return A.x == B.x ? A.kind > B.kind : A.x < B.x;
+}
+bool cmpB(Tscanpoint A, Tscanpoint B)
+{
+    return A.x == B.x ? A.kind > B.kind : A.x > B.x;
+}
+Tscanpoint makescanpoint(int x, int y1, int y2, int who, bool kind)
+{
+    Tscanpoint temp;
+    temp.x = x; temp.y1 = y1; temp.y2 =y2; temp.kind = kind; temp.who = who;
+    return temp;
+}
+struct Trect{
+    Tpoint p, q;
+    void init()
+    {
+        int x, y;
+        scanf("%d%d", &x, &y); p = makepoint(x, y);
+        scanf("%d%d", &x, &y); q = makepoint(x, y);
+        if (p.x > q.x) swap(p.x, q.x);
+        if (p.y > q.y) swap(p.y, q.y);
+    }
+} rect[MAXN];
+typedef bool (*scancmp)(Tscanpoint, Tscanpoint);
+struct Tscan{
+    Tscanpoint scan[MAXN]; int scannum;
+    void clear() { scannum = 0; }
+    void addscanpoint(Tscanpoint A) { scan[++scannum] = A; }
+    int getnow(int w)
+    {
+        if (w == NONE) return NONE;
+        if (w == -1) if (NOW < 2) return sx; else return sy;
+        if (w == -2) if (NOW < 2) return ex; else return ey;
+        switch(NOW){
+            case 0 : return rect[w].q.x;
+            case 1 : return rect[w].p.x;
+            case 2 : return rect[w].q.y;
+            case 3 : return rect[w].p.y;
+            }
+        return 0;
+    }
+    void solve(scancmp cmp)
+    {
+        int tot = 0;
+        T.clear();
+        sort(scan + 1, scan + scannum + 1, cmp);
+        for (int i = 1; i <= scannum; i++)
+            T.data[++tot] = scan[i].y1, T.data[++tot] = scan[i].y2;
+        sort(T.data + 1, T.data + tot + 1);
+        tot = unique(T.data + 1, T.data + tot + 1) - T.data - 1;
+        Tpoint temp;
+        for (int i = 1; i <= scannum; i++)
+            switch(scan[i].kind){
+                case 0 :
+                    T.change(1, 1, tot, scan[i].y1, scan[i].y2, scan[i].who);
+                    break;
+                case 1:
+                    int t1 = T.query(1, 1, tot, scan[i].y1);
+                    if (t1 != NONE){
+                        temp.x = getnow(t1); temp.y = scan[i].y1;
+                        if (NOW >= 2) swap(temp.x, temp.y);
+                        if (t1 > 0 && !S.count(temp)) V[t1][NOW].push_back(temp);
+                        t1 = AP.addpoint(temp);
+                        Tpoint TEMP;
+                        TEMP.x = scan[i].x; TEMP.y = scan[i].y1;
+                        if (NOW >= 2) swap(TEMP.x, TEMP.y);
+                        G.add(t1, AP.addpoint(TEMP), dis(temp, TEMP));
+                        }
+                    int t2 = T.query(1, 1, tot, scan[i].y2);
+                    if (t2 != NONE){
+                        temp.x = getnow(t2); temp.y = scan[i].y2;
+                        if (NOW >= 2) swap(temp.x, temp.y);
+                        if (t2 > 0 && !S.count(temp)) V[t2][NOW].push_back(temp);
+                        t2 = AP.addpoint(temp);
+                        Tpoint TEMP;
+                        TEMP.x = scan[i].x; TEMP.y = scan[i].y2;
+                        if (NOW >= 2) swap(TEMP.x, TEMP.y);
+                        G.add(t2, AP.addpoint(TEMP), dis(temp, TEMP));
+                        }
+                    break;
+                }
+    }
+} SC;   
+int main()
+{
+int TEST; scanf("%d", &TEST);
+while(TEST--){
+    scanf("%d%d%d%d", &sx, &sy, &ex, &ey);
+    scanf("%d", &n);
+    G.clear(); AP.clear();
+    AP.addpoint(makepoint(sx, sy));
+    AP.addpoint(makepoint(ex, ey));
+    for (int i = 1; i <= n; i++){
+        rect[i].init();
+        V[i][0].push_back(rect[i].q); V[i][0].push_back(makepoint(rect[i].q.x, rect[i].p.y));
+        V[i][1].push_back(rect[i].p); V[i][1].push_back(makepoint(rect[i].p.x, rect[i].q.y));
+        V[i][2].push_back(rect[i].q); V[i][2].push_back(makepoint(rect[i].p.x, rect[i].q.y));
+        V[i][3].push_back(rect[i].p); V[i][3].push_back(makepoint(rect[i].q.x, rect[i].p.y));
+        }
+    rect[n + 1].p = rect[n + 1].q = makepoint(sx, sy);
+    rect[n + 2].p = rect[n + 2].q = makepoint(ex, ey);
+    NOW = 0;
+    SC.clear();
+    SC.addscanpoint(makescanpoint(sx, sy, sy, -1, 0));
+    SC.addscanpoint(makescanpoint(ex, ey, ey, -1, 0));
+    SC.addscanpoint(makescanpoint(sx, sy, sy, -2, 1));
+    SC.addscanpoint(makescanpoint(ex, ey, ey, -2, 1));
+    for (int i = 1; i <= n; i++){
+        SC.addscanpoint(makescanpoint(rect[i].q.x, rect[i].p.y, rect[i].q.y, i, 0));
+        SC.addscanpoint(makescanpoint(rect[i].p.x, rect[i].p.y, rect[i].q.y, i, 1));
+        }
+    SC.solve(cmpS);
+    NOW = 1;
+    SC.clear();
+    SC.addscanpoint(makescanpoint(sx, sy, sy, -1, 0));
+    SC.addscanpoint(makescanpoint(ex, ey, ey, -1, 0));
+    SC.addscanpoint(makescanpoint(sx, sy, sy, -2, 1));
+    SC.addscanpoint(makescanpoint(ex, ey, ey, -2, 1));
+     
+    for (int i = 1; i <= n; i++){
+        SC.addscanpoint(makescanpoint(rect[i].p.x, rect[i].p.y, rect[i].q.y, i, 0));
+        SC.addscanpoint(makescanpoint(rect[i].q.x, rect[i].p.y, rect[i].q.y, i, 1));
+        }
+    SC.solve(cmpB);
+    NOW = 2;
+    SC.clear();
+    SC.addscanpoint(makescanpoint(sy, sx, sx, -1, 0));
+    SC.addscanpoint(makescanpoint(ey, ex, ex, -1, 0));
+    SC.addscanpoint(makescanpoint(sy, sx, sx, -2, 1));
+    SC.addscanpoint(makescanpoint(ey, ex, ex, -2, 1));
+     
+    for (int i = 1; i <= n; i++){
+        SC.addscanpoint(makescanpoint(rect[i].q.y, rect[i].p.x, rect[i].q.x, i, 0));
+        SC.addscanpoint(makescanpoint(rect[i].p.y, rect[i].p.x, rect[i].q.x, i, 1));
+        }
+    SC.solve(cmpS);
+    NOW = 3;
+    SC.clear();
+    SC.addscanpoint(makescanpoint(sy, sx, sx, -1, 0));
+    SC.addscanpoint(makescanpoint(ey, ex, ex, -1, 0));
+    SC.addscanpoint(makescanpoint(sy, sx, sx, -2, 1));
+    SC.addscanpoint(makescanpoint(ey, ex, ex, -2, 1));
+     
+    for (int i = 1; i <= n; i++){
+        SC.addscanpoint(makescanpoint(rect[i].p.y, rect[i].p.x, rect[i].q.x, i, 0));
+        SC.addscanpoint(makescanpoint(rect[i].q.y, rect[i].p.x, rect[i].q.x, i, 1));
+        }
+    SC.solve(cmpB);
+    for (int i = 1; i <= n; i++)
+        for (int j = 0; j < 4; j++){
+            sort(V[i][j].begin(), V[i][j].end());
+            for (int k = 0; k < int(V[i][j].size()) - 1; k++){
+                int t1 = AP.addpoint(V[i][j][k]), t2 = AP.addpoint(V[i][j][k + 1]);
+                G.add(t1, t2, dis(V[i][j][k], V[i][j][k + 1]));
+                }
+            }
+    AP.solve();
+    for (int i = 1; i <= n; i++)
+        for (int j = 0; j < 4; j++)
+            V[i][j].clear();
+}   
+}

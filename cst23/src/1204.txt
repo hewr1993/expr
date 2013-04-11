@@ -1,0 +1,89 @@
+#include<iostream>
+using namespace std;
+int n;
+int m;
+int num=0;
+int Num=0;
+int e[20001][10];
+int a[10];
+bool d[10];
+int b[10][12];
+bool ist(int* c,int k)
+{
+    int s=1;
+    for(int g=0;g<n&&s<=b[k][0];g++)
+    {
+        if(c[s]==a[g])
+        s++;
+    }
+    if(s-1==b[k][0])
+        return 1;
+    else
+        return 0;
+}
+void T(int i)
+{
+    for(int g=0;g<n;g++)
+    {
+        if(d[g]==1)
+        {
+            a[i]=g;
+            d[g]=0;
+            if(i<n-1)
+                T(i+1);
+            else
+            {
+                for(int k=0;k<m;k++)
+                {
+                    if(ist(b[k],k)==b[k][b[k][0]+1])
+                        Num++;
+                    else
+                        break;
+                }
+                if(Num==m)
+                {
+                    num++;
+                    for(int l=0;l<n;l++)
+                    {
+                        e[num][l]=a[l];
+                    }
+                }
+                Num=0;
+            }
+            d[g]=1;
+        }
+    }
+}
+int main()
+{
+    
+    cin>>n>>m;
+    int i,j=0;
+    for(i=0;i<10;i++)
+    {
+        for(j=0;j<12;j++)
+            b[i][j]=-1;
+    }
+    for(i=0;i<n;i++)
+        d[i]=1;
+    for(i=0;i<m;i++)
+    {
+        cin>>b[i][0];
+        for(j=1;j<=b[i][0]+1;j++)
+        {
+            cin>>b[i][j];
+        }
+    }
+    T(0);
+    cout<<num<<endl;
+    for(i=1;i<=num;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            cout<<e[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+//  system("pause");
+    return 0;
+}

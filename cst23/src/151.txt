@@ -1,0 +1,94 @@
+/*日期距离
+时间限制：1.0s   内存限制：512.0M
+问题描述
+　　定义两个日期间的距离如下：
+　　1. 如果两个日期相同，则它们的距离为0天。如2009年11月15日和2009年11月15日的距离为0天。
+　　2. 如果一个日期的k天后是另一个日期，则这两个日期的距离为k天。如2009年11月1日和2009年11月15日的距离为14天。
+　　给定两个用年月日表示的日期，求这两个日期的距离为多少天。
+输入格式
+　　输入有两行，第一行包括三个整数，分别表示第一个日期的年、月和日。
+　　第二行包括三个整数，分别表示第二个日期的年、月和日。
+　　两个日期中年的范围为1900至2011（含）。保证日期的合法性。
+输出格式
+　　输出这两个日期的距离。
+样例输入
+2009 11 15
+2009 11 1
+样例输出
+14
+样例输入
+2009 2 27
+2009 3 1
+样例输出
+2
+说明
+　　一、三、五、七、八、十、十二月每月有31天，四、六、九、十一月每月有30天，平年二月有28天，闰年二月有29天。
+　　如果年份是400的倍数，或者年份是4的倍数且不是100的倍数，则此年是闰年，否则是平年。
+　　提示
+　　你可以从较小的日期开始，每次加一天，直到加到与另一个日期相等，加了多少次，距离就是多少天。
+*/
+#include<iostream>
+using namespace std;
+struct date{
+    int year;
+    int month;
+    int day;
+};
+date newdate(date odate)
+{
+    date ndate;
+    ndate=odate;
+    if(odate.day<28) ndate.day++;
+    else if(odate.day==28)
+    {
+        if(odate.month!=2) ndate.day++;
+        else
+        {
+            if(((odate.year%4==0)&&(odate.year%100!=0))||(odate.year%400==0)) ndate.day++;
+            else {ndate.day=1;ndate.month++;}
+        }
+    }
+    else if(odate.day==29)
+    {
+        if(odate.month==2) {ndate.day=1;ndate.month++;}
+        else ndate.day++;
+    }
+    else if(odate.day==30)
+    {
+        if((odate.month==4)||(odate.month==6)||(odate.month==9)||(odate.month==11)){ndate.day=1;ndate.month++;}
+        else ndate.day++;
+    }        
+    else
+    {
+        if(odate.month!=12) {ndate.day=1;ndate.month++;}
+        else{ndate.day=1;ndate.month=1;ndate.year++;}
+    }    
+    return ndate;
+}
+bool big(date d1,date d2)
+{
+    if(d1.year>d2.year) return true;
+    else if(d1.year==d2.year)
+    {
+        if(d1.month>d2.month) return true;
+        else if(d1.month==d2.month){if(d1.day>d2.day) return true;}
+    }
+    return false;
+}    
+int main()
+{
+    date date1,date2,date3;
+    int num=0;
+    cin>>date1.year>>date1.month>>date1.day;
+    cin>>date2.year>>date2.month>>date2.day;
+    if(big(date1,date2)==false){date3=date1;date1=date2;date2=date3;}
+    date1=newdate(date1);
+    while (big(date1,newdate(date2)))
+    {
+        num++;
+        date2=newdate(date2);
+    }
+    cout<<num<<endl;
+//    system("pause");
+    return 0;
+}

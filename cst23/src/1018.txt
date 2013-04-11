@@ -1,0 +1,16 @@
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{
+ char str[200];
+ int i;
+ scanf("%s",str);
+ for (i = 0;; i++)
+  if (i>=strlen(str)-1-i||str[i]!=str[strlen(str)-1-i]) break;
+
+ if (i>=strlen(str)-1-i) printf("yes");
+ else printf("no");
+ return 0;
+}
+

@@ -1,0 +1,79 @@
+#include<iostream> 
+using namespace std;
+
+int num[310];
+int kind[2][310];
+int sum;
+int kindSum[2] = {0};
+
+void input()
+{
+	cin >> sum;
+	for(int i = 0;i < sum;i++)
+		cin >> num[i];
+}
+
+void sorter(int n, int sign)
+{
+	if(kindSum[sign] == 0)
+		kind[sign][0] = n;
+	else
+	{
+		int i = kindSum[sign] - 1;
+		while(i >= 0 && kind[sign][i] > n)
+		{
+			kind[sign][i + 1] = kind[sign][i]; 
+			i--;
+		}
+		kind[sign][i + 1] = n;
+	}
+	kindSum[sign]++;
+}//插入排序 
+
+bool isPrime(int n)
+{
+	for(int i = 2;i < n;i++)
+	{
+		if(n % i == 0)
+			return false;
+	}
+	return true;	
+}
+
+void handle()
+{
+	for(int i = 0;i < sum;i++)
+	{
+		if(isPrime(num[i]))
+			sorter(num[i], 1);
+		else
+			sorter(num[i], 0);
+	}
+}
+
+void output()
+{
+	for(int i = kindSum[0] - 1;i >= 0;i--)
+	{
+		if(i == kindSum[0] - 1 || kind[0][i] != kind[0][i + 1]) 
+			cout << kind[0][i] << " ";
+	}
+	cout << endl;
+	for(int i = 0;i < kindSum[1];i++)
+	{
+		if(i == 0 || kind[1][i] != kind[1][i - 1])
+			cout << kind[1][i] << " ";
+	}
+	cout << endl; 
+		
+}
+
+int main()
+{
+	input();
+	handle();
+	output();
+	//system("pause");
+	return 0;
+} 
+

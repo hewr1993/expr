@@ -1,0 +1,41 @@
+#include<stdio.h>
+#include<math.h>
+int main()
+{
+	int wen[1000]={0},dic[100]={0},i,j,M,N,num=1,d=0,s=0,p;
+	scanf("%d%d",&M,&N);
+	p=M-1;
+    for(i=0;i<N;i++)
+	     scanf("%d",&wen[i]);
+	for(i=0;i<M;i++)
+		dic[i]=-1;
+	dic[0]=wen[0];
+    for(i=1;i<N;i++)
+	{
+        for(j=0;j<=p;j++)
+		{
+			if(wen[i]==dic[j])
+			{
+                s=1;
+				break;
+			}
+		}
+		if(s==0&&j>p)
+		{
+			num++;
+			if(d<M-1)
+			{
+				d++;
+				dic[d]=wen[i];
+			}
+			else if(d==M-1)
+			{
+				d=0;
+				dic[d]=wen[i];
+			}
+		}
+		s=0;
+	}
+	printf("%d",num);
+	return 0;
+}

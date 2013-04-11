@@ -1,0 +1,48 @@
+#include <stdio.h>
+
+int ret = 0;
+char c;
+char op = '+';
+bool inMulti = false;
+int multi = 1;
+int now = 0;
+
+void calc(int& ret, int tmp, char op) {
+     if (op == '+') ret += tmp;
+     else ret -= tmp;
+}
+
+void calc() {
+     if (inMulti) multi = multi * now;             
+     if (c == '*') {
+        if (!inMulti) multi = now;
+        inMulti = true;
+     } else {
+        if (inMulti) now = multi;
+        calc(ret, now, op);
+        inMulti = false;
+        op = c;
+     }
+     now = 0;     
+}
+
+int main() {
+    
+    while (scanf("%c", &c) != EOF) {
+          if (c >= '0' && c <= '9') {
+             now = now * 10 + c - '0';             
+          } else {
+             calc();
+          }
+//printf("%c %d %d %d
+", c, now, ret, multi);          
+    }
+    
+    if (inMulti || now > 0) calc();
+    
+    printf("%d
+", ret);
+    
+    return 0;
+}
+

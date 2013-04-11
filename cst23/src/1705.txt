@@ -1,0 +1,70 @@
+#include<cstdio>
+#define fo(i,a,b) for(i=a;i<=b;++i)
+#define fd(i,a,b) for(i=a;i>=b;--i)
+#define LL long long
+const int mn=501000;
+struct node{int x,y;}a[mn];
+LL sqr(const int x){return (LL)x*x;}
+LL dis(int i,int j){return sqr(a[i].x-a[j].x)+sqr(a[i].y-a[j].y);}
+int n,i,j,k,T;
+int ans[mn],ans1[mn];
+LL L[mn],R[mn],now;
+int main()
+{
+    scanf("%d",&T);
+    while(T--)
+    {
+        scanf("%d",&n);
+        fo(i,1,n)scanf("%d%d",&a[i].x,&a[i].y);
+        if(n==1){puts("1");return 0;}
+        ans[1]=1,L[1]=0.0;
+        fo(i,1,n)
+        {
+            now=dis(1,i);
+            if(now>L[1])L[1]=now,ans[1]=i;
+        }
+        j=ans[1];
+        fo(i,2,n)
+        {
+            ans[i]=j,L[i]=dis(i,j);
+            while(1)
+            {
+                k=j==n?1:j+1;
+                now=dis(i,k);
+                if(now>L[i])L[i]=now,ans[i]=j=k;
+                else break;
+            }
+        }
+        ans1[n]=n,R[n]=0.0;
+        fo(i,1,n)
+        {
+            now=dis(i,n);
+            if(now>R[n])R[n]=now,ans1[n]=i;
+        }
+        j=ans1[n];
+        fd(i,n-1,1)
+        {
+            ans1[i]=j,R[i]=dis(i,j);
+            while(1)
+            {
+                k=j==1?n:j-1;
+                now=dis(i,k);
+                if(now>R[i])R[i]=now,ans1[i]=j=k;
+                else break;
+            }
+        }
+        fo(i,1,n)
+        {
+            if(L[i]<R[i]||(L[i]==R[i]&&ans[i]>ans1[i]))L[i]=R[i],ans[i]=ans1[i];
+            fo(j,-10,10)
+            {
+                k=((ans[i]+j-1)%n+n)%n+1;
+                now=dis(i,k);
+                if(now>L[i]||(now==L[i]&&k<ans[i]))L[i]=now,ans[i]=k;
+            }
+        }
+        fo(i,1,n)printf("%d
+",ans[i]);
+    }
+    return 0;
+}

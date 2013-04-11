@@ -1,0 +1,29 @@
+#include <stdio.h>
+
+int main()
+{
+    char room[10][10]={"Venus", "Jupiter", "Mars",
+		"Mercury", "Saturn", "Uranus", "Pluto", "Neptune", "Earth" };
+    char *p1[10];
+	char (*p2)[10];
+    char **q = NULL;
+    
+    int i;
+    
+	for (i=0; i<9; i++)
+        p1[i] = room[i];
+
+	p2 = room;
+	q = p1;
+
+    for (i=0; i<9; i++)				
+    {
+       printf("%c
+", q[i][0]);			//该语句效果等价于执行printf("%c
+", room[i][0]);
+	   printf("%s
+", (*p2));
+	   p2++;
+    }
+    return 0;
+}

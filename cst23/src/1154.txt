@@ -1,0 +1,44 @@
+#include <cstdio>
+#include <iostream>
+
+using namespace std;
+
+int d1[11000],d2[11000],ans[11000];
+
+int main()
+{
+   // freopen("a10.in","r",stdin);
+   // freopen("a10.out","w",stdout);
+    int n,m,x;
+    char ch;
+    for (int i=1;i<=10001;i++)
+    {
+        d1[i]=0;
+        d2[i]=0;
+    }
+    scanf("%d%d%c",&n,&m,&ch);
+    for (int i=1;i<=n+1;i++)
+    {
+        scanf("%c",&ch);
+        d1[n-i+1]=ch-'0';    
+    }     
+    for (int i=1;i<=m;i++)
+    {
+        scanf("%c",&ch);
+        d2[m-i+1]=ch-'0';    
+    }     
+    if (n>m) m=n;
+    x=0;
+    for (int i=1;i<=m;i++)
+    {
+        ans[i]=(d1[i]+d2[i]+x)%10;
+        x=(d1[i]+d2[i]+x)/10;    
+    }
+    if (x>0) {m++;ans[m]=1;}
+    while (ans[m]==0) m--;
+    for (int i=m;i>=1;i--)
+        printf("%d",ans[i]);
+   // fclose(stdin);
+  //  fclose(stdout);
+}
+

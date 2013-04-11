@@ -1,0 +1,121 @@
+#include<stdio.h>
+#include<memory.h>
+
+#define Student 10
+#define Course 6
+char Name[Student][21];
+int Cou_average[Course];
+
+void Student_average(int array[][Course]);
+void Course_average(int array[][Course]);
+void Variance(int array[]);
+void MAX_search(int array[][Course]);
+int main()
+{
+	int i,j;
+	int Score[Student][Course];
+	
+	memset(Score,0,sizeof(Score));
+
+	for(i=0;i<Student;i++)
+	{
+		scanf("%s",&Name[i]);
+		for(j=0;j<Course;j++)
+		{
+			scanf("%d",&Score[i][j]);
+		}
+	}
+	Student_average(Score);
+	Course_average(Score);
+	MAX_search(Score);
+	Variance(Cou_average);
+	
+	return 0;
+
+}
+void Student_average(int array[][Course])
+{
+	int i,j;
+	int sum[Student]={0};
+	int average[Student];
+	
+	for(i=0;i<Student;i++)
+	{
+		for(j=0;j<Course;j++)
+		{
+			sum[i]=sum[i]+array[i][j];
+		}
+		average[i]=sum[i]/Course;
+		
+		printf("%s %d
+",Name[i],average[i]);
+	}
+}
+void Course_average(int array[][Course])
+{
+	int i,j;
+	int sum[Course]={0};
+	
+	
+	for(i=0;i<Course;i++)
+	{	
+		for(j=0;j<Student;j++)
+		{
+			sum[i]=sum[i]+array[j][i];
+		}
+		
+		Cou_average[i]=sum[i]/Student;
+		printf("%d
+",Cou_average[i]);
+	}
+}
+void MAX_search(int array[][Course])
+{
+	int i,j;
+	int R,L;
+	int MAX=0;
+	int max[Student];
+	memset(max,0,sizeof(max));
+	
+	for(i=0;i<Student;i++)
+	{
+		for(j=0;j<Course;j++)
+		{
+			if(array[i][j]>max[i])
+				max[i]=array[i][j];
+		}
+	}
+	for(i=0;i<Student;i++)
+	{
+		if(max[i]>MAX)
+			MAX=max[i];
+	}
+	for(i=0;i<Student;i++)
+	{
+		for(j=0;j<Course;j++)
+		{
+			if(array[i][j]==MAX)
+			{
+				R=i;
+				L=j+1;
+				break;
+			}
+		}
+	}
+	printf("%s ",Name[R]);
+	printf("%d
+",L);
+}
+void Variance(int array[])
+{
+	int i,result;
+	int sum1=0;
+	int sum2=0;
+	for(i=0;i<Course;i++)
+		sum1=sum1+array[i]*array[i];
+	for(i=0;i<Course;i++)
+		sum2=sum2+array[i];
+	result=sum1/Course-(sum2*sum2)/(Course*Course);
+	printf("%d
+",result);
+}

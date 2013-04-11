@@ -1,0 +1,77 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <iostream>
+using namespace std;
+int a[11]={0,10,-20,0,-100,20,50,40,100,80};
+char pnum[100002][12];
+int n;
+int price(char * s)
+{
+    int p=0;
+    int i;
+    for(i=0;i<11;i++)
+    {
+        p=p+a[s[i]-'0'];
+    }
+    p=p+a[s[10]-'0'];
+    return p;
+}
+
+void print()
+{
+    for(int i=0;i<n;i++)
+    {
+       printf("%s %d
+",pnum[i],price(pnum[i]));
+    }
+    //printf("--------------
+");
+}
+
+bool cmp(char *s1,char *s2)
+{
+    int p1=price(s1);
+    int p2=price(s2);
+    if(p1>p2) return true;
+    else if(p1<p2) return false;
+    else if(strcmp(s1,s2)>0) return true;
+    else return false;
+}
+
+void qsort(int low,int high)
+{
+    int i,j;
+    if(low>=high) return;
+    char ts[12];
+    strcpy(ts,pnum[low]);
+    i=low,j=high;
+    
+    while(i<j)
+    {
+        while(i<j && cmp(pnum[j],ts)<=0) j--;
+        
+        strcpy(pnum[i],pnum[j]);
+        
+        while(i<j && cmp(pnum[i],ts)>0) i++;
+        
+        strcpy(pnum[j],pnum[i]);
+    }
+    strcpy(pnum[i],ts);
+    qsort(low,i-1);
+    qsort(i+1,high);
+}
+
+int main()
+{
+    int i;
+    cin>>n;
+    
+    for(i=0;i<n;i++)
+        scanf("%s",pnum[i]);
+    qsort(0,n-1);
+    print();
+    return 0;
+}
+

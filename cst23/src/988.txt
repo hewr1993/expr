@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int main()
+{
+     int a,b,n,x,test,y;
+     b=0;
+     scanf("%d", &n);
+     for(a=2;a<=n;a++)
+     {
+         for(test=2;test<a;test++)
+         {
+             if(a%test==0)
+                break;
+         }    
+       if (test==a)  
+            b++;
+   
+    }
+
+     printf("%d",b);
+     
+     
+     system("pause");
+     return 0;
+}
+
+
+

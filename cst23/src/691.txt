@@ -1,0 +1,87 @@
+program aa;
+var
+ n,m,i,j,k,l,o,p,x,y,heap:longint;
+ s,sum:double;
+ a:array[1..50000]of double;
+ b:array[1..50000]of longint;
+ h:array[1..50000]of longint;
+ ans:double;
+function calc(i,x:longint):double;
+ begin
+  inc(x);
+  exit(x*sqr(a[i]/x-s));
+ end;
+function js(x:longint):double;
+ begin
+  exit(calc(x,b[x]+1)-calc(x,b[x]));
+ end;
+procedure insert(x:longint);
+ var
+  i,j:longint;
+ begin
+  inc(heap);
+  i:=heap;
+  while(i>1)do begin
+   if(js(h[i div 2])<js(x))then break;
+   h[i]:=h[i div 2];
+   i:=i div 2;
+  end;
+  h[i]:=x;
+ end;
+procedure delete;
+ var
+  i,j:longint;
+  x:longint;
+ begin
+  x:=h[heap];
+  dec(heap);
+  i:=1;j:=2;
+  while(j<=heap)do begin
+   if(j<heap)and(js(h[j])>js(h[j+1]))then inc(j);
+   if(js(h[j])>js(x))then break;
+   h[i]:=h[j];
+   i:=j;
+   j:=i*2;
+  end;
+  h[i]:=x;
+ end;
+begin
+  readln(n,m,s);
+ if(n<2)then begin
+  writeln('0.000');
+  exit;
+ end;
+ for i:=1 to n do read(a[i]);
+ for i:=1 to n-1 do a[i]:=a[i+1]-a[i];
+ dec(n);
+ for i:=1 to n do sum:=sum+abs(a[i]);
+ for i:=1 to n do begin
+  b[i]:=trunc(abs(a[i])/sum*m)-1;
+  if(b[i]<0)then b[i]:=0;
+ end;
+ for i:=1 to n do begin
+  k:=0;
+  l:=b[i];
+  while(((l-k)>=3))do begin
+   x:=(k+(l-k) div 3);
+   y:=l-(l-k) div 3;
+   if(calc(i,x)<calc(i,y))then l:=y
+   else k:=x;
+  end;
+  for j:=k to l do
+   if(calc(i,j)<calc(i,b[i]))then b[i]:=j;
+ end;
+ for i:=1 to n do dec(m,b[i]);
+ for i:=1 to n do insert(i);
+ while(m>0)do begin
+  j:=h[1];
+  if(js(j)>0)then break;
+  delete;
+  inc(b[j]);
+  dec(m);
+  insert(j);
+ end;
+ for i:=1 to n do ans:=ans+calc(i,b[i]);
+ writeln(ans:0:3);
+end.
+

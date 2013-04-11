@@ -1,0 +1,34 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+int main()
+{
+	
+	cout << "Test Case 2: " <<endl;
+	int x = 1000;
+	cout.setf(ios::showbase);
+	cout << setw(10) << x << endl;
+	cout.setf(ios::left, ios::adjustfield);
+	cout << setw(10) << x << endl;
+	cout.setf(ios::internal, ios::adjustfield);
+	cout << setw(10) << hex << x << endl;
+	
+	cout << "
+Using various padding characters: 
+";
+        
+    cout.setf(ios::internal, ios::adjustfield);
+    cout.fill('*');
+    cout << setw(10) << dec << x << endl;
+    cout.setf(ios::left, ios::adjustfield);
+    cout.fill('%');
+    cout << setw(10) << x << endl;
+    cout.setf(ios::internal, ios::adjustfield);
+    cout.fill('^');
+    cout << setw(10) << hex << x << endl;
+
+
+	return 0;
+}

@@ -1,0 +1,31 @@
+#include <cstdlib>
+#include <cstdio>
+#include <iostream>
+#include <cstring>
+#include <string>
+
+using namespace std;
+
+// 获取一个人的姓名，identity为用户标识，用户的姓名保存到result中。
+void getName(char *result, char *identity)
+{
+int len = strlen(identity);
+	int j=0;
+	for(int i=0;i<len-2;i++){
+		if(identity[i] == 40||j!=0){
+			result[j] = identity[i+1];
+			j++;
+		}
+	}
+}
+
+char identity[1024], result[1024];
+
+int main()
+{
+	cin >> identity;
+	getName(result, identity);
+	cout << result << endl;
+	return 0;
+}
+

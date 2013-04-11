@@ -1,0 +1,13 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+int main()
+{ int n ;
+	cin.setf(ios::dec,ios::basefield);
+	cin >> n ;
+	
+	cout.setf(ios::oct,ios::basefield);
+	cout << n << endl ;
+	
+    return 0;
+}

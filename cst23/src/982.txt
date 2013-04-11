@@ -1,0 +1,61 @@
+var
+  i,j,d,n,m,k,l,t,w,x,y,z:longint;
+  b,a:array[1..1000,1..2] of longint;
+begin
+  readln(n,m,k,l,d);
+  for i:=1 to n-1 do b[i,1]:=i;
+  for i:=1 to m-1 do a[i,1]:=i;
+  for i:=1 to d do
+  begin
+    readln(w,x,y,z);
+    if w=y then if x>z then inc(a[z,2]) else inc(a[x,2]);
+    if x=z then if w>y then inc(b[y,2]) else inc(b[w,2]);
+  end;
+  for i:=1 to n-1 do
+  for j:=i+1 to n do
+  if(b[j,2]>b[i,2])then
+  begin
+    t:=b[i,1];
+    b[i,1]:=b[j,1];
+    b[j,1]:=t;
+    t:=b[i,2];
+    b[i,2]:=b[j,2];
+    b[j,2]:=t;
+  end;
+  for i:=1 to m-1 do
+  for j:=i+1 to m do
+  if(a[j,2]>a[i,2])then
+  begin
+    t:=a[i,1];
+    a[i,1]:=a[j,1];
+    a[j,1]:=t;
+    t:=a[i,2];
+    a[i,2]:=a[j,2];
+    a[j,2]:=t;
+  end;
+  for i:=1 to k-1 do
+  for j:=i+1 to k do
+  if(b[j,1]<b[i,1])then
+  begin
+    t:=b[i,1];
+    b[i,1]:=b[j,1];
+    b[j,1]:=t;
+    t:=b[i,2];
+    b[i,2]:=b[j,2];
+    b[j,2]:=t;
+  end;
+  for i:=1 to l-1 do
+  for j:=i+1 to l do
+  if(a[j,1]<a[i,1])then
+  begin
+    t:=a[i,1];
+    a[i,1]:=a[j,1];
+    a[j,1]:=t;
+    t:=a[i,2];
+    a[i,2]:=a[j,2];
+    a[j,2]:=t;
+  end;
+    for i:=1 to k-1 do write(b[i,1],' '); writeln(b[k,1]);
+    for i:=1 to l-1 do write(a[i,1],' '); writeln(a[l,1]);
+end.
+

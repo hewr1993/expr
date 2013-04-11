@@ -1,0 +1,244 @@
+/*
+Author: LJQ
+PROG: WC 2010. rebuild
+DATE: 2012.2.27
+*/
+#include<cstdio>
+#include<algorithm>
+
+using namespace std;
+
+const int maxn = 100005;
+const double eps = 1e-7;
+
+FILE *fin, *fout;
+
+struct Tedge{
+	int y, next, cost;
+	double key;
+} adj[maxn << 1];
+
+struct Tchd{
+	int y, next;
+} ch[maxn << 2];
+
+struct Tpair{
+	int x, y;
+} chd[maxn];
+
+bool vis[maxn];
+int able[maxn], as;
+int fch[maxn], fc[maxn];
+int size[maxn], len[maxn], sum[maxn];
+int par[maxn], lab[maxn], slab;
+int stack[maxn], stail;
+int que[maxn], head, tail;
+int mlen[maxn];
+double best[maxn], nowbest[maxn], cost[maxn];
+int totsize, rsize, chs, root;
+int n, ms, cs, L, R;
+int lim;
+int Q[maxn], qh, qt;
+double ret, nret, RR = 0;
+
+void add_edge(int x, int y, int c)
+{
+	ms ++; adj[ms].y = y; adj[ms].cost = c; adj[ms].next = fch[x]; fch[x] = ms;
+}
+
+void init()
+{
+	scanf("%d%d%d", &n, &L, &R);
+	int u, v, c;
+	for (int i = 1; i < n; i ++){
+		scanf("%d%d%d", &u, &v, &c);
+		add_edge(u, v, c);
+		add_edge(v, u, c);
+		if (c > RR) RR = c;
+	}
+}
+
+void dfs_max(int t, int lat, double w)
+{
+	stail = 1; stack[1] = t; par[t] = lat; sum[t] = 1; cost[t] = w; lab[t] = ++ slab;
+	while (stail >= 1){
+		int u = stack[stail --]; lab[u] = slab;
+		if (sum[u] >= lim) nowbest[sum[u]] = cost[u], lim = sum[u] + 1;
+			else if (cost[u] > nowbest[sum[u]]) nowbest[sum[u]] = cost[u];
+		for (int i = fch[u]; i; i = adj[i].next)
+			if (!vis[adj[i].y] && adj[i].y != par[u]){
+				if (lab[adj[i].y] != slab){
+					stack[++ stail] = adj[i].y, par[adj[i].y] = u;
+					sum[adj[i].y] = sum[u] + 1; cost[adj[i].y] = cost[u] + adj[i].key;
+				}
+			}
+	}	
+}
+
+void check(int L0)
+{
+	int p = 0, q = L0 - 1;
+	qh = qt = 0;
+	while (q >= 0){
+		while (p < lim && p + q <= R){
+			while (qh < qt && nowbest[p] >= nowbest[Q[qt-1]]) qt --;
+			Q[qt ++] = p ++;
+		}
+		while (qh < qt && Q[qh] + q < L) qh ++;
+		if (qh < qt && nowbest[Q[qh]] + best[q] > nret) 
+			nret = nowbest[Q[qh]] + best[q];
+		q --;
+	}
+}
+
+bool calc(double now)
+{
+	for (int i = 1; i <= ms; i ++){
+		adj[i].key = adj[i].cost - now; vis[adj[i].y] = 0;
+	}
+	nret = -10000; as ++;
+	for (int i = 1; i <= tail; i ++){
+		root = que[i]; vis[root] = 1;
+		if (mlen[root] + mlen[root] - 1 < L || able[i]) continue;
+		int L0 = 1;
+		best[0] = nowbest[0] = 0;
+		for (int j = fc[root]; j; j = ch[j].next){
+			int v = adj[ch[j].y].y; lim = 1;
+			dfs_max(v, root, adj[ch[j].y].key);
+			check(L0);
+			for (int k = 1; k < L0; k ++)
+				if (nowbest[k] > best[k]) best[k] = nowbest[k];
+			for (int k = L0; k < lim; k ++)
+				best[k] = nowbest[k];
+			L0 = lim;
+		}
+		if (nret > -eps) return 1;
+			else able[i] = as;
+	}
+	for (int i = 1; i <= tail; i ++) 
+		if (able[que[i]] == as) able[que[i]] = 0;
+	return 0;
+}
+
+void dfs_len(int t)
+{
+	stail = 1; stack[1] = t; par[t] = 0; lab[t] = ++ slab;
+	while (stail >= 1){
+		int u = stack[stail], flag = 1, s = 0; lab[u] = slab;
+		for (int i = fch[u]; i; i = adj[i].next)
+			if (!vis[adj[i].y] && adj[i].y != par[u]){
+				if (lab[adj[i].y] != slab){
+					flag = 0; break;
+				} else if (len[adj[i].y] > s) s = len[adj[i].y];
+			}
+		if (flag) len[u] = s + 1, stail --;
+			else {
+				for (int i = fch[u]; i; i = adj[i].next)
+					if (!vis[adj[i].y] && adj[i].y != par[u]){
+						par[adj[i].y] = u; stack[++ stail] = adj[i].y;
+					}
+			}
+	}
+}
+
+void make_size(int t)
+{
+	stail = 1; stack[1] = t; par[t] = 0; lab[t] = ++ slab;
+	while (stail >= 1){
+		int u = stack[stail], flag = 1, s = 1; lab[u] = slab;
+		for (int i = fch[u]; i; i = adj[i].next)
+			if (!vis[adj[i].y] && adj[i].y != par[u]){
+				if (lab[adj[i].y] != slab){
+					flag = 0; break;
+				} else s += size[adj[i].y];
+			}
+		if (flag) size[u] = s, stail --;
+			else {
+				for (int i = fch[u]; i; i = adj[i].next)
+					if (!vis[adj[i].y] && adj[i].y != par[u]){
+						par[adj[i].y] = u; stack[++ stail] = adj[i].y;
+					}
+			}
+	}
+}
+
+void find_root(int t)
+{
+	stail = 1; stack[1] = t; par[t] = 0; lab[t] = ++ slab;
+	while (stail >= 1){
+		int u = stack[stail], flag = 1, s = totsize - size[u]; lab[u] = slab;
+		for (int i = fch[u]; i; i = adj[i].next)
+			if (!vis[adj[i].y] && adj[i].y != par[u]){
+				if (lab[adj[i].y] != slab){
+					flag = 0; break;
+				} else if (size[adj[i].y] > s) s = size[adj[i].y];
+			}
+		if (flag){
+			if (s < rsize) rsize = s, root = u; stail --;
+		} else {
+			for (int i = fch[u]; i; i = adj[i].next)
+				if (!vis[adj[i].y] && adj[i].y != par[u]){
+					par[adj[i].y] = u; stack[++ stail] = adj[i].y;
+				}
+		}
+	}
+}
+
+bool cmp(Tpair a, Tpair b)
+{
+	return a.x < b.x;
+}
+
+void add_chd(int x, int y)
+{
+	cs ++; ch[cs].y = y; ch[cs].next = fc[x]; fc[x] = cs;
+}
+
+void find_order()
+{
+	head = tail = 1; que[1] = 1;
+	while (head <= tail){
+		int u = que[head];
+		make_size(u);
+		totsize = rsize = size[u]; root = u;
+		find_root(u);
+		que[head ++] = root; vis[root] = 1;
+		dfs_len(root); mlen[root] = len[root];
+		chs = 0;
+		for (int i = fch[root]; i; i = adj[i].next)
+			if (!vis[adj[i].y])
+				chd[chs].y = i, chd[chs ++].x = len[adj[i].y];
+		sort(chd, chd + chs, cmp);
+		for (int i = chs-1; i >= 0; i --){
+			add_chd(root, chd[i].y);
+			que[++ tail] = adj[chd[i].y].y;
+		}
+	}	
+}
+
+void work()
+{
+	find_order();
+	double LL = 0;
+	for (int it = 0; it < 40; it ++){
+		double mid = (LL + RR) / 2;
+		if (calc(mid)) LL = mid;
+			else RR = mid - eps;
+	}
+	ret = LL;
+}
+
+void print()
+{
+	printf("%.3lf
+", ret);
+}
+
+int main()
+{
+	init();
+	work();
+	print();
+	return 0;
+}
+

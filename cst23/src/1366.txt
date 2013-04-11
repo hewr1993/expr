@@ -1,0 +1,34 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+string s,s1;
+int l,list[100],nlist;
+bool flag;
+
+int main()
+{
+	cin >> s;
+	l = s.size();
+	for (int i = 1; i <= l; i++)
+		if (l % i == 0)
+			list[nlist++] = i;
+	for (int i = 0; i <= nlist-1; i++)
+		{
+			flag= true;
+			s1 = s.substr(0,list[i]);
+			for (int j = 0; j <= l - list[i]; j+= list[i])
+				{
+					if (s1!=s.substr(j,list[i]))
+						{
+							flag= false;
+							break;
+						}
+				}
+			if (flag) 
+				{
+					cout << list[i] << endl;
+					return 0;
+				}
+		} 
+}

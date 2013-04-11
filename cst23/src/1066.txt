@@ -1,0 +1,60 @@
+#include<stdio.h>
+#define MAXNUM 10000
+#define OUTNUM 100
+int main()
+{
+    int iMonkey[MAXNUM] = {0};
+    int iMonkeyNum = 0;
+    int iOutNum = 0;
+    int iCurrentNum = 0;
+    int iMonk_Count = 0;        
+    int iCount = 0;             
+    scanf("%d %d",&iMonkeyNum, &iOutNum);
+    if (iMonkeyNum > MAXNUM)
+    {
+        printf("m must be between 0 and 10000.
+Press <Enter> to exit.");
+        fflush(stdin);
+        getchar();
+        return 0;
+    }
+    if (iOutNum > OUTNUM)
+    {
+        printf("n must be between 0 and 100.
+Press <Enter> to exit.");
+        fflush(stdin);
+        getchar();
+        return 0;
+    }
+    iCurrentNum = iMonkeyNum;
+    while( iCurrentNum > 1 )
+    {
+        if( iMonkey[iMonk_Count] == 0 )
+        {
+            iCount++;
+        }
+        if( iCount == iOutNum )
+        {
+            iMonkey[iMonk_Count] = 1;      
+            iCurrentNum--;                 
+            iCount = 0;                    
+        }
+                            
+        iMonk_Count++; 
+                        
+        if( iMonk_Count == iMonkeyNum )
+        {
+            iMonk_Count = 0;
+        }               
+    }
+    iCount = 0;
+    while(1)
+    {
+        if( iMonkey[iCount++] == 0 )
+        {
+            printf("%d",iCount);
+            break;    
+        }    
+    }
+    return 0;
+}

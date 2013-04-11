@@ -1,0 +1,29 @@
+var
+a,b,c,d,e,k:integer;
+q,w:array[1..1000] of integer;
+begin
+read(a,b);
+readln;
+for c:=1 to b do
+read(q[c]);
+for c:=1 to a do
+w[c]:=-1;
+for c:=1 to b do
+begin
+e:=0;
+for d:=1 to a do
+if q[c]=w[d] then
+e:=1;
+if e=0  then
+begin
+for d:=2 to a do
+w[d-1]:=w[d];
+w[a]:=q[c];
+inc(k);
+end;
+end;
+write(k);
+end.
+
+
+

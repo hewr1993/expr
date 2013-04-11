@@ -1,0 +1,82 @@
+const
+	infns='3.in';
+	outfns='3.out';
+var
+	chess:array[1..50] of record
+			x,y:byte;
+		end;
+	line,row:array[1..10] of boolean;
+	d:array[1..10] of longint;
+	m,n,p,sum:byte;
+	st:string;
+	//f,g:text;
+
+procedure init;
+var
+	i,j,int:integer;
+begin
+	sum:=0;
+	for i:=1 to m do
+	begin
+		for j:=1 to n do
+			begin
+				read(int);
+				if int=1 then 
+					begin
+						inc(sum);
+						chess[sum].x:=i;chess[sum].y:=j;
+					end;
+			end;
+	end;
+	fillchar(line,sizeof(line),true);
+	fillchar(row,sizeof(row),true);
+	fillchar(d,sizeof(d),0);
+end;
+
+procedure work(next,s:integer);
+var
+	i,x,y:integer;
+begin
+	for i:=next to sum do
+		begin
+			x:=chess[i].x;y:=chess[i].y;
+			if line[x] and row[y] then
+			begin
+				inc(d[s]);
+				line[x]:=false;
+				row[y]:=false;
+				work(i+1,s+1);
+				line[x]:=true;row[y]:=true;
+			end;
+		end;
+end;
+
+procedure out;
+var
+	i:integer;
+begin
+	for i:=10 downto 1 do
+		if d[i]>0 then break;
+	p:=i;
+	writeln('p=',p);
+	for i:=1 to p do
+		write('D',i,':',d[i],' ');
+	writeln;
+end;
+
+
+begin
+	//assign(f,infns);reset(f);
+	//assign(g,outfns);rewrite(g);
+	readln(m,n);
+	while(m<>0)and(n<>0)do
+		begin
+			init;
+			work(1,1);
+			out;
+			readln(m,n);
+		end;
+	//close(f);
+	//close(g);
+end.
+

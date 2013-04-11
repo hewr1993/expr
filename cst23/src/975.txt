@@ -1,0 +1,18 @@
+#include<cstdio>
+#include<cstring>
+using namespace std;
+int a[20],Ans,x;
+int main()
+{
+    for (int i=1;i<=10;i++)
+        scanf("%d",&a[i]);
+    scanf("%d",&x);
+    Ans=0;
+    for (int i=1;i<=10;i++)
+        if (a[i]<=x+30)
+            Ans++;
+    printf("%d
+",Ans);
+    return 0;
+}
+

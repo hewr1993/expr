@@ -1,0 +1,44 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include<iterator>
+
+using namespace std;
+
+typedef vector<string> str;
+typedef str::iterator sit;
+void push(str& v)
+{
+  v.push_back("Japan");
+  v.push_back("Italy");
+  v.push_back("Spain");
+  v.push_back("Egypt");
+  v.push_back("Chile");
+  v.push_back("Zaire");
+  v.push_back("Nepal");
+  v.push_back("Kenya");
+  v.push_back("India");
+  v.push_back("China");
+  v.push_back("Malta");
+  v.push_back("Syria");
+}
+
+void disp(str v)
+{
+   copy(v.begin(),v.end(),ostream_iterator<string>(cout,"
+"));
+   cout<<endl;
+}
+
+int main()
+{
+	str v;
+	push(v); 
+	disp(v);
+	sit e1=find(v.begin(),v.end(),"Egypt");
+	sit m1=find(v.begin(),v.end(),"Malta");
+	sort(e1,m1);
+	disp(v);
+}
+

@@ -1,0 +1,11 @@
+struct dataStruct {
+	int n1;
+	int n2;
+};
+
+void getData(dataStruct & v)
+{
+v.n1=0;
+v.n2=1<<31;
+}
+

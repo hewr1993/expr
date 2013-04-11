@@ -1,0 +1,9 @@
+var n,i,s,x:longint;
+begin
+read(n);
+for i:=1 to n do begin
+read(x);
+if x>1000 then s:=s+x-1000;
+end;
+write(s);
+end.

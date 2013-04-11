@@ -1,0 +1,65 @@
+#include<cstdlib>
+#include<iostream>
+#include<cmath>
+using namespace std;
+int main()
+{
+    int a,b,c,d,e,f,g,h,i;
+    
+    for(int A=0;A<=1;A=A+1)
+    
+    for(int B=0;B<=1;B=B+1)
+    
+    for(int C=0;C<=1;C=C+1)
+    
+    
+    for(int D=0;D<=1;D=D+1)
+    
+    for(int E=0;E<=1;E=E+1)
+    
+    for(int F=0;F<=1;F=F+1)
+    
+    for(int G=0;G<=1;G=G+1)
+    
+    for(int H=0;H<=1;H=H+1)
+    
+    for(int I=0;I<=1;I=I+1)
+            {
+            a=B+D;
+            a=a%2;
+            b=A+C+E;
+            b=b%2;
+            c=B+F;
+            c=c%2;
+            d=A+E+G;
+            d=d%2;
+            e=B+D+F+H;
+            e=e%2;
+            f=C+E+I;
+            f=f%2;
+            g=D+H;
+            g=g%2;
+            h=E+G+I;
+            h=h%2;
+            i=F+H;
+            i=i%2;
+            
+             
+            
+            
+            
+          
+                                                                                                                              
+    
+                          
+            if(a+b+c+d+e+f+g+h+i==4)
+            { 
+                                    cout<<A<<B<<C<<D<<E<<F<<G<<H<<I<<endl; 
+            }             
+            }
+            
+            
+    system("Pause");
+    return 0;
+}
+

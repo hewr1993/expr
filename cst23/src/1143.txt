@@ -1,0 +1,92 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+
+const int N=11,M=211;
+bool color=true;
+int n,map[N][N];
+const char chess_out[]={'.','W','B'};
+struct point{
+	int x,y;
+	point operator+(const point&a)const{
+		return(point){x+a.x,y+a.y};
+	}
+};
+
+point operator*(const int&a,const point&b){
+	return(point){a*b.x,a*b.y};
+}
+
+const point dir[]={
+	(point){-1,0},(point){0,1},(point){1,0},(point){0,-1},
+	(point){-1,1},(point){1,1},(point){1,-1},(point){-1,-1}};
+
+void init(){
+	scanf("%d",&n);
+	map[4][4]=map[5][5]=2;
+	map[4][5]=map[5][4]=1;
+}
+
+bool can_move(const point&pos){
+	return pos.x>=1&&pos.x<=8&&pos.y>=1&&pos.y<=8;
+}
+
+bool put(const point&pos,const int&a){
+	for(int i=1;i<=8;i++){
+		point cur=pos+i*dir[a];
+		if(!can_move(cur))
+			return false;
+		if(!map[cur.x][cur.y])
+			return false;
+		if(map[cur.x][cur.y]-1==color){
+			if(i==1)
+				return false;
+			for(int j=1;j<i;j++){
+				cur=pos+j*dir[a];
+				map[cur.x][cur.y]=int(color)+1;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+bool put(const point&pos){
+	if(map[pos.x][pos.y])
+		return false;
+	bool flag=false;
+	for(int i=0;i<=7;i++)
+		flag|=put(pos,i);
+	if(flag)
+		map[pos.x][pos.y]=color+1;
+	return flag;
+}
+
+bool play(){
+	point pos;
+	scanf("%d%d",&pos.x,&pos.y);
+	if(put(pos))
+		color^=true;
+}
+
+void print(){
+	FILE*fout=stdout;
+	int i,j;
+	for(i=1;i<=8;i++){
+		for(j=1;j<=8;j++)
+			fprintf(fout,"%c",chess_out[map[i][j]]);
+		fprintf(fout,"
+");
+	}
+	fclose(fout);
+}
+
+int main(){
+	init();
+	for(int i=1;i<=n;i++)
+		play();
+	print();
+	return 0;
+}
+

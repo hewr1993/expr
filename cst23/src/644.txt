@@ -1,0 +1,21 @@
+#include <stdio.h>
+int main()
+{
+	int str[20] = {0};
+	int i;
+	for(i = 0;i<20;i++)
+	{
+		scanf("%d",&str[i]);
+		if(str[i]== 0)break;
+	}
+	int j = i-1;
+	for(i = 0;i<=j/2;i++)
+	{
+		int temp = str[i];
+		str[i] = str[j - i];
+		str[j - i] = temp;
+	}
+	for(i = 0;str[i]!=0;i++)
+		printf("%d ",str[i]);
+	return 0;
+}

@@ -1,0 +1,123 @@
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+#include <queue>
+#include <cmath>
+#define sqr(x) ((x) * (x))
+ 
+using namespace std;
+ 
+const int maxn = 1000;
+const int maxt = 2 * sqr(maxn) - maxn + 1;
+const int maxm = 9 * sqr(maxn) - 5 * maxn;
+ 
+struct point
+  {
+    double x, y;
+    point(double x0, double y0) : x(x0), y(y0) {}
+    point() : x(0), y(0) {}
+    point operator - (const point &o) const
+      {
+        return point(x - o.x, y - o.y);
+      }
+  } p[maxn+1];
+ 
+struct node
+  {
+    int data;
+    double weight;
+    node *next;
+  } *ge[maxt+1], edge[maxm];
+ 
+pair<double, int> list[2*maxn];
+double dist[maxt+1];
+bool v[maxt+1];
+ 
+inline double Dist(point a, point b)
+  {
+    return sqrt(sqr(a.x - b.x) + sqr(a.y - b.y));
+  }
+ 
+void Ins_Edge(int a, int b, double w)
+  {
+    static int top = 0;
+    node *p = &edge[top ++];
+    p->data = b, p->weight = w, p->next = ge[a], ge[a] = p;
+    p = &edge[top ++];
+    p->data = a, p->weight = w, p->next = ge[b], ge[b] = p;
+  }
+ 
+double Dijkstra(int s, int t, int n)
+  {
+    priority_queue< pair<double, int> > Q;
+    int now, i;
+    for (i = 0; i <= n; i ++) dist[i] = 1e100;
+    dist[s] = 0, Q.push(make_pair(-dist[s], s));
+    for (memset(v, false, sizeof(v)); ; )
+      {
+        for ( ; v[Q.top().second]; Q.pop());
+        now = Q.top().second, v[now] = true;
+        if (now == t) return dist[t];
+        for (node *p = ge[now]; p; p = p->next)
+          if (dist[now] + p->weight < dist[p->data])
+            {
+              dist[p->data] = dist[now] + p->weight;
+              Q.push(make_pair(-dist[p->data], p->data));
+            }
+      }
+  }
+ 
+int main()
+  {
+    int n, tot, i, j, k, cnt;
+    double va, vb, l, h, tmp;
+    point v1, v2;
+    
+    //freopen("racing.in", "r", stdin);
+    //freopen("racing.out", "w", stdout);
+    
+    scanf("%d%lf%lf", &n, &va, &vb);
+    p[0].x = p[0].y = 0;
+    for (i = 1; i <= n; i ++)
+      scanf("%lf%lf", &p[i].x, &p[i].y);
+    
+    for (i = 0; i <= n; i ++) ge[i] = 0;
+    for (i = 0; i < n; i ++)
+      for (j = i + 1; j <= n; j ++)
+        Ins_Edge(i, j, Dist(p[i], p[j]) / vb);
+    
+    for (tot = n, i = 1; i <= n; i ++)
+      {
+        list[0] = make_pair(0.0, i - 1);
+        list[1] = make_pair(Dist(p[i-1], p[i]), i);
+        for (cnt = 1, j = 0; j <= n; j ++)
+          if (j != i - 1 && j != i)
+            for (k = i - 1; k <= i; k ++)
+              {
+                v1 = p[j] - p[k], v2 = p[2*i-1-k] - p[k];
+                if (v1.x * v2.x + v1.y * v2.y <= 0) continue;
+                
+                v1 = p[j] - p[k], v2 = p[i-1] - p[i];
+                l = fabs(v1.x * v2.x + v1.y * v2.y) / list[1].first;
+                h = fabs(v1.x * v2.y - v1.y * v2.x) / list[1].first;
+                tmp = l - vb * h / sqrt(sqr(va) - sqr(vb));
+                
+                if (0 < tmp && tmp < list[1].first)
+                  {
+                    list[++ cnt] = make_pair(tmp, ++ tot), ge[tot] = 0;
+                    Ins_Edge(j, tot, sqrt(sqr(l - tmp) + sqr(h)) / vb);
+                    if (k == i) list[cnt].first = list[1].first - tmp;
+                  }
+              }
+        
+        sort(list + 1, list + cnt + 1);
+        for (j = 1; j <= cnt; j ++)
+          Ins_Edge(list[j-1].second, list[j].second, (list[j].first - list[j-1].first) / va);
+      }
+    
+    printf("%.6lf
+", Dijkstra(0, n, tot));
+    
+    return 0;
+}
+

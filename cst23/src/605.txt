@@ -1,0 +1,33 @@
+#include<stdio.h>
+int main()
+{
+int i,j,a[9][30];
+printf("  Nine-by-nine Multiplication Table
+");
+printf("--------------------------------------
+");
+printf("     1   2   3   4   5   6   7   8   9
+");
+printf("--------------------------------------
+");
+for(i=0;i<9;i++)
+{
+	a[i][0]=i+1;
+	for(j=1;j<=i+1;j++)
+		a[i][j]=a[i][0]*j;
+}
+for(i=0;i<9;i++)
+{
+	for(j=0;j<=i+1;j++)
+	{	if(j==0) printf("%2d",a[i][0]);
+        else if(j!=0)
+		printf("%4d",a[i][j]);
+	}
+        printf("
+");
+	
+}
+printf("--------------------------------------
+");
+return 0;
+}

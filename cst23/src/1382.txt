@@ -1,0 +1,101 @@
+/*
+ * : tree.cpp
+ * : Mon Jan 09 16:52:58 2012 +0800
+ * : Xinyu Zhou <zxytim@gmail.com>
+ */
+
+#include <cstdio>
+#include <cassert>
+
+const int N_MAX = 100001;
+
+struct Node
+{
+	int left, right;
+};
+Node node[N_MAX];
+int n;
+
+/*
+ * Find root of the tree by see if a node has a parent
+ */
+int find_root()
+{
+	static bool not_root[N_MAX];
+	for (int i = 1; i <= n; i ++)
+		not_root[node[i].left] = not_root[node[i].right] = true;
+	for (int i = 1; i <= n; i ++)
+		if (!not_root[i])
+			return i;
+	assert(0);
+}
+
+int size[N_MAX];
+
+/*
+ * Preorder traversal of the tree:
+ *		root, left, right
+ */
+void preoder_traversal(int root)
+{
+	if (!root)
+		return;
+	printf("%d ", root);
+	preoder_traversal(node[root].left);
+	preoder_traversal(node[root].right);
+}
+
+/*
+ * Inorder traversal of the tree:
+ *		left, root, right
+ * besides, this function sums the size
+ * of this subtree.
+ */
+int inorder_traversal(int root)
+{
+	if (!root)
+		return 0;
+	size[root] = 1;
+	size[root] += inorder_traversal(node[root].left);
+	printf("%d ", root);
+	size[root] += inorder_traversal(node[root].right);
+	return size[root];
+}
+
+/*
+ * Postorder traversal of the tree:
+ *		right, root, left
+ */
+void postoder_traversal(int root)
+{
+	if (!root)
+		return;
+	postoder_traversal(node[root].left);
+	postoder_traversal(node[root].right);
+	printf("%d ", root);
+}
+
+
+
+int main()
+{
+	scanf("%d", &n);
+	for (int i = 1; i <= n; i ++)
+		scanf("%d %d", &node[i].left, &node[i].right);
+
+	int root = find_root();
+	preoder_traversal(root); printf("
+");
+	inorder_traversal(root); printf("
+");
+	postoder_traversal(root); printf("
+");
+
+
+	for (int i = 1; i <= n; i ++)
+		printf("%d ", size[i]);
+	printf("
+");
+	return 0;
+}
+

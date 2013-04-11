@@ -1,0 +1,45 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+#define MAXN 10010
+
+int N, M;
+
+long long d[MAXN];
+
+int main ()
+{
+//	scanf ("%d %d", &N, &M);
+	cin >> N >> M;
+	for (int i = 1; i <= N; i++)
+	{
+//		scanf ("%lld", &d[i]);
+		cin >> d[i];
+		d[i] <<= 1;
+	}
+	for (int i = 1; i <= M; i++)
+	{
+		int u, v, w;
+//		scanf ("%d %d %d", &u, &v, &w);
+		cin >> u >> v >> w;
+		d[u] += w;
+		d[v] += w;
+	}
+	sort (&d[1], &d[N+1]);
+	long long ans = 0;
+	for (int i = 1; i <= N; i++)
+		if (i&1)
+			ans -= d[i];
+		else
+			ans += d[i];
+//	printf ("%lld
+", ans>>1);
+	cout << (ans>>1) << endl;
+//	system ("pause");
+	return 0;
+}
+

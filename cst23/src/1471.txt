@@ -1,0 +1,52 @@
+program A1183;
+type
+    wv1=record
+    x,data:longint;
+    end;
+var
+   f:array[0..40,0..40,0..40,0..40] of wv1;
+   a:array[1..350] of integer;
+   b:array[1..4] of integer;
+   i,j,k,l,p,o,m,n,sum,max,x:longint;
+begin
+     readln(n,m);
+     fillchar(b,sizeof(b),0);
+     for i:=1 to n do read(a[i]);
+     for i:=1 to m do begin read(o);b[o]:=b[o]+1;end;
+     sum:=0;
+     f[0,0,0,0].data:=a[1];
+     f[0,0,0,0].x:=1;
+     for i:=0 to b[1] do
+         for j:=0 to b[2] do
+             for k:=0 to b[3] do
+                 for l:=0 to b[4] do
+                    if (i=0) and (k=0) and (j=0) and (l=0) then
+                    else
+                     begin
+                          max:=0;
+                          x:=0;
+                          if (i<>0) and (a[f[i-1,j,k,l].x+1]+f[i-1,j,k,l].data>max) then
+                             begin
+                                  max:=a[f[i-1,j,k,l].x+1]+f[i-1,j,k,l].data;
+                                  x:=f[i-1,j,k,l].x+1;
+                             end;
+                          if (j<>0) and (a[f[i,j-1,k,l].x+2]+f[i,j-1,k,l].data>max) then
+                             begin
+                                  max:=a[f[i,j-1,k,l].x+2]+f[i,j-1,k,l].data;
+                                  x:=f[i,j-1,k,l].x+2;
+                             end;
+                          if (k<>0) and (a[f[i,j,k-1,l].x+3]+f[i,j,k-1,l].data>max) then
+                             begin
+                                  max:=a[f[i,j,k-1,l].x+3]+f[i,j,k-1,l].data;
+                                  x:=f[i,j,k-1,l].x+3;
+                             end;
+                          if (l<>0) and (a[f[i,j,k,l-1].x+4]+f[i,j,k,l-1].data>max) then
+                             begin
+                                  max:=a[f[i,j,k,l-1].x+4]+f[i,j,k,l-1].data;
+                                  x:=f[i,j,k,l-1].x+4;
+                             end;
+                          f[i,j,k,l].x:=x;
+                          f[i,j,k,l].data:=max;
+                     end;
+    writeln(f[b[1],b[2],b[3],b[4]].data);
+end.

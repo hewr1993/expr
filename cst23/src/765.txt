@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+int L[12]={0};                        //定义布尔型变量标注列是否用过 
+long zong=0;
+void Try(int ary[][11],int p[],int k,int n)       //k为行数 
+{
+int j=1,nixu=0,t,m;     //j,t,m均为循环变量，sum为一组排列连乘结果 
+long sum=1;                 //nixu为逆序数，zong为总量 
+for(j=1;j<=n;j++)      
+ { 
+     if(L[j]!=1)               
+      {
+         p[k]=j;                   //则k行j列为所选元素之一 
+         L[j]=1; 
+     if(k<n)
+          Try(ary,p,k+1,n);                 //将此列标注为已占用 
+      else
+       { 
+         sum=1;
+         nixu=0;
+         for(t=1;t<=n;t++)
+          { 
+             sum=sum*ary[t][p[t]];    //计算一组排列连乘结果 
+             for(m=t;m<=n;m++)
+                  //继续选下一行的元素 
+              if(p[m]<p[t])   nixu++;         //计算所选排列的逆序数 
+          }
+         if(nixu%2==1)  zong=zong-sum; 
+         else           zong=zong+sum; 
+         nixu=0;        
+      }                     
+      
+      L[j]=0;         //将标注数组初始化       
+     }
+}
+ return;
+}
+int main()
+{   int p[15]={0};
+    int ary[11][11];
+    int i,j,n;
+    scanf("%d",&n);
+    for(i=1;i<=n;i++)
+     for(j=1;j<=n;j++)
+       scanf("%d",&ary[i][j]);
+    Try(ary,p,1,n);
+    printf("%d
+",zong);
+    //system("pause");
+    return 0;
+}
+         
+               
+

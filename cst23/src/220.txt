@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+#include <string.h>
+
+#include <stdlib.h>
+
+#define MAXH 23
+
+#define MAXM 59
+
+/* 定义时与分的最大值 */
+
+
+
+
+int main()
+
+{
+
+char num[60][100]={"zero","one","two","three","four","five","six","seven","eight","nine","ten",
+
+"eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen",
+
+    "twenty "};
+
+strcpy(num[30],"thirty ");
+strcpy(num[40],"forty ");
+strcpy(num[50],"fifty ");
+
+int i;
+
+for(i=21;i<=59;i++){
+
+if((i%10)!=0){
+
+strcpy(num[i],num[i/10*10]);
+
+strcat(num[i],num[i%10]);}
+
+}
+
+
+/* 建立字符串数组，设置必要字符串，并与数字一一对应 */
+
+
+int h,m;
+
+scanf("%d	%d",&h,&m);// 获取数据时和分
+
+if(h <= MAXH && m <= MAXM){       //限制输入数据
+
+if(m==0)
+
+printf("%s o'clock",num[h]);
+
+else printf("%s %s",num[h],num[m]);
+
+return 0;
+
+}
+
+}// 结束，返回值0
+
+

@@ -1,0 +1,73 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+
+using namespace std;
+
+void score(char *inp, char *oup)
+{
+        ifstream fin(inp);
+	ofstream fout(oup);
+	int num;
+	int mark[6][10010];
+	int head[6];
+	for(int i=1;i<=5;i++)
+	{
+		head[i]=1;
+	}
+	while(fin>>num)
+	{
+		if(num<=59) mark[5][head[5]++]=num;
+		else
+		{
+			if(num<=69) mark[4][head[4]++]=num;
+			else
+			{
+				if(num<=79) mark[3][head[3]++]=num;
+				else
+				{
+					if(num<=89) mark[2][head[2]++]=num;
+					else mark[1][head[1]++]=num;	
+				}	
+			}	
+		}
+	}
+	int max1=-1;
+	int x;
+	for(int i=1;i<=5;i++)
+	{
+		if(head[i]-1>max1) 
+		{
+		max1=head[i]-1;
+		x=i;	
+		}
+	}
+	int t;
+	for(int i=1;i<head[x];i++)
+	{
+		for(int e=i+1;e<=head[x];e++)
+			{
+				if(mark[x][i]<mark[x][e])
+				{
+				t=mark[x][i];
+				mark[x][i]=mark[x][e];
+				mark[x][e]=t;
+				}
+			}		
+	}
+	for(int i=1;i<=5;i++)
+	{
+	fout<<head[i]-1<<" ";	
+	}
+	fout<<endl;
+	fout<<max1<<endl;
+	for(int i=1;i<head[x];i++)
+	{
+	fout<<mark[x][i]<<" ";	
+	}
+	fout<<endl;
+	return;
+}
+

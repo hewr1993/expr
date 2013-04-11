@@ -1,0 +1,19 @@
+#include<iostream>
+using namespace std;
+
+   
+    
+int main()
+{
+    int n;
+    int D[100]={0};
+    cin>>n;
+    D[1]=0;
+    D[2]=1;
+    for(int i=3;i<=n;i++)
+    {
+        D[i]=(i-1)*(D[i-1]+D[i-2]);
+    }
+    cout<<D[n];
+}
+

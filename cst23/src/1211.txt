@@ -1,0 +1,96 @@
+/*
+ * : excel.cpp
+ * : Fri Jul 15 15:51:22 2011 +0800
+ * : jiakai <jia.kai66@gmail.com>
+ */
+
+// f{{{ 
+
+#include <stdint.h>
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cassert>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
+#include <numeric>
+#include <queue>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <utility>
+#include <vector>
+#include <limits>
+
+#define ITER_VECTOR(v, var) \
+	for (typeof((v).begin()) var = (v).begin(); var != (v).end(); var ++)
+
+#define ITER_VECTOR_IDX(v, var) \
+	for (typeof((v).size()) var = 0; var < (v).size(); var ++)
+
+using namespace std;
+
+// f}}}
+
+namespace Solve
+{
+	const int BUFLEN = 100,
+		  BASE = 26;
+	typedef long long int Bignum_t;
+	const char* work(int n);
+
+	void solve(FILE *fin, FILE *fout);
+}
+
+void Solve::solve(FILE *fin, FILE *fout)
+{
+	int n;
+	fscanf(fin, "%d", &n);
+	fprintf(fout, "%s
+", work(n - 1));
+}
+
+const char* Solve::work(int n)
+{
+	static char str[BUFLEN];
+	Bignum_t tmp = (Bignum_t)n * (BASE - 1) + BASE,
+			 pow = 1;
+	int p = 0;
+	while (pow <= tmp)
+		pow *= BASE, p ++;
+	n -= (pow / BASE - BASE) / (BASE - 1);
+	int len = p - 2;
+	for (int i = 0; i <= len; i ++)
+	{
+		str[len - i] = 'A' + n % BASE;
+		n /= BASE;
+	}
+	str[len + 1] = 0;
+	return str;
+}
+
+// f{{{ main
+int main()
+{
+#if defined(INPUT) && defined(OUTPUT) && !defined(STDIO)
+	FILE *fin = fopen(INPUT, "r"),
+		 *fout = fopen(OUTPUT, "w");
+	Solve::solve(fin, fout);
+	fclose(fin);
+	fclose(fout);
+#else
+	Solve::solve(stdin, stdout);
+#endif
+}
+// f}}}
+// vim: filetype=cpp foldmethod=marker foldmarker=f{{{,f}}}
+

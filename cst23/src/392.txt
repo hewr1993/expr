@@ -1,0 +1,27 @@
+#include <iostream>
+using namespace std;
+int main()
+{ int i,j,k,p,q,m,n,s;
+char a[200],b[200];
+int c[400]={0};
+ cin>>a>>b;
+ p=strlen(a);q=strlen(b);
+ if(b[0]=='0') cout<<0<<endl;
+else 
+{
+ for(i=q-1;i>=0;i--)
+  for(j=399-(q-i-1),k=p-1;j>=0,k>=0;j--,k--)
+  {   c[j]=c[j]+(int)(a[k]-48)*(int)(b[i]-48);
+  m=c[j]/10;n=c[j]%10;
+  if(m>0) {c[j]=n;c[j-1]=c[j-1]+m;}
+  }
+if(c[j]!=0)
+for(s=j;s<400;s++)
+      cout<<c[s];
+else 
+for(s=j+1;s<400;s++)
+cout<<c[s];
+cout<<endl; 
+}
+return 0;
+}

@@ -1,0 +1,35 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+
+using namespace std;
+
+void euler(char *inp, char *oup)
+{
+
+	FILE* infp;
+	FILE* oufp;
+	infp=fopen(inp,"rt"); 
+	oufp=fopen(oup,"wt");
+	int n;
+	fscanf(infp,"%d",&n);
+	double re=(double)n;
+	for(int i=2;i<=2000000;i++)
+	{
+		if(n%i==0&&n>0)
+		{
+			re=re/(double)i;
+			re=re*(i-1);
+		}
+		while(n%i==0&&n>0)
+			n/=i;
+	}
+	 fprintf(oufp,"%d",(int)(re+0.99999));
+	 fclose(infp);
+	 fclose(oufp);
+	 return;
+
+}
+

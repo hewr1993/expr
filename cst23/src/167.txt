@@ -1,0 +1,11 @@
+program D1083;
+var
+    st:string;
+    i,l,n:integer;
+begin
+        read(st);
+        l:=length(st);
+        for i:=l downto  1 do
+        write(st[i]);
+        readln;
+end.

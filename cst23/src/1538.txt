@@ -1,0 +1,77 @@
+#include <iostream>
+#include <cstring>
+char cun[1005]={0},ch[1005];
+bool tag = true;
+using namespace std;
+int main()
+{
+   //  freopen("in.txt","r",stdin);
+   // freopen("out.txt","w",stdout);
+    int l = 1;
+   
+    int  i,m,j,nb,max=0,maxl=0,num=0;
+    
+    cin >> ch;
+    
+    int len = strlen(ch);
+      
+         for(j=1;j<=len;j++)
+           { 
+           tag = true;
+              for(m=0;m<j;m++)
+                {
+                  cun[m]=ch[m];
+                }
+              //  cout << cun  << endl;
+              int lencun = strlen(cun);
+              num =0;
+             
+              for(int i = 0 ; i <= (len-1) / lencun ; i++)
+              {
+                 for(int j = 0 ; j < lencun ; j ++)
+                  if(cun[j]!= ch[i*lencun + j] )
+                  {
+                    tag = false ;
+                     break;
+                  }
+                  
+              }
+              
+              
+              if(tag == true)
+              {
+                 char *word = ch;
+            char *p = strstr(word,cun);
+            while (p!=NULL)
+            {
+               num++;
+               word = p + lencun;
+               p = strstr(word,cun);
+            }
+      
+              if(num>max)
+              {
+                 
+                  max = num;
+                  
+              }
+              
+        //      cout<<zyj <<" "<<maxl<<endl;
+              for(nb=0;nb<lencun;nb++)
+              cun[nb]=0;
+              }
+              
+              
+              
+              
+            
+           
+           }    
+      if(tag == true)
+      cout << max << endl;
+      if(tag == false)
+      cout << 1 << endl;
+  //    system("pause");
+      return 0;
+}
+

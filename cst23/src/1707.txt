@@ -1,0 +1,318 @@
+#include <fstream>
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+#include <iostream>
+using namespace std;
+
+const int maxn = 2010;
+const int base = 10000;
+const int len = 4;
+const int power10[len] = {1, 10, 100, 1000};
+
+struct largenum{
+	int l;
+	int num[maxn];
+
+	bool iszero(){
+		return (l == 1 && num[1] == 0);
+	}
+
+	int compare(const largenum & a){
+		if (l > a.l) return 1;
+		if (l < a.l) return -1;
+		for (int i = l; i >= 1; i--)
+			if (num[i] != a.num[i]) {
+				if (num[i] > a.num[i]) return 1;
+				else return -1;
+			}
+		return 0;
+	}
+
+	void add(const largenum & a){
+		if (a.l > l) l = a.l;
+		for (int i = 1; i <= l; i++){
+			num[i] += a.num[i];
+			if (num[i] >= base){
+				num[i] -= base; num[i + 1]++;
+			}
+		}
+		if (num[l + 1] > 0) l++;
+	}
+
+	void dec(const largenum & a){
+		for (int i = 1; i <= l; i++){
+			num[i] -= a.num[i];
+			if (num[i] < 0){
+				num[i] += base; num[i + 1]--;
+			}
+		}
+		while (l > 1 && num[l] == 0) l--;
+	}
+
+	void mul(const long long x){
+		long long temp, p = 0;
+		for (int i = 1; i <= l; i++){
+			temp = num[i] * x + p;
+			p = temp / base;
+			num[i] = (int) (temp - base * p);
+		}
+		while (p > 0){
+			l ++; num[l] = (int) (p % base); p /= base;
+		}
+	}
+
+	void dev(const int x){
+		int temp, left = 0;
+		for (int i = l; i >= 1; i--){
+			temp = left * base + num[i];
+			num[i] = temp / x;
+			left = temp - x * num[i];
+		}
+		while (l > 1 && num[l] == 0) l--;
+	}
+
+	void print(){
+		cout << num[l];
+		for (int i = l - 1; i >= 1; i--){
+			for (int j = 1; j < len; j++)
+				if (num[i] < power10[j]) cout << '0';
+			cout << num[i];
+		}
+	}
+};
+
+struct bignum{
+	bool f;
+	largenum key;
+
+	void init(int x){
+		if (x < 0){
+			f = false; x = -x;
+		}else f = true;
+		memset(key.num, 0, sizeof(key.num));
+		if (x >= base){
+			key.l = 2; key.num[2] = x / base; 
+		}else key.l = 1; 
+		key.num[1] = x % base;
+	}
+
+	bool iszero(){
+		return (key.iszero());
+	}	
+
+	bool biggerthan(const bignum &a){
+		if (f != a.f) return f;
+		if (f) return (key.compare(a.key) == 1);
+		else return (key.compare(a.key) == -1);
+	}
+
+	void add(const bignum & a){
+		if (a.f == f) key.add(a.key);
+		else {   //Õý+žº   žº+Õý
+			int c = key.compare(a.key);
+			if (c == 0)	init(0);
+			else if (c == 1) key.dec(a.key);
+			else {
+				largenum temp;
+				temp = a.key; temp.dec(key);
+				f = !f; key = temp;
+			}
+		}
+	}
+
+	void add(const int x){
+		bignum temp; temp.init(x); add(temp);
+	}
+
+	void dec(bignum & a){
+		a.f = !a.f;
+		add(a);
+		a.f = !a.f;
+	}
+
+	void dec(const int x){
+		bignum temp; temp.init(-x); add(temp);
+	}
+
+	void mul(long long x){
+		if (iszero()) return;
+		if (x == 0){
+			init(0); return;
+		}
+		if (x < 0){
+			f = !f; x = -x;
+		}		
+		key.mul(x);
+	}
+
+	void dev(int x){
+		if (iszero()) return;
+		if (x < 0){
+			f = !f; x = -x;
+		}
+		key.dev(x);
+	}
+
+	void print(){
+		if (!f && !iszero()) cout << '-';
+		key.print();
+	}
+
+} ans;
+
+int n, m;
+int a[maxn];
+int n_p, n_q, n_0, n_1;
+
+inline int min(int a, int b){return (a<b)?a:b;}
+
+inline int max(int a, int b){return (a>b)?a:b;}
+
+inline int abs(int a){return (a<0)?(-a):a;}
+
+void prepare(){
+	sort(a + 1, a + n + 1);
+	n_0 = n_1 = n_p = n_q = 0;
+	for (int i = 1; i <= n; i++){
+		if (a[i] == 1) n_1++; 
+		if (a[i] == 0) n_0++; else if (a[i] > 0) n_p++; else n_q++;
+	}
+}
+
+void init(){
+	cin >> n >> m;
+	for (int i = 1; i <= n; i++) cin >> a[i];
+}
+
+void condition1(bignum & ans){			//È«ÔÚÒ»×é
+	ans.init(1);
+	for (int i = 1; i <= n; i++) ans.mul(a[i]);
+}
+
+void condition2(bignum & ans){			//Ò»žöÒ»×é
+	ans.init(0);
+	for (int i = 1; i <= n; i++) ans.add(a[i]);
+}
+
+void condition3(bignum & ans){			//È«¶ŒÊÇÕýÊý
+	ans.init(1);
+	for (int i = m; i <= n; i++) ans.mul(a[i]);
+	for (int i = 1; i < m; i++) ans.add(a[i]);
+}
+
+void condition4(bignum & ans){			//ÎÞžºÊý£¬ÓÐ0
+	if (n_p == 0){
+		ans.init(0); return;
+	}
+	int x, L, R;
+	L = m - min(n_0, m - 1); R = m - max(1, m - n_p);
+	if (n_1 + 1 < L) x = m - L; else if (n_1 + 1 > R) x = m - R; else x = m - (n_1 + 1);
+	ans.init(1);
+	for (int i = m - x; i <= n_p; i++) ans.mul(a[i + n_0]);
+	for (int i = 1; i < m - x; i++) ans.add(a[i + n_0]);
+}
+
+bool mark[maxn];
+int b[maxn];
+int fromq[maxn];
+
+void condition5(bignum & ans){			//ÎÞ0£¬ÓÐžºÊý
+	int t, tb, L, R, p, q, x;
+	L = max(2 * m - n - n_p, 0); R = min(n_q, m - 1);
+	if ((L + n_q) % 2 == 1) L++;
+	if ((R + n_q) % 2 == 1) R--;
+	memset(mark, true, sizeof(mark));	
+	t = L; x = (n_q - t) / 2; tb = 0;
+	for (int i = 1; i <= x; i++){
+		tb++; b[tb] = a[2 * i - 1] * a[2 * i]; fromq[tb] = i;
+	}
+	for (int i = n_q + 1; i <= n; i++){
+		tb++; b[tb] = a[i]; fromq[tb] = 0;
+	}
+	int temp;
+	for (int i = 1; i <= tb - 1; i++)
+		for (int j = i + 1; j <= tb; j++)
+			if (b[j] < b[i] || b[j] == b[i] && (fromq[j] > fromq[i])){
+				temp = b[i]; b[i] = b[j]; b[j] = temp;
+				temp = fromq[i]; fromq[i] = fromq[j]; fromq[j] = temp;
+			}
+	p = m - t - 1; q = 1; 
+	bignum nows, nowm, nowq;
+	nowm.init(1);
+	for (int i = p + 1; i <= tb; i++) nowm.mul(b[i]);
+	nows.init(0);
+	for (int i = 1; i <= p; i++) nows.add(b[i]);
+	nowq.init(0);
+	for (int i = n_q - t + 1; i <= n_q; i++) nowq.add(a[i]);
+	ans = nowq; ans.add(nows); ans.add(nowm);
+
+	for (int t = L + 2; t <= R; t++)
+		if ((t + n_q) % 2 == 0){
+			nowq.add(a[2 * x - 1]); nowq.add(a[2 * x]);
+			while ((q <= p) && (fromq[q] == 0)) q++;
+
+			if ((q < p) && (fromq[q] == x)){
+				mark[q] = false; nows.dec(b[q]); q++;		
+				while (!mark[p]) p--; mark[p] = false;
+				nows.dec(b[p]); nowm.mul(b[p]);
+			}
+			else{
+				nowm.dev(a[2 * x - 1]); nowm.dev(a[2 * x]);
+				while (!mark[p]) p--; mark[p] = false;
+				nows.dec(b[p]); nowm.mul(b[p]);
+				while (!mark[p]) p--; mark[p] = false;
+				nows.dec(b[p]); nowm.mul(b[p]);
+			}
+
+			bignum now;
+			now = nows; now.add(nowm); now.add(nowq);
+			if (now.biggerthan(ans)) ans = now;
+			x--;
+		}
+}
+
+void work(){
+	if (m == 1)			condition1(ans);  //È«ÔÚÒ»×é
+	else if (m == n)	condition2(ans);  //Ò»žöÒ»×é
+	else if (n_p == n)	condition3(ans);  //È«¶ŒÊÇÕýÊý
+	else if (n_q == 0)	condition4(ans);  //ÎÞžºÊý£¬ÓÐ0
+	else if (n_0 == 0)	condition5(ans);  //ÎÞ0£¬ÓÐžºÊý
+	else{
+		if (n_0 >= m) ans.init(0); //Çé¿ö0
+		else {				   //Çé¿ö1
+			n -= n_0; m -= n_0;
+			for (int i = n_q + 1; i <= n; i++) a[i] = a[i + n_0];			
+			condition5(ans);			
+			n += n_0; m += n_0;
+			for (int i = n; i > n_q + n_0; i--) a[i] = a[i - n_0];
+			for (int i = n_q + 1; i <= n_q + n_0; i++) a[i] = 0;
+		}
+		
+		//Çé¿ö2
+		if (n_q % 2 == 1){
+			for (int i = n_q; i < n; i++) a[i] = a[i + 1];
+			n--; n_q--;
+		}
+		n_q >>= 1;
+		for (int i = 1; i <= n_q; i++) a[i] = a[2 * i - 1] * a[2 * i];
+		n -= n_q; if (n < m) return;
+		for (int i = n_q + 1; i <= n; i++) a[i] = a[i + n_q];		
+		prepare();
+		bignum now;
+		if (m == n) condition2(now); else condition4(now);
+		if (now.biggerthan(ans)) ans = now;
+	}
+}
+
+void print(){
+	ans.print();
+}
+
+int main(){
+	init();
+	prepare();
+	work();
+	print();
+	return 0;
+}

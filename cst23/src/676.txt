@@ -1,0 +1,50 @@
+#include<stdio.h>
+int main()
+{
+	struct shu
+	{
+		int num;
+		int numm;
+	}jishu[1005];
+	int i,j,n,p,k,sign;
+	struct shu tmp;
+	for(i=0;i<=1003;i++)
+	{
+		jishu[i].num=0;
+		jishu[i].numm=0;
+	}
+	scanf("%d",&n);
+	for(i=0,p=0;p<n;i++,p++)
+	{
+		scanf("%d",&jishu[i].num);
+	    for(j=0;j<i;j++)
+		{
+            sign=0;
+			if(jishu[j].num==jishu[i].num)
+			{
+				sign=1;
+				jishu[j].numm++;
+				break;
+			}
+		}
+		if(sign==1)
+		{i--;}
+		else
+		{jishu[i].numm++;}
+	}
+	k=i;
+	for(j=0;j<k-1;j++)
+		for(i=0;i<k-j-1;i++)
+		{
+			if(jishu[i].num>jishu[i+1].num)
+			{
+				tmp=jishu[i];
+			    jishu[i]=jishu[i+1];
+			    jishu[i+1]=tmp;
+			}
+		}
+	for(i=0;i<k;i++)
+	{printf("%d:%d
+",jishu[i].num,jishu[i].numm);}
+	return 0;
+}

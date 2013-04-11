@@ -1,0 +1,182 @@
+#include <iostream>
+#include <vector>
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+#define Rep(i,j,k) for(int i=(j); i<=(k); i++)
+#define TR(a,e) for(typeof((a).begin()) e=(a).begin(); e!=(a).end(); e++)
+#define fi first
+#define se second
+#define mk make_pair
+typedef long long LL;
+
+int n, m, MOD, T;
+LL k, F, times[51000];
+pair<int,int> a[51000];
+int num[51000], w[51000], f1[51000], f2[51000];
+vector<int> list[51000];
+
+int pwd(int a, LL n, int MOD){
+	int ret=1;
+	while(n)
+		if (n%2==1)
+			n--, ret=(LL)ret*a%MOD;
+		else
+			n>>=1, a=(LL)a*a%MOD;
+	return ret;
+}
+
+int pwd(int a, int n){
+	int ret=1;
+	while(n)
+		if (n&1) n--, ret*=a; else n>>=1, a*=a;
+	return ret;
+}
+
+void init(){
+	F=T=0;
+	Rep(i,1,w[0]) times[i]=0, f1[i]=f2[i]=0;	
+}
+
+int getf(int *f, int x){
+	int ret=0;
+	while(x) ret+=f[x], x-=x&-x;
+	return ret;
+}
+
+void insf(int *f, int x, int y){
+	while(x<=w[0]) f[x]+=y, x+=x&-x;
+}
+
+void ins(int x){
+	F-=times[x]*times[x]*times[x];
+	times[x]++;
+	F+=times[x]*times[x]*times[x];
+	if (times[x]==1){
+		T++;
+		insf(f2,w[0]-x+1,1);
+		F+=getf(f1,x-1);
+	}
+	insf(f1,x,1);
+	F+=getf(f2,w[0]-(x+1)+1);
+}
+
+void del(int x){
+	F-=times[x]*times[x]*times[x];
+	times[x]--;	
+	F+=times[x]*times[x]*times[x];
+	if (times[x]==0){
+		T--;
+		insf(f2,w[0]-x+1,-1);
+		F-=getf(f1,x-1);
+	}
+	insf(f1,x,-1);
+	F-=getf(f2,w[0]-(x+1)+1);
+}
+
+int doit1(){
+	Rep(i,1,n) scanf("%d",num+i), w[i]=num[i];
+	sort(w+1,w+n+1);
+	w[0]=unique(w+1,w+n+1)-w-1;
+	Rep(i,1,n) num[i]=lower_bound(w+1,w+w[0]+1,num[i])-w;
+	
+	Rep(i,1,m)
+		scanf("%d%d",&a[i].fi,&a[i].se);
+	sort(a+1,a+m+1);
+	
+	int s; for(s=1; (s+1)*(s+1)<=n; s++);
+	int cur=1, ans=1;
+	Rep(now,1,(n-1)/s+1){
+		int tot=0;
+		while(cur<=m && a[cur].fi<=min(now*s,n)){
+			if (a[cur].se>min(now*s,n)){
+				list[a[cur].se].push_back(cur);
+				tot++;
+			}else{
+				init();
+				Rep(i,a[cur].fi,a[cur].se)
+					ins(num[i]);
+				ans=(LL)ans*pwd(T,F,MOD)%MOD;
+			}
+			cur++;
+		}
+		if (tot){
+			init();
+			Rep(i,now*s+1,n){
+				ins(num[i]);
+				while(list[i].size()){
+					int j=list[i].back(); list[i].pop_back();
+					Rep(k,a[j].fi,min(now*s,n))
+						ins(num[k]);
+					ans=(LL)ans*pwd(T,F,MOD)%MOD;
+					Rep(k,a[j].fi,min(now*s,n))
+						del(num[k]);
+				}
+			}
+		}
+	}
+	return ans;
+}
+
+pair<int,int> mi[100];
+pair<int,LL> pp[110000];
+
+pair<int,LL> fac(LL n, int MOD){
+	if (n<MOD)
+		return pp[n];
+	pair<int,LL> ret=fac(n/MOD,MOD);
+	ret.se+=pp[MOD].se*(n/MOD)+pp[n%MOD].se;
+	ret.fi=(LL)ret.fi*pwd(pp[MOD-1].fi,n/MOD,MOD)%MOD*pp[n%MOD].fi%MOD;
+	return ret;
+}
+
+int doit3(int p, int r){
+	LL N=(LL)m*(m-1)/2, M=k;
+	int MOD=pwd(p,r);
+	// return C(N,M)
+	pp[0]=mk(1,0);
+	Rep(i,1,MOD){
+		pp[i]=pp[i-1];
+		int j=i;
+		while(j%p==0) pp[i].se++, j/=p;
+		pp[i].fi=(LL)pp[i].fi*j%MOD;
+	}
+	
+	pair<int,LL> a=fac(N,MOD), b=fac(M,MOD), c=fac(N-M,MOD);
+	if (a.se-b.se-c.se<0){
+		cout<<N<<" "<<M<<" "<<MOD<<endl;
+		exit(0);
+	}
+	return (LL)pwd((LL)b.fi*c.fi%MOD,MOD-2,MOD)*a.fi%MOD*pwd(p,a.se-b.se-c.se,MOD)%MOD;
+}
+
+int doit2(){
+	int tot=0, M=MOD;
+	for(int i=2; i*i<=M; i++)
+		if (M%i==0){
+			mi[++tot]=mk(i,0);
+			while(M%i==0)
+				mi[tot].se++, M/=i;
+		}
+	if (M!=1)
+		mi[++tot]=mk(M,1);
+		
+	int ans=0;
+	Rep(i,1,tot){
+		LL Mi=1, mm=pwd(mi[i].fi,mi[i].se);
+		Rep(j,1,tot) if (i!=j) Mi*=pwd(mi[j].fi,mi[j].se);
+		ans=(ans+Mi*pwd(Mi,mm-2,mm)%MOD*doit3(mi[i].fi,mi[i].se))%MOD;
+	}
+	return ans;
+}
+
+int main(){
+
+	
+	cin>>n>>m>>MOD>>k;
+	
+	cout<<(LL)doit1()*doit2()%MOD<<endl;
+	
+	return 0;
+}
+

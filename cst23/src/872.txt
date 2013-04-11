@@ -1,0 +1,20 @@
+#include<stdio.h>
+int main()
+{
+ int min ,max,factor,temp;
+ scanf("%d%d%d",&max,&min,&factor);
+ if(min>max)
+ {
+  temp=min;
+  min=max;
+  max=temp;
+ }
+ while(min<=max)
+ {
+  if(min%factor==0)
+	  printf("%d ",min);
+	  min++;
+ }
+
+return 0;
+}

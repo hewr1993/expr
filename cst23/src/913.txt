@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <string.h>
+
+int main(int argc, char *argv[])
+{
+    char a[1001];
+    gets(a);
+    char d;
+    scanf("%c",&d);
+    int b[500];
+    int i=0,j=0,p=0;
+    int l=strlen(a);
+    for(i=0;i<l;i++)
+    {
+        if(a[i]==d)
+        {
+            b[j]=i;
+            j++;
+        }
+    }
+    if(b[j-1]!=l-1)
+    {
+        j++;
+        b[j-1]=l;
+    }
+    
+    char c[500][100];
+    memset(c,0,sizeof(c));
+    
+    for(i=0;i<j-1;i++)
+    {
+        int k=0;
+        for(p=b[i]+1;p<b[i+1];p++)
+        {
+            c[i][k]=a[p];
+            k++;
+        }
+}
+    int k=0;
+    for(p=b[i+1]+1;p<b[i+1]+400;p++)
+        {
+            c[i+1][k]=a[p];
+            k++;
+        }
+    for(i=0;i<j-2;i++)
+    {
+        for(p=0;p<j-2-i;p++)
+        {
+            if(strcmp(c[p],c[p+1])>0)
+            {
+                char e[100];
+                strcpy(e,c[p]);
+                strcpy(c[p],c[p+1]);
+                strcpy(c[p+1],e);
+            }
+        }
+    }
+    if(a[l-1]!=d)
+    for(i=0;i<j-1;i++)
+    {
+        printf("%s
+",c[i]);
+    }
+    else
+    for(i=0;i<j-1;i++)
+    {
+        printf("%s
+",c[i]);
+    }
+
+    
+    
+ 	
+  return 0;
+}

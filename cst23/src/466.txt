@@ -1,0 +1,24 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+ char word[100000],maxword[100000];
+int main()
+{
+ int i,j,len,maxlen;
+
+ maxlen=0;
+ while(scanf("%s",word)==1)
+ {
+  len=strlen(word);
+  if(len>maxlen)
+  {
+  strcpy(maxword,word);
+  maxlen=len;
+  }
+ }
+ printf("%s
+",maxword);
+ system("pause");
+ return 0;
+}
+

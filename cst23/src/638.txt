@@ -1,0 +1,24 @@
+//时间转化问题
+//童精中 结93 2009010173
+#include<iostream>
+using namespace std;
+int main()
+{
+	char n[21][20]={"zero","one","two","three","four","five","six","seven","eight","nine","ten",
+					"eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen",
+					"twenty"};
+	int h,m;
+	cin>>h>>m;
+	if(h<=20) {cout<<n[h]<<" ";}
+	else {cout<<n[20]<<" "<<n[h-20]<<" ";}
+	if(m==0) {cout<<"o'clock"<<endl;}
+	if(m>0&&m<=20) {cout<<n[m]<<endl;}
+	if(m>20&&m<30) {cout<<n[20]<<" "<<n[m-20]<<endl;}
+	if(m==30) {cout<<"thirty"<<endl;}
+	if(m>30&&m<40) {cout<<"thirty"<<" "<<n[m-30]<<endl;}
+	if(m==40) {cout<<"forty"<<endl;}
+	if(m>40&&m<50) {cout<<"forty"<<" "<<n[m-40]<<endl;}
+	if(m==50) {cout<<"fifty"<<endl;}
+	if(m>50) {cout<<"fifty"<<" "<<n[m-50]<<endl;}
+	return 0;
+}

@@ -1,0 +1,12 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+main()
+{
+      char st[256];
+      gets(st);
+      printf("hello ");
+      puts(st);
+      system("pause");
+      return 0;
+}

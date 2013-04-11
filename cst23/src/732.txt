@@ -1,0 +1,65 @@
+#include<cstdio>
+#include<cstring>
+const long long oo=1999007;
+long long s1,s2;
+long long f[40005][3],base[10005];
+int T,i,N,s,flag;
+int A[10005];
+void Modify(int t,int l,int r,int x)
+{
+	int mid=(l+r)/2;
+	if(l==r)
+	{
+		f[t][1]=f[t][2]=1;
+		return;
+	}
+	if(x<=mid) Modify(2*t,l,mid,x);
+	else Modify(2*t+1,mid+1,r,x);
+	f[t][1]=(f[2*t][1]*base[r-mid]+f[2*t+1][1])%oo;
+	f[t][2]=(f[2*t+1][2]*base[mid-l+1]+f[2*t][2])%oo;
+}
+long long Query(int t,int l,int r,int ll,int rr,int x)
+{
+	int mid=(l+r)/2;
+	long long f1,f2,f3;
+	if(l==ll&&r==rr) return f[t][x];
+	if(rr<=mid) return Query(2*t,l,mid,ll,rr,x);
+	if(ll>mid) return Query(2*t+1,mid+1,r,ll,rr,x);
+	f1=Query(2*t,l,mid,ll,mid,x),f2=Query(2*t+1,mid+1,r,mid+1,rr,x);
+	if(x==1) f3=(f1*base[rr-mid]+f2)%oo;
+	else f3=(f2*base[mid-ll+1]+f1)%oo;
+	return f3;
+}
+int main()
+{
+	scanf("%d",&T);
+	for(base[0]=1,i=1;i<=10000;++i) base[i]=base[i-1]*2%oo;
+	for(;T--;)
+	{
+		scanf("%d",&N);
+		for(i=1;i<=N;++i) scanf("%d",&A[i]);
+		memset(f,0,sizeof(f));
+		flag=0;
+		for(i=1;i<=N;++i)
+		{	
+			s=A[i]-1;
+			if(N-A[i]<s) s=N-A[i];
+			if(s==0) s1=0;
+			else s1=Query(1,1,N,A[i]-s,A[i]-1,1);
+			if(s==0) s2=0;
+			else s2=Query(1,1,N,A[i]+1,A[i]+s,2);
+			if(s1!=s2)
+			{
+				flag=1;
+				break;
+			}
+			Modify(1,1,N,A[i]);
+		}
+		if(flag) printf("Y
+");
+		else printf("N
+");
+	}
+	return 0;
+}
+

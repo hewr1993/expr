@@ -1,0 +1,130 @@
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+#define MAX 12
+struct data
+{
+char name[21];
+int fig1;
+int fig2;
+int fig3; 
+};
+int rank_name(struct data records[]);
+int rank_fig1 (struct data records[]);
+int rank_fig2 (struct data records[]);
+int rank_fig3 (struct data records[]);
+int Num = 0;
+int main()
+{
+scanf("%d",&Num);
+if (!(Num>=2&&Num<=10))
+{
+printf("error!
+");
+}
+else
+{
+int i;
+//struct data records[MAX];
+struct data* records = (struct data*)malloc(sizeof(struct data) * Num);
+struct data* p_records;
+p_records = records;
+for(i = 0; i< Num; i++) 
+{
+	//这里可以将 records[i].name 替换成 (*(records + i)).name,因为records[i]与*(records + i)两者是等价的， 
+//scanf("%s %d %d %d",(records[i].name),&(records[i].fig1),&(records[i].fig2),&(records[i].fig3));
+/*下面两种输入方式与上面等价，你参考一下*/
+//scanf("%s %d %d %d",(*(records+i)).name,&((*(records+i)).fig1),&((*(records+i)).fig2),&((*(records+i)).fig3));
+//records[i].name也能替换成 (records + i)->name，因为records + i就是指针啦
+scanf("%s %d %d %d",(records + i)->name,&((records + i)->fig1),&((records + i)->fig2),&((records + i)->fig3));
+}
+rank_name(records);
+rank_fig3 (records);
+rank_fig2 (records);
+rank_fig1 (records);
+for(i = 0; i< Num; i++,p_records++)
+{
+printf("%s
+",p_records->name);
+}
+p_records = records;
+}
+return 0;
+}
+/*===============rank_fig3==============*/
+int rank_fig3 (struct data records[])
+{
+int current,walk;
+for (current=0; current < Num; current++)
+{
+for(walk = Num-1; walk > current ; walk--)
+{
+if(records[walk].fig3>records[walk-1].fig3)    //降序
+{
+struct data temp;
+temp = records[walk];
+records[walk] = records[walk -1];
+records[walk -1] = temp;
+}
+}
+}
+return 0;
+}
+/*===============rank_fig2==============*/
+int rank_fig2 (struct data records[])
+{
+int current,walk;
+for (current=0; current < Num; current++)
+{
+for(walk = Num-1; walk > current ; walk--)
+{
+if(records[walk].fig2>records[walk-1].fig2)    //降序
+{
+struct data temp;
+temp = records[walk];
+records[walk] = records[walk -1];
+records[walk -1] = temp;
+}
+}
+}
+return 0;
+}
+/*===============rank_fig1==============*/
+int rank_fig1 (struct data records[])
+{
+int current,walk;
+for (current=0; current < Num; current++)
+{
+for(walk = Num-1; walk > current ; walk--)
+{
+if(records[walk].fig1>records[walk-1].fig1)    //降序
+{
+struct data temp;
+temp = records[walk];
+records[walk] = records[walk -1];
+records[walk -1] = temp;
+}
+}
+}
+return 0;
+}
+/*=================rank_name==================*/
+int rank_name(struct data records[])
+{
+int current,walk;
+for (current=0; current < Num; current++)
+{
+for(walk = Num-1; walk > current ; walk--)
+{
+if(strcmp(records[walk].name,records[walk-1].name)<0)    //升序
+{
+struct data temp;
+temp = records[walk];
+records[walk] = records[walk -1];
+records[walk -1] = temp;
+}
+}
+}
+return 0;
+}
+

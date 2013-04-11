@@ -1,0 +1,134 @@
+//By Lin
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<queue>
+#define maxn 500005
+using namespace std; 
+typedef long long LL; 
+
+int		n,m,ecnt,cnt,depth,top;
+int		d[maxn],l[maxn],p[maxn],stack[maxn],ps[maxn];
+LL		data[maxn],ans[maxn];
+int		sta[maxn];
+bool	mark[maxn];
+queue<int> que; 
+
+struct	Edge{
+	int to; 
+	Edge *next; 
+}*cur[maxn],*mat[2][maxn],edges[maxn*2];
+
+void	link(int i ,int x ,int to )
+{
+	edges[ecnt].to = to; 
+	edges[ecnt].next = mat[i][x]; 
+	mat[i][x] = &edges[ecnt++];
+}
+
+void	dfs(int x )
+{
+	int i , k = 0; 
+	i = ps[ top = 0 ] = x; 
+	bool flag = true;
+	while ( true ) {
+		if ( !flag ) {
+			l[i] = min( l[i] , l[cur[i]->to] );
+			cur[i] = cur[i]->next;
+		}else{
+			d[i] = l[i] = ++depth; 
+			stack[k++] = i;
+			sta[i] = 1; 
+			cur[i] = mat[0][i];
+		}
+		for ( ; cur[i]; cur[i] = cur[i]->next )	
+		{
+			if ( sta[cur[i]->to] == 0 ) break; 
+			if ( sta[cur[i]->to] == 1 ) l[i] = min( d[cur[i]->to], l[i] );
+		}
+		if ( cur[i] ){
+			flag = true; 
+			i = cur[i]->to; 
+			ps[++top] = i; 
+		}
+		else {
+			if ( d[i] == l[i] ) { 
+				do{ 
+					p[stack[k-1]] = cnt; 
+					sta[stack[k-1]] = 2; 
+				}while ( stack[--k] != i );
+				cnt++; 
+			}
+			if ( top == 0 ) break; 
+			flag = false; 
+			i = ps[--top]; 
+		}
+	}
+}
+
+int		main()
+{
+	int k ,x , y; 
+	scanf("%d%d", &n,  &m ); 
+	while ( m -- ) {
+		scanf("%d%d", &x , &y );
+		link( 0 , x, y );
+	}
+	for (int i = 1; i<=n; i++) scanf("%I64d", &ans[i] );
+	scanf("%d", &x );
+	memset( p , -1 , sizeof(p) );
+	dfs( x );
+	for (int i = 1; i<=n; i++)
+	{
+		if ( p[i] == -1 ) continue; 
+		for ( Edge *pp = mat[0][i]; pp ; pp = pp->next )
+		{
+			if ( p[i] == p[pp->to] ) continue; 
+			link( 1 , p[i] , p[pp->to] ); 
+		}
+		data[p[i]] += ans[i]; 
+	}
+	memset( d , 0 , sizeof(d) );
+	memset( ans , 0 , sizeof(ans) );
+	memset( mark, 0 , sizeof(mark));
+	mark[p[x]] = true; 
+	que.push(p[x]);
+	while ( !que.empty() ) 
+	{
+		int i = que.front();  que.pop();
+		for ( Edge *pp = mat[1][i]; pp ; pp = pp->next ) 
+		{	
+			int to = pp->to; 
+			d[to] ++; 
+			if ( !mark[to] ) {
+				que.push(to ); 
+				mark[to] = true; 
+			}
+		}
+	}
+	que.push(p[x]);
+	while ( !que.empty() ) 
+	{
+		int i = que.front();  que.pop();
+		ans[i] += data[i];
+		for ( Edge *pp = mat[1][i]; pp ; pp = pp->next ) 
+		{	
+			int to = pp->to; 
+			if ( !mark[to] ) continue; 
+			if ( --d[to] == 0 ) que.push( to ); 
+			ans[to] =max( ans[to], ans[i] ); 
+		}
+	}
+	LL	w = -1;
+	scanf("%d", &m );
+	while ( m -- ) 
+	{
+		scanf("%d", &x );
+		if ( p[x] == -1 || !mark[p[x]] ) continue; 
+		w = max( w , ans[p[x]] );
+	}
+	printf("%I64d
+" , w );
+	return 0; 
+}
+

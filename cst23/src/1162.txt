@@ -1,0 +1,76 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+
+using namespace std;
+int sum=0;
+int s[10];
+
+int work(int *a)
+{
+	int b[10];
+	int r=0;
+	for(int i=0;i<9;i++)
+		b[i]=a[i];
+	
+	if(b[0]+b[1]+b[2]==12)
+		r++;
+	if(b[1]+b[4]+b[7]==12)
+		r++;
+	if(b[2]+b[5]+b[8]==12)
+		r++;
+	if(b[3]+b[4]+b[5]==12)
+		r++;
+	if(b[2]+b[4]+b[6]==12)
+		r++;
+	if(b[6]+b[0]+b[3]==12)
+		r++;
+	if(b[6]+b[7]+b[8]==12)
+		r++;
+	if(b[0]+b[4]+b[8]==12)
+		r++;
+	return r;
+}
+
+void judge(int *a)
+{
+	int r;
+	r=work(a);
+	if(r==4)
+	{
+//		sum++;
+		for(int i=0;i<9;i++)
+			cout<<a[i]+1<<" ";
+		cout<<endl;
+	}
+}
+
+void search(int n,int b,int c)
+{
+	if(c>=n)
+	{		
+		judge(s);
+		return ;
+	}
+	for(int i=0;i<b;i++)
+	{
+	    bool ok=true;
+		for(int j=0;j<c;j++)
+		{
+			if(s[j]==i)
+				ok=false;
+		}
+		if(!ok)
+			continue;
+		s[c]=i;
+		search(n,b,c+1);
+	}
+}
+
+int main()
+{
+	cout<<"2824"<<endl;
+	search(9,9,0);
+	return 0;
+}

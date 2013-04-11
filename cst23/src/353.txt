@@ -1,0 +1,54 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+const int MAXN = 201;
+long double f[2][MAXN][MAXN], g[2][MAXN][MAXN], f_sum[2][MAXN][MAXN], g_sum[2][MAXN][MAXN];
+
+int main()
+{
+ //   ifstream cin("circle.in");
+ //   ofstream cout("circle.out");
+
+    int n, m;
+    cin >> n >> m;
+    memset(f, 0, sizeof(f));
+    memset(g, 0, sizeof(g));
+    f[1][1][1] = 1;
+
+    for (int i = 2; i <= n; ++i) {
+        int it = i & 1;
+        memset(f[it], 0, sizeof(f[it]));
+        memset(g[it], 0, sizeof(g[it]));
+        f[it][i][i] = f[it^1][i-1][i-1] / m;
+
+        for (int j = 1; j <= i; ++j) {
+            for (int k = 2; k <= i - j; ++k) {
+                f[it][j][k] = f[it^1][j][k-1] / m;
+                g[it][j][k] = g[it^1][j][k-1] / m;
+            }
+            f[it][j][1] = g_sum[it^1][j][i-1] / m;
+            g[it][j][1] = ((m - 2) * g_sum[it^1][j][i-1] + (m - 1) * (f_sum[it^1][j][i-2] + f[it^1][j][i-1])) / m;
+        }
+
+        memset(f_sum, 0, sizeof(f_sum));
+        memset(g_sum, 0, sizeof(g_sum));
+        for (int j = 1; j <= i; ++j)
+            for (int k = 1; k <= i; ++k) {
+                f_sum[it][j][k] = f_sum[it][j][k-1] + f[it][j][k] * k;
+                g_sum[it][j][k] = g_sum[it][j][k-1] + g[it][j][k] * k;
+            }
+    }
+
+    long double ans(0);
+    for (int i = 1; i < n; ++i)
+        for (int j = 1; j <= n - i; ++j)
+            ans += f[n&1][i][j] * (i + j) + g[n&1][i][j] * i * j;
+    ans += f[n&1][n][n] * n;
+
+    cout.precision(10);
+    cout << fixed << ans << endl;
+
+    return 0;
+}
+

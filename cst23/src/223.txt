@@ -1,0 +1,47 @@
+#include<iostream>
+#include<cmath>
+#include<cstring>
+using namespace std;
+
+
+bool is(int a)
+{
+     int p=0;
+     for(int i=1;i<=sqrt(a);i++)
+     {
+             if(((a%i)==0)&&(i!=1))
+             p=p+1;
+     }
+     if(p!=0)
+     return 0;
+     else 
+     return 1;
+}
+
+
+int main ()
+{
+    int a[10000],b[10000]={0};
+    memset(a,-1,sizeof(a));
+    int i=0;
+    while(a[i]!=0)
+    {
+          i=i+1;
+          cin>>a[i];
+    }
+    for(int k=1;k<i;k++)
+    {     
+     for(int j=1;j<=a[k];j++)
+     {
+             if(is(j))
+             b[k]=b[k]+j;
+     }
+    }
+    for(int k=1;k<i;k++)
+    {
+            cout<<b[k]-1<<endl;
+    }      
+    
+    return 0;
+}
+

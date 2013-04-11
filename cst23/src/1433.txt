@@ -1,0 +1,87 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	int n,m;
+	cin >> n >> m ;
+ 	int p[n];
+ 	for (int i=0; i<n; i++)
+  		cin >> p[i];
+  		
+ 	for (int i=0; i<m; i++)
+ 	{
+		int k=0;
+		for (k=0; ; k++)
+		{
+      	if(p[n-k-2]<p[n-k-1])
+        	break;
+   		}
+		
+		for (int j=n-1; j>n-k-2; j=j-1)
+		{
+      		if (p[j]>p[n-2-k])
+      		{
+            	int t=p[n-2-k];
+            	p[n-2-k]=p[j];
+            	p[j]=t;
+            	break;
+         	}
+      	}
+
+      	for (int r=n-1-k; r<n; r++)
+      	{
+           for (int v=r+1; v<n; v++)
+           {
+               if (p[v]<p[r])
+               {
+                   int t=p[v];
+                   p[v]=p[r];
+                   p[r]=t;
+               }
+           }
+        }
+    	
+ 	}
+ 	for (int i=0; i<n; i++)
+  		cout << p[i]<<" ";
+  	
+	return 0;
+}
+  		
+
+      		
+      		
+      		
+
+
+
+
+
+
+
+
+ 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

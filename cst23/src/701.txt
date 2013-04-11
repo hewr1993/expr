@@ -1,0 +1,77 @@
+//2012 Summer Training Session Day11 1; brt; Greedy Method
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
+#include <deque>
+#define N 200
+using namespace std;
+
+struct passenger
+{
+	int s, t, n;
+	bool operator < (const passenger &x) const
+	{ return s == x.s ? t > x.t : s < x.s; }
+}p[N + 1];
+int n, m;
+deque<passenger> bus;
+
+int main()
+{
+	scanf("%d%d", &n, &m);
+	for (int i = 1; i <= m; ++i) scanf("%d%d", &p[i].s, &p[i].t), p[i].n = i;
+	sort(p + 1, p + m + 1);
+	for (int i = 1, s = 0, t = 0; i <= n; ++i)
+	{
+		while (bus.size() > 0 && bus.front().t <= i)
+			printf("3 %d
+", bus.front().n), bus.pop_front();
+		while (bus.size() > 0 && bus.back().t <= i)
+			printf("3 %d
+", bus.back().n), bus.pop_back();
+		bool uprise = bus[0].t < bus[1].t, ok = false;
+		int hp = 0, dif = 0;
+		for (int x = 1; x < bus.size(); ++x)
+			if (uprise ^ bus[x - 1].t < bus[x].t) { hp = t; break; }
+		for (t = ++s; s <= m && p[s].s == i; ++s) ;
+		--s;
+		int mins = p[t].t, maxs = p[s].t;
+		if (bus.size() == 0)
+		{
+			for (int x = t; x <= s; ++x) bus.push_front(p[x]), printf("1 %d
+", p[x].n);
+			continue;
+		}
+		for (int x = t; x <= s; ++x)
+			if (uprise && p[x].t > bus.front().t && p[x].t < bus.back().t) { ok = false; break; }
+			else if (!uprise && p[x].t < bus.front().t && p[x].t > bus.back().t) { ok = false; break; }
+		if (ok && !hp)
+			if (uprise)
+			{
+				for (int x = t; x < s; ++x)
+					if (p[x].t > bus.back().t && p[x + 1].t < bus.back().t) { dif = x; break; }
+				for (int x = t; x <= dif; ++x) bus.push_back(p[x]), printf("2 %d
+", p[x].n);
+				for (int x = s; x > dif; --x) bus.push_front(p[x]), printf("1 %d
+", p[x].n);
+			}
+			else
+			{
+				for (int x = t; x < s; ++x)
+					if (p[x].t > bus.front().t && p[x + 1].t < bus.front().t) { dif = x; break; }
+				for (int x = t; x <= dif; ++x) bus.push_front(p[x]), printf("1 %d
+", p[x].n);
+				for (int x = s; x > dif; --x) bus.push_back(p[x]), printf("2 %d
+", p[x].n);
+			}
+		else
+			for (; t <= s; ++t)
+				if (p[t].t < bus.front().t)
+					bus.push_front(p[t]), printf("1 %d
+", p[t].n);
+				else
+					bus.push_back(p[t]), printf("2 %d
+", p[t].n);
+	}
+	return 0;
+}
+

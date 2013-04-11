@@ -1,0 +1,31 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+
+using namespace std;
+
+void exchange(char *file1, char* file2)
+{
+        ifstream fin1(file1);
+	ifstream fin2(file2);
+	char str[1001];
+	fin1 >> str;
+	int ing[1001],i = 0,j = 0,len = strlen(str);
+	fin2 >> ing[0];
+	for(i = 1; ing[i-1] != -1; i++)
+	{
+		fin2 >> ing[i];
+	} 
+	fin1.close();
+	fin2.close();
+	ofstream fout1(file1);
+	ofstream fout2(file2);
+	for(j = len - 1; j >= 0; j--)
+		fout2 << str[j];
+	for(j = i - 1; j >= 0; j--)
+		fout1 << ing[j] << " ";
+	fout1.close();
+	fout2.close();
+}

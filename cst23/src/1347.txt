@@ -1,0 +1,40 @@
+#include<iostream>
+#include<iomanip>
+using namespace std;
+int new_number[7];
+int main()
+{
+    long int number=0;
+    int count=0,i=6,r=0;
+    cin>>number;
+    
+    if(number<0)
+    {
+        count=1;
+        number=(-1)*number;
+    }
+    while(number>=20)
+    {
+        r=number%20;
+        number=number/20;
+        new_number[i]=r;
+        i--;
+    }
+
+    new_number[i]=number;
+
+    if(count==1)
+        cout<<"-";
+    
+    for(int j=i;j<=6;j++)
+    {
+        if(new_number[j]<10)
+            cout<<new_number[j];
+        else
+            cout<<char(new_number[j]+55);
+    }
+
+    cout<<endl;
+    return 0;
+
+}

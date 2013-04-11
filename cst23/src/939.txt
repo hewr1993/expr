@@ -1,0 +1,133 @@
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#define fo(i,u,d) for(int i=u;i<=d;i++)
+using namespace std;
+int n,m,all=0,alle=0,A,B;
+int g[21000],fa[21000],gg[21000],num[21000],id[21000],temp[21000],q[21000];
+int next[510000],aim[510000],e[510000];
+bool v[21000];
+int ty,len;
+long long ans=0;
+
+void add(int& x,int y,int t)
+{
+	 aim[++alle]=y;
+	 next[alle]=x;
+	 e[alle]=t;
+	 x=alle;
+}
+
+void dfs(int x)
+{
+	 v[x]=true;
+	 for(int p=g[x];p;p=next[p])
+	 	if (e[p]==ty)
+	 	if (!v[aim[p]])
+	 		dfs(aim[p]);
+	 if (ty==1)
+	 	id[++all]=x;
+	 else
+	 {
+		fa[x]=all;
+		num[all]++;
+		add(gg[all],x,0);
+	 }
+}
+	 
+void merge()
+{
+ 	 fo(i,1,n)
+ 	 	v[i]=false;
+ 	 ty=1;
+ 	 all=0;
+ 	 fo(i,1,n)
+ 	 	if (!v[i])
+ 	 		dfs(i);
+ 	 fo(i,1,n)
+ 	 	v[i]=false;
+ 	 ty=2;
+ 	 all=0;
+ 	 for(int i=n;i;i--)
+ 	 	if (!v[id[i]])
+ 	 	{
+			all++;
+			dfs(id[i]);
+			long long t=num[all];
+	
+			ans+=t*t;
+		}
+}
+
+void bfs(int s,int ty)
+{
+	 all=0;
+	 fo(i,1,n)v[i]=false;
+	 int h=0,t=1;
+	 q[1]=fa[s];
+	 v[q[1]]=true;
+	 while(h++<t)
+	 {
+		int x=q[h];
+		for(int pp=gg[x];pp;pp=next[pp])
+		{
+			for(int p=g[aim[pp]];p;p=next[p])
+				if(e[p]==ty)
+					if ((!v[fa[aim[p]]])&&(fa[aim[p]]!=fa[s]))
+					{
+						q[++t]=fa[aim[p]];
+						v[q[t]]=true;
+					}
+		}
+	}
+	all=t;
+}
+	 
+
+void solve()
+{
+	 bfs(A,1);	 
+	 fo(i,1,all)
+	  	temp[i]=q[i];
+	 temp[0]=all;
+	 if (v[fa[B]])
+	 {
+//		fo(i,1,all)cout<<q[i]<<endl;
+	 	bfs(B,2);
+	}
+	 else
+	 {
+		bfs(A,2);
+ 	    fo(i,1,all)
+	  		temp[i]=q[i];
+	  	temp[0]=all;
+	  	bfs(B,1);
+	 }
+	 len=0;
+	 fo(i,1,temp[0])
+	 	if ((v[temp[i]])&&(temp[i]!=fa[A])&&(temp[i]!=fa[B]))
+	 		len+=num[temp[i]];
+}
+ 
+ 	
+int main()
+{
+    scanf("%d%d%d%d",&n,&m,&A,&B);
+    int x,y;
+    fo(i,1,m)
+    {
+		scanf("%d%d",&x,&y);
+		add(g[x],y,1);
+		add(g[y],x,2);
+	}
+	merge();
+	solve();
+	cout<<ans<<" "<<len<<endl;
+	return 0;
+}
+	
+		
+

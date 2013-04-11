@@ -1,0 +1,121 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+#include <string>
+#define sqr(x) ((x) * (x))
+using namespace std;
+
+
+const	double	eps = 1e-10;
+const	double	delta = 1e-1;
+const	int	MaxN = 50005;
+struct	pairr { double head, tail; } o[MaxN], p, q;
+double	xx1[MaxN], yy1[MaxN], xx2[MaxN], yy2[MaxN], xmid[MaxN], ymid[MaxN], rr[MaxN];
+double	xtop, ytop, a, b, c, y, S = 0;
+int	N, M = 0, O;
+
+
+inline	bool	sort_o (const pairr& A, const pairr& B) { return A.head < B.head; }
+
+inline	double	minn (double x, double y)
+{
+	if (x < y) return x; else return y;
+}
+
+inline	double	maxx (double x, double y)
+{
+	if (x > y) return x; else return y;
+}
+
+inline	void	list (double xxx, double yyy, double xx, double yy)
+{
+	a = 1;
+	b = - xxx - xx;
+	c = xxx * xx + (yyy - y) * (yy - y);
+}
+
+inline	void	quadratic (pairr& p)
+{
+	double	d = b * b - c * 4;
+	if (d < 0) { p.head = p.tail = 1e5; return; }
+	d = sqrt (d);
+	p.head = (- b + d) / 2;
+	p.tail = (- b - d) / 2;
+	if (p.head > p.tail) swap (p.head, p.tail);
+}
+
+inline	void	addline (double aa, double bb, double cc, double dd)
+{
+	aa = maxx(aa, cc); aa = maxx(aa, 0);
+	bb = minn(bb, dd); bb = minn(bb, xtop);
+	if (aa > bb) return;
+	if (fabs (aa - bb) < eps) return;
+	o[++O].head = aa; o[O].tail = bb;
+}
+
+int	main()
+{
+	scanf("%d%lf%lf", &N, &xtop, &ytop);
+	for (int i = 1; i <= N; ++i)
+	{
+		scanf("%lf%lf%lf%lf", &xx1[i], &yy1[i], &xx2[i], &yy2[i]);
+		xmid[i] = (xx1[i] + xx2[i]) / 2;
+		ymid[i] = (yy1[i] + yy2[i]) / 2;
+		rr[i] = sqrt (sqr (xx1[i] - xx2[i]) + sqr (yy1[i] - yy2[i])) / 2;
+	}
+	
+	for (y = delta / 2; y < ytop; y += delta)
+	{
+		O = 0;
+		for (int i = 1; i <= N; ++i)
+		for (int j = i + 1; j <= N; ++j)
+		{
+			list (xx1[i], yy1[i], xx1[j], yy1[j]); quadratic (p);
+			list (xx1[i], yy1[i], xx2[j], yy2[j]); quadratic (q);
+			addline (0, p.head, q.head, q.tail);
+			addline (p.tail, xtop, q.head, q.tail);
+			addline (0, q.head, p.head, p.tail);
+			addline (q.tail, xtop, p.head, p.tail);
+			
+			list (xx2[i], yy2[i], xx1[j], yy1[j]); quadratic (p);
+			list (xx2[i], yy2[i], xx2[j], yy2[j]); quadratic (q);
+			addline (0, p.head, q.head, q.tail);
+			addline (p.tail, xtop, q.head, q.tail);
+			addline (0, q.head, p.head, p.tail);
+			addline (q.tail, xtop, p.head, p.tail);
+		}
+		for (int i = 1; i <= N; ++i)
+		{
+			a = 1;
+			b = - xmid[i] * 2;
+			c = sqr (xmid[i]) + sqr (y - ymid[i]) - sqr (rr[i]);
+			quadratic (p);
+			addline (p.head, p.tail, p.head, p.tail);
+		}
+		//printf("%d
+",O);
+		sort (o + 1, o + O + 1, sort_o);
+		
+		//for (int i=1;i<=O;++i) printf("%.3lf %.3lf
+",o[i].head,o[i].tail);
+		
+		double	L = 0, R = 0, len = 0;
+		for (int i = 1; i <= O; ++i)
+		if (o[i].head > R)
+			len += R - L, L = o[i].head, R = o[i].tail;
+		else
+			R = maxx (R, o[i].tail);
+		
+		len += R - L;
+		S += len * delta;
+	}
+	
+	printf("%.7lf
+", 1.0 - S / (xtop * ytop));
+	
+	return 0;
+}
+

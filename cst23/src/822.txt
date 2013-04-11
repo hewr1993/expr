@@ -1,0 +1,11 @@
+#include<stdio.h>
+int main()
+{
+	long sale;
+	float rate;
+	double tax;
+	scanf("%ld" "%f",&sale,&rate);
+	tax=sale*rate;
+	printf("%0.2f",tax);
+	return 0;
+}

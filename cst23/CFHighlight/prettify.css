@@ -1,0 +1,38 @@
+.str { color: blue; }
+.kwd { color: #069; font-weight: bold;}
+.com { color: #008200; }
+.typ { color: #069; font-weight: bold; }
+.lit { color: #000; }
+.pun { color: #660; }
+.pln { color: #000; }
+.tag { color: #069; font-weight: bold; }
+.atn { color: #A0A; }
+.atv { color: #0F0; }
+.dec { color: #A0A; }
+pre.prettyprint { 
+    padding: 2px; background-color: #F8F8F8; 
+    font-family: Consolas, Monaco, "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+}
+
+
+ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
+
+li.L1,
+li.L3,
+li.L5,
+li.L7,
+li.L9 { background: #F8F8F8; }
+
+@media print {
+.str { color: blue; }
+.kwd { color: #069; font-weight: bold;}
+.com { color: #008200; }
+.typ { color: #069; font-weight: bold; }
+.lit { color: #009900; }
+.pun { color: #660; }
+.pln { color: #000; }
+.tag { color: #069; font-weight: bold; }
+.atn { color: #A0A; }
+.atv { color: #0F0; }
+.dec { color: #A0A; }
+}

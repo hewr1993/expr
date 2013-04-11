@@ -1,0 +1,16 @@
+#include<cstdio>
+#include<cstdlib>
+int main()
+{
+    int n,m,a[30001],i,j,v,p;
+    scanf("%d %d",&n,&m);
+    for (i=1;i<=m;i++)
+    {
+        scanf("%d %d",&v,&p);
+        for (j=n;j>=v;j--)
+          if (a[j]<a[j-v]+v*p) a[j]=a[j-v]+v*p;
+    }
+    printf("%d",a[n]);
+}
+
+

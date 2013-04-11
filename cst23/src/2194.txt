@@ -1,0 +1,43 @@
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int maxn=1010000;
+int odd[maxn],fa[maxn],deg[maxn],size[maxn];
+int n,m,ans;
+bool self[maxn];
+int getf(int x){return x==fa[x]?x:fa[x]=getf(fa[x]);}
+int main(){
+    //freopen("AC.in","r",stdin);
+    //freopen("AC.out","w",stdout);
+    scanf("%d%d",&n,&m);
+    memset(self,0,sizeof self);
+    for(int i=1;i<=n;i++)fa[i]=i;
+    for(int i=1;i<=m;i++){
+        int x,y;
+        scanf("%d%d",&x,&y);
+        int p=getf(x),q=getf(y);
+        if(p!=q)fa[p]=q;
+        if(x==y)self[x]=1;
+        deg[x]++;deg[y]++;
+    }
+    memset(size,0,sizeof size);
+    memset(odd,0,sizeof odd);
+    for(int i=1;i<=n;i++){
+        size[getf(i)]++;
+        if(deg[i]%2==1)odd[getf(i)]++;
+    }
+    ans=0;
+    int tot=0;
+    for(int i=1;i<=n;i++)
+        if(getf(i)==i){
+            if(i!=1&&size[i]==1&&!self[i])continue;
+            tot++;
+            ans+=max(odd[i]/2,1);
+        }
+    if(tot==1&&odd[getf(1)]==0)ans=0;
+    printf("%d
+",ans);
+    return 0;
+}

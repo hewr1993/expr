@@ -1,0 +1,157 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+using namespace std;
+
+char x, y, z;
+char ans[1000][11], cur[11];
+int cans;
+
+bool check1()
+{
+	for (int i = 1; i <= 10; ++i) if (cur[i] == x) return (i == cur[1] - 'A' + 2);
+	return false;
+}
+	
+bool check2()
+{
+	bool find = false;
+	bool ret = false;
+	for (int i = 1; i <= 9; ++i) if (cur[i] == cur[i + 1]) {
+		if (find) return false; else find = true;
+		ret = (i == cur[2] - 'A' + 2);
+	}
+	return ret;
+}
+
+bool check3()
+{
+	int rhs;
+	switch (cur[3]) {
+	case 'A': rhs = 1; break;
+	case 'B': rhs = 2; break;
+	case 'C': rhs = 4; break;
+	case 'D': rhs = 7; break;
+	case 'E': rhs = 6; break;
+	}
+	return cur[3] == cur[rhs];
+}
+
+bool check4()
+{
+	int cnt = 0;
+	for (int i = 1; i <= 10; ++i) if (cur[i] == y) ++cnt;
+	return cnt == cur[4] - 'A';
+}
+
+bool check5()
+{
+	int rhs = 9 - (cur[5] - 'A');
+	return cur[5] == cur[rhs];
+}
+
+char nxt(char c)
+{
+	char d = c + 1;
+	if (d == 'F') d = 'A';
+	return d;
+}
+
+bool check6()
+{
+/*
+	{
+	int cnt[5];
+	for (int i = 1; i <= 10; ++i) ++cnt[cur[i] - 'A'];
+	if (cur[6] == 'E') {
+		int tmp = cnt[z - 'A'];
+		return tmp != cnt[1] && tmp != cnt[2] && tmp != cnt[3] && tmp != cnt[4];
+	}
+	}
+*/
+	int cnt1 = 0;
+	for (int i = 1; i <= 10; ++i) if (cur[i] == z) ++cnt1;
+	int cnt2 = 0;
+	for (int i = 1; i <= 10; ++i) if (cur[i] == nxt(cur[6])) ++cnt2;
+	return cnt1 == cnt2;
+}
+
+bool check7()
+{
+	return abs(cur[7] - cur[8]) == 4 - (cur[7] - 'A');
+}
+
+bool check8()
+{
+	int cnt = 0;
+	for (int i = 1; i <= 10; ++i) if (cur[i] == 'A' || cur[i] == 'E') ++cnt;
+	return cnt == cur[8] - 'A' + 2;
+}
+/*
+bool check9()
+{
+	int cnt = 0;
+	for (int i = 1; i <= 10; ++i) if (cur[i] == 'B' || cur[i] == 'C' || cur[i] == 'D') ++cnt;
+	switch (cur[9]) {
+	case 'A': return cnt == 2 || cnt == 3 || cnt == 5 || cnt == 7;
+	case 'B': return cnt == 1 || cnt == 2 || cnt == 6;
+	case 'C': return cnt == 0 || cnt == 1 || cnt == 4 || cnt == 9;
+	case 'D': return cnt == 0 || cnt == 1 || cnt == 8;
+	case 'E': return cnt % 5 == 0;
+	}
+}
+*/
+bool check9()
+{return true;}
+	
+void check()
+{
+	bool flag = true;
+	if (!check1()) flag = false;
+	if (!check2()) flag = false;
+	if (!check3()) flag = false;
+	if (!check4()) flag = false;
+	if (!check5()) flag = false;
+	if (!check6()) flag = false;
+	if (!check7()) flag = false;
+	if (!check8()) flag = false;
+	if (!check9()) flag = false;
+	if (flag) strcpy(ans[cans++] + 1, cur + 1);
+}
+
+void dfs(int depth)
+{
+	if (depth == 10) {
+		check();
+		return;
+	}
+	for (char c = 'A'; c <= 'E'; ++c) {
+		cur[depth] = c;
+		dfs(depth + 1);
+	}
+}
+
+void work()
+{
+	memset(ans, 0, sizeof(ans));
+	memset(cur, 0, sizeof(cur));
+	cans = 0;
+	dfs(1);
+	//cout << x << y << z << ":" << endl;
+	cout << cans << endl;
+	for (int i = 0; i < cans; ++i) cout << ans[i] + 1 << endl;
+	//cout << endl;
+}
+void mkdata()
+{
+	for (char x = 'A'; x <= 'E'; ++x)
+	for (char y = 'A'; y <= 'E'; ++y)
+	for (char z = 'A'; z <= 'E'; ++z)
+	cout << x << y << z << endl;
+}
+
+int main()
+{
+	//mkdata();
+	while (cin >> x >> y >> z) work();
+}

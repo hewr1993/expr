@@ -1,0 +1,21 @@
+#include <iostream>
+using namespace std;
+int process(int p,int no)
+{
+    int temp=1,pla=no,sum=0;
+    while (pla>0)
+    {
+        sum+=temp*(pla %2);
+        temp=temp*p;
+        pla/=2;
+    }
+    return sum;
+}        
+int main()
+{
+    int k,n;
+    cin>>k>>n;
+    cout<<process(k,n);
+    return 0;
+}
+    

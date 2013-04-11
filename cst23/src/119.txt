@@ -1,0 +1,48 @@
+#include<iostream>
+using namespace std;
+
+int a[220][220],t0;
+int x=-1,y=0,t=0;
+
+void lineout(int i,int j,int k)
+{
+for(int p=0;p<k;p++)
+{if (t<t0) {x=x+i;y=y+j;
+cout<<a[x][y]<<' ';
+t++;
+}
+if (t==t0) break;}
+}
+
+int main()
+{
+int n,m;
+cin>>n>>m;
+t0 = n*m;
+for(int i=0;i<n;i++)
+for(int j=0;j<m;j++)
+cin>>a[i][j];
+lineout(1,0,n);
+while(t<t0)
+{if (t==t0) break;
+m--;
+if (t==t0) break;
+lineout(0,1,m);
+if (t==t0) break;
+n--;
+if (t==t0) break;
+lineout(-1,0,n);
+if (t==t0) break;
+m--;
+if (t==t0) break;
+lineout(0,-1,m);
+if (t==t0) break;
+n--;
+if (t==t0) break;
+lineout(1,0,n);
+if (t==t0) break;
+}
+//system("pause");
+return 0;
+}
+

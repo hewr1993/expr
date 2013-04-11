@@ -1,0 +1,52 @@
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+using namespace std;
+
+int n;
+int num[100], ln = 0;
+
+int len = 1;
+short mul[100] = {};
+
+void mu(int n)
+{
+	for (int i = 0; i < len; ++i)
+		mul[i] *= n;
+	for (int i = 0; i < len; ++i)
+		if (mul[i] >= 10)
+		{
+			mul[i + 1] += mul[i] / 10;
+			mul[i] %= 10;
+		}
+	while (mul[len])
+	{
+		mul[len + 1] += mul[len] / 10;
+		mul[len] %= 10;
+		len++;
+	}
+}
+
+int main()
+{
+	scanf("N=%d", &n);
+	for (int i = 2; i <= n; ++i)
+	{
+		n -= i;
+		num[ln++] = i;
+	}
+	for (int i = ln - n; i < ln; ++i)
+		num[i]++;
+	for (int i = 0; i < ln; ++i)
+		cout << num[i] << ",";
+	cout << endl;
+	mul[0] = num[0];
+	for (int i = 1; i < ln; ++i)
+		mu(num[i]);
+	cout << "MUL=";
+	for (int i = len - 1; i >= 0; --i)
+		cout << mul[i];
+	return 0;
+}

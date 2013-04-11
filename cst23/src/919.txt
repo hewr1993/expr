@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+long f(long n)
+{
+	if(n <5)
+	return 0;
+	else 
+	return n/5 + f(n/5);
+}
+
+int main(int argc, char *argv[])
+{
+	long n;int a = 19377621;
+	int m = 0,k = 0;
+	scanf("%ld",&n);
+	printf("%ld",f(n));
+
+  
+  //system("PAUSE");	
+  return 0;
+}
+

@@ -1,0 +1,49 @@
+#include <iostream>
+#include <cmath>
+#include <memory>
+#include <cstring>
+using namespace std;
+int main()
+{
+    int m=0,s=0,n=0;int g=0;
+    cin>>m>>s>>n;
+    int A[m+1][s+1];int B[s+1][n+1];int C[m+1][n+1];
+    memset(B,0,sizeof(B));
+    memset(A,0,sizeof(A));
+    memset(C,0,sizeof(C));
+    for(int c=1;c<=m;c++)
+    {
+        for(int d=1;d<=s;d++)
+        {
+            cin>>A[c][d];
+        }
+    }
+    for(int c=1;c<=s;c++)
+    {
+        for(int d=1;d<=n;d++)
+        {
+            cin>>B[c][d];
+        }
+    }
+    for(int c=1;c<=m;c++)
+    {
+        for(int d=1;d<=n;d++)
+        {
+            for(int e=1;e<=s;e++)
+            {
+                g=g+((A[c][e])*(B[e][d]));
+                if(e==s)
+                {
+                    C[c][d]=g;
+                    g=0;
+                    cout<<C[c][d]<<" ";
+                }
+            }
+            if(d==n)
+            {
+                cout<<endl;
+            }
+        }
+    }
+    return 0;
+}

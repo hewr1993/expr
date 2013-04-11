@@ -1,0 +1,171 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+
+#define INF 1000010
+
+using namespace std;
+
+//基本数据结构
+struct node{
+  int value;
+  int spot;
+};
+
+//建图
+vector<node> graph[INF];
+bool Search_time=true;
+bool DFSed[INF]={0};
+
+//全局变量
+vector<int> routine;
+int D,Max=-1,n,s;
+
+//深搜准备
+inline void DFS_Begin()
+{
+  Search_time = !Search_time;
+  Max=-1; 
+}
+
+//深搜
+void Get_Depest(int now,int depth,vector<int> rout)
+{
+  DFSed[now]=!DFSed[now];
+  rout.push_back(now);
+  if (depth>Max)
+    {
+      Max=depth;
+      D=now;
+      routine=rout;
+    }
+  bool check=DFSed[(*graph[now].begin()).spot] ^ Search_time;
+  if (graph[now].size()==1)
+    if(!check)
+      return;
+  for(vector<node>::iterator i=graph[now].begin();i<graph[now].end();i++)
+    {
+      check= DFSed[(*i).spot] ^ Search_time;
+      if (check)
+	Get_Depest((*i).spot,depth+(*i).value,rout);
+    }
+  return;
+}
+
+//单调队列
+class cQueue{
+public:
+  vector<node> mQueue;
+  void push(int,int);
+  inline void roll(int);
+  inline int get_top(void);
+};
+
+void cQueue::push(int num,int turn)
+{
+  vector<node>::iterator pointer=mQueue.end()-1;;
+  node ins;
+  ins.spot=turn;
+  ins.value=num;
+  if (mQueue.size()!=0)
+    while(pointer->value <= num && pointer>=mQueue.begin())
+      pointer--;
+  if (pointer!=mQueue.end()-1)
+    mQueue.erase(pointer+1,mQueue.end());
+  mQueue.push_back(ins);
+  return;
+}
+
+inline void cQueue::roll(int num)
+{
+  if (mQueue.size()!=0)
+    if(num==mQueue.begin()->spot)
+      mQueue.erase(mQueue.begin());
+}
+
+inline int cQueue::get_top(void)
+{
+  if (mQueue.size()!=0)
+    return mQueue.begin()->value;
+  else
+    return 0;
+}
+
+
+
+int main()
+{
+  const vector<int> Empty;
+  //输入
+  cin >> n >> s;
+  int sp1,sp2,val;
+  node inp,oup;
+  for(int i=1;i<n;i++)
+    {
+      cin >> sp1 >> sp2 >> val;
+      inp.value=val;inp.spot=sp2;
+      graph[sp1].push_back(inp);
+      inp.spot=sp1;
+      graph[sp2].push_back(inp);
+    }
+
+  //获取直径
+  vector<int> Dis; 
+  int SigLen;
+  Get_Depest(1,0,Empty);
+  DFS_Begin();
+  Get_Depest(D,0,Empty);
+  Dis=routine;SigLen=Max;
+
+  //处理生成树  
+  vector<int> ECC;
+  DFS_Begin();
+  for(vector<int>::iterator i=Dis.begin();i<Dis.end();i++)
+    {
+      Max=-1;
+      if(i!=Dis.end()-1)
+	DFSed[*(i+1)]=!DFSed[*(i+1)];
+      Get_Depest(*i,0,Empty);
+      if(i!=Dis.end()-1)
+	DFSed[*(i+1)]=!DFSed[*(i+1)];
+      ECC.push_back(Max);
+    }
+  
+  //处理直径内距离
+  vector<int> Length;
+  int Depth=0;
+  Length.push_back(0);
+  for(vector<int>::iterator i=Dis.begin();i<Dis.end()-1;i++)
+    for(vector<node>::iterator j=graph[*i].begin();j<graph[*i].end();j++)
+      if(j->spot==*(i+1))
+	{
+	  Depth+=(*j).value;
+	  Length.push_back(Depth);
+	}
+
+  //穷举
+  int front=0,back=0,Min=999999999,temp;
+  cQueue ecc;
+   
+  for(front=0;front<Dis.size();front++)
+    {
+      while(Length[back]-Length[front]<=s && back<Dis.size())
+	{
+	  ecc.push(ECC[back],back);
+	  back++;
+	}
+      back--;
+      temp=SigLen-Length[back];
+      if(temp<Length[front])
+	temp=Length[front];
+      if(temp<ecc.get_top())
+	temp=ecc.get_top();
+      if(temp<Min)
+	Min=temp;
+      ecc.roll(front);
+    }
+  
+  cout <<Min<<endl;
+  return 0;
+}
+

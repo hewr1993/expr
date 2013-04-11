@@ -1,0 +1,47 @@
+#include<stdio.h>
+#include<stdlib.h>
+int main ()
+{
+    int a,b,c,d,e,x,y,n,m,k,i,p,q,t;
+    scanf("%d", &a);
+    for(i=1;;i++)
+    {
+        b=a/1000;
+        c=(a-1000*b)/100;
+        d=(a-1000*b-100*c)/10;
+        e=a-1000*b-100*c-10*d; 
+        if(b>c)
+            {   x=b;
+                b=c;
+                c=x;
+            } 
+         if(d>e)
+            {   y=d;
+                d=e;
+                e=y;  
+            }
+        if(b>d)
+            {   n=b;
+                b=d;
+                d=n;
+            }
+        if(c>e)
+            {   m=c;
+                c=e;
+                e=m; 
+            }
+        if(c>d)
+            {   k=c;
+                c=d;
+                d=k;  
+            }
+        p=1000*e+100*d+10*c+b;
+        q=1000*b+100*c+10*d+e;
+        a=p-q;
+        if(a==6174)
+        break; 
+    }
+    printf("%d",i); 
+    return 0;         
+}
+

@@ -1,0 +1,20 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int N=0,i=0,j=0,c=-10000000,sum=0; 
+    int H[100];
+    for(i=0;i<100;i=i+1)
+        H[i]=0;
+    cin>>N;
+    for(i=0;i<N;i=i+1)
+     cin>>H[i];
+    for(i=0;i<N;i=i+1)
+    {sum=0;                 
+for(j=i;j<N;j=j+1)
+       {sum=sum+H[j];
+          if(sum>c)
+           {c=sum;}}}   
+ cout<<c<<endl;
+   return 0;
+}

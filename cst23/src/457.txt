@@ -1,0 +1,13 @@
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+    int i,n;
+    double r=0.1;
+    double p=1; 
+    scanf("%d",&n);
+    for(i=1; i<=n; i++)
+        p*=(1+r);
+    printf("%.2lf
+",p);
+}

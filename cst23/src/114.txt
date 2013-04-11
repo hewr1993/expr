@@ -1,0 +1,56 @@
+#include<iostream>
+#include<stdio.h>
+	#include<cstdlib>
+	#include<cstdio>
+	#include<vector>
+	#include<algorithm>
+	using namespace std;
+	int main()
+	{
+	  int t;
+	  char flag;
+	  scanf("%d ",&t);
+	  
+	  int i, input;
+	  vector<char> v;
+	  if(t==1)
+	  {
+	    scanf("%c",&flag);//...
+	    cout<<endl;
+	    cout<<flag;
+	    cout<<endl;
+	    return 0;            
+	  }
+	  for(i=1;i<=t;i++)
+	  {
+	    scanf("%c",&input);
+	    v.push_back(input);                 
+	  }
+	  int m, n, tem;
+	  for(i=1;i<=(int)t/2;i++)
+	  {
+	    tem=i-1;
+	    m=*(v.begin()+tem);
+	    n=*(v.end()-1-tem);
+	    v.erase(v.end()-1-tem);
+	    reverse(v.begin()+tem,v.end()-tem);
+	    v.erase(v.end()-1-tem);
+	    v.insert(v.end()-tem,n);
+	    reverse(v.begin()+tem,v.end()-tem);
+	    v.insert(v.end()-tem,m);
+	    vector<char>::iterator k;
+	    for(k=v.begin();k!=v.end();++k)
+	    {
+	      cout<<*k;
+	    }
+	    cout<<endl;
+	  }
+	  cout<<endl;
+	  vector<char>::iterator k;//zheshishenme....
+	  for(k=v.begin();k!=v.end();++k)
+	  {
+	    cout<<*k;
+	  }
+	  cout<<endl;
+	  return 0;   
+	}

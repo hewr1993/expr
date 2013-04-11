@@ -1,0 +1,65 @@
+#include <iostream>
+using namespace std;
+
+const int l = 205;
+
+int n, m, a[l][l], s[l][l], f[l][l], g[l][l];
+int f1[l][l][l], f2[l][l][l];
+
+int main()
+{
+
+    cin >> n >> m;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= m; ++j)
+            cin >> a[i][j];
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= m; ++j)
+            s[i][j] = s[i][j - 1] + a[i][j];
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= m; ++j)
+            g[i][j] = a[i][j] ? 0 : g[i - 1][j] + 1;
+        for (int j = 1; j <= m; ++j) {
+            f[j][j] = g[i][j];
+            for (int k = j - 1; k; --k)
+                f[k][j] = min(f[k + 1][j], g[i][k]);
+        }
+        for (int j = 2; j < m; ++j)
+            for (int k = m - 1; k >= j; --k) {
+                f1[i][j][k] = f[j - 1][k + 1] * (k - j + 3);
+                f1[i][j][k]=max(f1[i][j][k],max(f1[i][j - 1][k], f1[i][j][k + 1]));
+            }
+    }
+    for (int i = n; i; --i) {
+        for (int j = 1; j <= m; ++j)
+            g[i][j] = a[i][j] ? 0 : g[i + 1][j] + 1;
+        for (int j = 1; j <= m; ++j) {
+            f[j][j] = g[i][j];
+            for (int k = j - 1; k; --k)
+                f[k][j] = min(f[k + 1][j], g[i][k]);
+        }
+        for (int j = 2; j < m; ++j)
+            for (int k = m - 1; k >= j; --k) {
+                f2[i][j][k] = f[j - 1][k + 1] * (k - j + 3);
+                f2[i][j][k]=max(f2[i][j][k], max(f2[i][j - 1][k], f2[i][j][k + 1]));
+            }
+    }
+    int ret = 0;
+    for (int l = 2; l < m; ++l)
+        for (int r = l; r < m; ++r) {
+            int pre = int(-1e6), w = r - l + 1;
+            for (int i = 2; i < n; ++i)
+                if (s[i][r] - s[i][l - 1])
+                    pre = int(-1e6);
+                else {
+                    if (f1[i - 1][l][r])
+                        pre =max(pre, f1[i - 1][l][r] - (i - 1) * w);
+                    if (f2[i + 1][l][r])
+                        ret =max(ret, pre + f2[i + 1][l][r] + i * w);
+                }
+        }
+    cout << ret << endl;
+    
+    return 0;
+}
+

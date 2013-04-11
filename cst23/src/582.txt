@@ -1,0 +1,49 @@
+/* 
+ * File:   noip98普及02.cpp
+ * Author: Georgejia
+ *
+ * Created on 2009年10月28日, 下午5:40
+ */
+#include <iostream>
+#include <memory>
+#include <fstream>
+using namespace std;
+/*
+ * 
+ */
+int main() 
+{
+    int n,i,j,k,g;
+    int a[100],b[100];
+    memset(a,0,sizeof(a));
+    memset(b,0,sizeof(b));
+    cin>>n;
+    a[1]=1;
+    for (i=1; i<=n; i++)
+    {
+        g=0;
+        for (j=1; j<=99; j++)
+        {
+            k=a[j]*i+g;
+            a[j]=k%10;
+            g=k/10;
+        }
+        g=0;
+        for (j=1; j<=99; j++)
+        {
+            k=a[j]+b[j]+g;
+            b[j]=k%10;
+            g=k/10;
+        }
+    }
+    for (i=99; i>=1; i--)
+        if (b[i]!=0) break;
+    for (j=i; j>=1; j--)
+        cout<<b[j];
+    cout<<endl;
+    return 0;
+}
+
+
+
+

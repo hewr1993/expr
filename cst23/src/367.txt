@@ -1,0 +1,110 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+#define MAXN 5010
+
+struct Task {
+	int s, t, v;
+	int tt;
+} task[MAXN];
+
+int N;
+
+int ind_t[MAXN], t_tot;
+
+void Solve ()
+{
+	long long ans = 0;
+	t_tot = 0;
+	int ind, x, t, flag;
+	for (int i = 0; i < N; i++)
+	{
+		for (ind = 0; ind < t_tot && task[ind_t[ind]].tt < task[i].s; ind++) ;
+		if (ind == t_tot || task[ind_t[ind]].tt > task[i].s)
+		{
+			ans += task[i].v;
+			task[i].tt = task[i].s;
+			for (int j = t_tot; j > ind; j--) ind_t[j] = ind_t[j-1];
+			ind_t[ind] = i;
+			t_tot++;
+			continue;
+		}
+		x = i;
+		flag = 0;
+		t = task[i].s;
+//x 与 ind_t[ind] 在 t时刻 冲突 
+//x 希望能用 t时刻 
+		while (1)
+		{
+			if (task[x].t < t) break;
+			if (ind == t_tot || task[ind_t[ind]].tt > t)
+			{
+				flag = 1;
+				break;
+			}
+			if (task[ind_t[ind]].t > task[x].t) x = ind_t[ind];
+			ind++;
+			t++;
+		}
+		if (!flag) continue;
+		ans += task[i].v;
+		x = i;
+		t = task[i].s;
+		for (ind = 0; ind < t_tot && task[ind_t[ind]].tt < task[i].s; ind++) ;
+		while (1)
+		{
+			if (ind == t_tot || task[ind_t[ind]].tt > t)
+			{
+				task[x].tt = t;
+				break;
+			}
+			if (task[ind_t[ind]].t > task[x].t)
+			{
+				task[x].tt = t;
+				swap (ind_t[ind], x);
+			}
+			ind++;
+			t++;
+		}
+		for (int j = t_tot; j > ind; j--)
+			ind_t[j] = ind_t[j-1];
+		ind_t[ind] = x;
+		t_tot++;
+	}
+/*	for (int i = 0; i < N; i++)
+		fprintf (fout, "%d %d %d %d
+", task[i].s, task[i].t, task[i].v, task[i].tt);
+	fprintf (fout, "
+");
+	for (int i = 0; i < t_tot; i++)
+		fprintf (fout, "%d ", ind_t[i]);
+	fprintf (fout, "
+");*/
+	printf ( "%I64d
+", ans);
+}
+
+bool Cmp (const Task &i, const Task &j)
+{
+	return i.v > j.v;
+}
+
+void Init ()
+{
+	scanf ("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf ("%d %d %d", &task[i].s, &task[i].t, &task[i].v);
+	sort (task, task+N, Cmp);
+}
+
+int main ()
+{
+	Init ();
+	Solve ();
+	return 0;
+}
+

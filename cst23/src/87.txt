@@ -1,0 +1,50 @@
+#include<iostream>
+using namespace std;
+
+int main()
+{
+	int n;
+	cin >> n;
+	int num = 1;
+	int th[11][11], th0[11][11] = {0};
+	size_t row = 0, column = 0;
+	for (int k = 0; k != n / 2 || n == 1; k++) {
+		for (; row != n; row++) {
+			if (th0[row][column])
+				break;
+			th[row][column] = num++;
+			th0[row][column] = 1;
+			//cout << "(" << row << "," << column << "):" << num - 1 << endl;
+		}
+		row--;
+		column++;
+		for (; column != n; column++) {
+			if (th0[row][column])
+				break;
+			th[row][column] = num++;
+			th0[row][column] = 1;
+			//cout << "(" << row << "," << column << "):" << num - 1 << endl;
+		}
+		column -= 2;
+		row--;
+		for (; ; column--, row--) {
+			if (th0[row][column])
+				break;
+			th[row][column] = num++;
+			th0[row][column] = 1;
+			//cout << "(" << row << "," << column << "):" << num - 1 << endl;
+		}
+		row += 2;
+		column++;
+		if (n == 1)
+			break;
+	}
+	for (size_t i = 0; i != n; i++) {
+		for (size_t j = 0; j != i + 1; j++)
+			cout << th[i][j] << ' ';
+		cout << endl;
+	}
+	//system ("pause");
+	return 0;
+}
+

@@ -1,0 +1,39 @@
+//牛顿迭代求方程的根
+#include <iostream>
+#include <iomanip>
+using namespace std;
+int a,b,c,d;
+double z;
+int times=1;
+char num[1000000]={'0'};
+
+double fuc(double x1){
+    return a*x1*x1*x1+b*x1*x1+c*x1+d;
+}
+
+double der(double x2){
+    return 3*a*x2*x2+2*b*x2+c;
+}    
+
+void findzero(double x){
+    double nx;
+    if(fuc(x)<=0.0000001&&fuc(x)>=-0.0000001){
+        cout<<setiosflags(ios::fixed);
+        cout<<setprecision(3)<<x<<" "<<times;
+    }
+    else{
+        nx= x - fuc(x)/der(x);
+        times=times+1;
+        findzero(nx);
+    }
+}
+    
+
+int main(){
+    cin>>a>>b>>c>>d>>z;
+    
+    findzero(z);
+    
+    return 0;
+}
+

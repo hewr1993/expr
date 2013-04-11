@@ -1,0 +1,9 @@
+struct dataStruct {
+	int x;
+};
+
+void getData(dataStruct & v)
+{
+v.x=2147483647;
+}
+

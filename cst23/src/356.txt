@@ -1,0 +1,177 @@
+#include <map>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+const int maxn = 11000;
+const int INF = 990000000;
+
+struct SegmentTree
+{
+	int hp, hg, t[maxn * 8], d[maxn * 8], s[maxn * 8], scale;
+	inline void build()
+		{
+			for (hp = 1, hg = 0; hp <= scale; hp <<= 1, hg++);
+		}
+	inline void update(int i)
+		{
+			if (t[i << 1] < t[i << 1 ^ 1])
+				t[i] = t[i << 1    ] + d[i], s[i] = s[i << 1    ];
+			else
+				t[i] = t[i << 1 ^ 1] + d[i], s[i] = s[i << 1 ^ 1];
+		}
+	inline void pushdown(int i)
+		{
+			for (int j = hg, k; j; j--)
+				if (d[k = i >> j])
+					{
+						d[k << 1] += d[k], d[k << 1 ^ 1] += d[k];
+						t[k << 1] += d[k], t[k << 1 ^ 1] += d[k];
+						d[k] = 0;
+					}
+		}
+	inline pair <int, int> query(int l, int r)
+		{
+			pair <int, int> res (INF, 0);
+			pushdown(l += hp - 1);
+			pushdown(r += hp + 1);
+			for (; l ^ r ^ 1; l >>= 1, r >>= 1)
+			{
+				if (l & 1 ^ 1 && res.first > t[l ^ 1])
+					res = make_pair(t[l ^ 1], s[l ^ 1]);
+				if (r & 1     && res.first > t[r ^ 1])
+					res = make_pair(t[r ^ 1], s[r ^ 1]);
+			}
+			return res;
+		}
+	inline void cover(int l, int r, int x)
+		{
+			pushdown(l += hp - 1);
+			pushdown(r += hp + 1);
+			for (; l ^ r ^ 1; l >>= 1, r >>= 1)
+			{
+				if (l & 1 ^ 1) d[l ^ 1] += x, t[l ^ 1] += x;
+				if (r & 1    ) d[r ^ 1] += x, t[r ^ 1] += x;
+				update(l >> 1), update(r >> 1);
+			}
+			for (; l >>= 1;) update(l);
+		}
+	inline void alter(int i, int x)
+		{
+			pushdown(i + hp);
+			d[i += hp] = 0, t[i] = x;
+			for (; i >>= 1;) update(i);
+		}
+}DFS, TCD;
+
+struct list
+{
+	int v, l, r, c, n;
+} g[maxn * 2];
+
+typedef int arr[maxn];
+arr f, q, pos, siz, opt, rig, lef, top, val, edge;
+int n, e, m, ans;
+
+void link(int a, int b, int c, int d)
+{
+	g[++e] = (list) {b, c, d, 0, edge[a]}, edge[a] = e;
+}
+
+void dfs(int i, int u)
+{
+	lef[i] = ++DFS.scale, f[i] = u;
+	for (int j = edge[i], k; j; j = g[j].n)
+		if ((k = g[j].v) != u)
+			dfs(k, i);
+	rig[i] = ++DFS.scale;
+}
+
+void init()
+{
+	scanf("%d%d", &n, &m), g[0].l = INF;
+
+	for (int i = 1, x, y, d, u; i <= n; i++)
+	{
+		scanf("%d%d%d%d", &x, &y, &d, &u);
+		link(x + 1, y + 1, d, u - d);
+		link(y + 1, x + 1, d, u - d);
+	}
+
+	n++, dfs(1, 0);
+
+	DFS.build();
+	for (int i = 1; i <= n; i++)
+	{
+		int dl = lef[i] + DFS.hp, dr = rig[i] + DFS.hp;
+		DFS.s[dl] = DFS.s[dr] = i;
+		if (dr - dl != 1)
+			DFS.t[dl] = DFS.t[dr] = INF;
+	}
+	for (int i = DFS.hp; i; i--)
+		DFS.update(i);
+
+	int head = 1, tail = 1, i, j, k;
+
+	for (q[1] = 1, siz[1] = 1; head <= tail; head++)
+		for (j = edge[i = q[head]]; j; j = g[j].n)
+			if ((k = g[j].v) != f[i])
+				q[++tail] = k, siz[k] = 1, val[k] = j;
+	for (; --head;)
+		k = q[head], i = f[k], siz[i] += siz[k], opt[i] = siz[k] > siz[opt[i]] ? k : opt[i];
+	for (head = 1; head <= tail; head++)
+		if (!top[i = q[head]])
+			for (j = i; j; j = opt[j])
+				top[j] = i, pos[j] = ++TCD.scale;
+
+	TCD.build();
+	for (i = 1; i <= n; i++)
+		TCD.t[pos[i] + TCD.hp] = g[val[i]].l, TCD.s[pos[i] + TCD.hp] = i;
+	for (i = TCD.hp; i; i--)
+		TCD.update(i);
+}
+
+int main()
+{
+	init();
+
+	for (; m >= 0; )
+	{
+		pair <int, int> y (INF, 0), x;
+		x = DFS.query(lef[1], rig[1]);
+		if (x.first >= n) break;
+
+		for (int i = x.second; i; i = f[top[i]])
+		{
+			pair <int, int> j = TCD.query(pos[top[i]], pos[i]);
+			if (j.first <= y.first)
+				y = j;
+		}
+
+		int e = val[y.second], cost = x.first * y.first;
+
+		if (m >= cost)
+		{
+			m -= cost, ans += y.first;
+			for (int i = x.second; i; i = f[top[i]])
+				TCD.cover(pos[top[i]], pos[i], -y.first);
+			if (g[e].c == 0)
+			{
+				DFS.cover(lef[g[e].v], rig[g[e].v], 1);
+				TCD.alter(pos[g[e].v], g[e].r);
+				g[e].l = g[e].r, g[e].c = 1;
+			}
+			else
+			{
+				DFS.cover(lef[g[e].v], rig[g[e].v], INF);
+				g[e].l = 0;
+			}
+		} else ans += m / x.first, m = -1;
+	}
+
+	printf("%d", ans);
+
+	return 0;
+}
+

@@ -1,0 +1,153 @@
+#include<iostream>
+#include<string>
+#include<fstream>
+using namespace std;
+struct num
+{
+    int n;
+    int a[1001];
+};
+struct node
+{
+    string s;
+    int son[27];
+    int fa;
+    int num;
+};
+struct answer
+{
+    int n;
+    string s[10000];
+};
+answer ans;
+node a[100001],r,u;
+int n,i,j,k,l,m,tt,sum,ttt,tmp,b[100001],ch;
+string s,t;
+num fi(int x)
+{
+    int o,tm,q;
+    num *p[27]={0};
+    num an={0};
+    if(a[x].son[0]==0)
+    {
+        a[x].num=1;
+        an.n=1;
+        an.a[0]=1;
+        an.a[1]=1;
+    }
+   else
+    {
+        for(o=1;o<=a[x].son[0];o++)
+        {
+            p[o]=new num;
+            *p[o]=fi(a[x].son[o]);
+        }
+        ttt=0;
+        for(o=1;o<=a[x].son[0];o++)
+            ttt=ttt^a[a[x].son[o]].num;
+       for(o=1;o<=a[x].son[0];o++)
+        {
+            tm=ttt^a[a[x].son[o]].num;
+            for(q=0;q<=p[o]->n;q++)
+                if(p[o]->a[q]==1)
+                {
+                    if((q^tm)>an.n)
+                        an.n=q^tm;
+                    an.a[q^tm]=1;
+                }
+            delete p[o];
+        }
+        for(o=0;an.a[o]>0;o++);
+            a[x].num=o;
+        an.a[o]=1;
+        if(an.n<o)
+            an.n=o;
+    }
+    return an;
+} 
+int main()
+{
+    ofstream fout("wordcraft.out");
+    ifstream fin("wordcraft1.in");
+//    fin>>n>>m;
+    cin>>n>>m;
+    for(i=0;i<n;i++)
+    {
+//        fin>>s;
+        cin>>s;
+        j=0;
+        while(s[j]==t[j])
+           j++;
+        t=s;
+        a[l].s=s;
+        if(j>0)
+        {
+            for(k=l-1;a[k].s.size()>j;k=a[k].fa);
+           a[l].fa=k;
+            if(k>-1)
+            {
+                a[k].son[0]++;
+                a[k].son[a[k].son[0]]=l;
+           }
+       }
+        else
+            a[l].fa=-1;
+        l++;
+    }
+    tt=0;
+   for(i=0;i<n;i++)
+        if(a[i].fa==-1)
+        {
+            fi(i);
+            tt=tt^a[i].num;
+        }
+    sum=tt;
+    if(tt==0)
+//        fout<<"Can't win at all!!"<<endl;
+        cout<<"Can't win at all!!"<<endl;
+    else
+    {
+        for(i=0;i<n;i++)
+        {
+            b[0]=0;
+            tt=sum;
+            for(j=i;j!=-1;j=a[j].fa)
+            {
+                b[0]++;
+                b[b[0]]=j;
+            }
+            for(j=b[0];j>0;j--)
+            {
+                tt=tt^a[b[j]].num;
+               for(k=1;k<=a[b[j]].son[0];k++)
+                    tt=tt^a[a[b[j]].son[k]].num;
+            }
+            if(tt==0)
+            {
+                ans.s[ans.n]=a[i].s;
+                ans.n++;
+            }
+        }
+       tt=0;
+        for(i=0;i<ans.n;i++)
+        {
+            for(j=0;j<ans.s[i].size();j++)
+            {
+                if(tt==50)
+                {
+                    tt=tt-50;
+//                    fout<<endl;
+                    cout<<endl;
+                }
+              tt++;
+//                fout<<ans.s[i][j];
+                cout<<ans.s[i][j];
+            }
+        }
+        if(tt!=50)
+//            fout<<endl;
+            cout<<endl;
+    } 
+    return 0; 
+}
+

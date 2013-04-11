@@ -1,0 +1,67 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+struct teacher
+{
+       char name[21];
+       int kyl,zy[3];
+       float gl[3];
+};
+struct student
+{
+       int num,zy;
+};
+int main()
+{
+    int n,m;
+    cin>>n;
+    teacher t[n];
+    for (int i(0);i<n;++i)
+    {
+        cin>>t[i].name>>t[i].kyl;
+        t[i].zy[0]=0;t[i].zy[1]=0;t[i].zy[2]=0;
+    }
+    cin>>m;
+    student s[m];
+    for (int i(0);i<m;++i)
+    {
+        char s0[21];
+        cin>>s0>>s[i].zy;
+        for (int j(0);j<n;++j)
+            if (strcmp(t[j].name,s0)==0)
+            {
+                                        s[i].num=j;
+                                        ++t[j].zy[s[i].zy-1];
+            }
+    }
+    for (int i(0);i<n;++i)
+    {
+        if (t[i].zy[0]<=t[i].kyl)
+        {
+                            t[i].gl[0]=100;
+                            t[i].kyl-=t[i].zy[0];
+                            if (t[i].zy[1]<=t[i].kyl)
+                            {
+                                                     t[i].gl[1]=100;
+                                                     t[i].kyl-=t[i].zy[1];
+                                                     if (t[i].zy[2]<=t[i].kyl) t[i].gl[2]=100; else t[i].gl[2]=t[i].kyl*100.00/t[i].zy[2];
+                            }
+                            else
+                            {
+                                t[i].gl[1]=t[i].kyl*100.00/t[i].zy[1];
+                                t[i].gl[2]=0;
+                            }
+        }
+        else
+        {
+            t[i].gl[0]=t[i].kyl*100.00/t[i].zy[0];
+            t[i].gl[1]=0;
+            t[i].gl[2]=0;
+        }
+    }
+    cout.setf(ios::fixed);
+    cout.precision(2);
+    for (int i(0);i<m;++i) cout<<t[s[i].num].gl[s[i].zy-1]<<'%'<<endl;
+    return 0;
+}

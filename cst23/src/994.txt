@@ -1,0 +1,18 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+int main()
+{
+    double a=0,b=0,x=0,y=0,r=0;
+    scanf("%lf%lf%lf%lf%lf",&a,&b,&x,&y,&r);
+    double m1=a-x,m2=b-y;
+    double l2=0;
+    l2=m1*m1+m2*m2;
+    double k=sqrt(l2);
+    if(k<r)printf("yes");
+    else printf("no");
+    //system("pause");
+    return 0;
+}
+
+

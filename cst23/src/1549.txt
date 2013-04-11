@@ -1,0 +1,53 @@
+
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+long long cz, a[61][61];
+int gx[60], gy[60];
+int n, m, x1, x2, y, y2;
+void Print(int maxn, int stox, int stoy)
+{
+   int i;
+   
+   for (i = 1; i < maxn; ++i)  cout << '(' << gx[i] << ',' << gy[i] << ")-";
+   
+   cout << '(' << stox << ',' << stoy << ')' << endl; 
+   
+   exit(0); 
+}
+void DFS(int step, int nowx, int nowy, int stox, int stoy)
+{
+   int i, j;  
+   
+   if (nowx > stox  ||  nowy > m  ||  nowy <= 0)  return;
+   
+   if (nowx == stox)
+     if (nowy == stoy)  Print(step, stox, stoy);
+     else  return; 
+   else
+      gx[step] = nowx, gy[step] = nowy,              
+      DFS(step + 1, nowx + 1, nowy - 2, stox, stoy),
+      DFS(step + 1, nowx + 1, nowy + 2, stox, stoy),
+      DFS(step + 1, nowx + 2, nowy - 1, stox, stoy),
+      DFS(step + 1, nowx + 2, nowy + 1, stox, stoy);
+}
+void DP(int stax, int stay, int stox, int stoy)
+{      
+   int i, j;    
+       
+   for (a[stax][stay] = 1, i = stax + 1; i <= stox; ++i)
+     for (j = 1; j <= m; ++j)
+       a[i][j] = (a[i][j] + a[i - 1][j + 2] + a[i - 2][j + 1] + a[i - 2][j - 1]) % cz,
+       a[i][j] = (j > 2)?  (a[i][j] + a[i - 1][j - 2]) % cz : a[i][j];
+   
+   cout << a[stox][stoy] << endl;  
+}
+int main()
+{
+    for (cz = n = 1; n <= 18; cz *= 10, n++);
+    
+    cin >> n >> m >> x1 >> y >> x2 >> y2;
+    
+    if (!(x1  &&  x2  &&  y  &&  y2))  DFS(1, 1, 1, n, m), cout << "NO" << endl;
+    else DP(x1, y, x2, y2);    
+}

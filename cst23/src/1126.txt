@@ -1,0 +1,43 @@
+#include<iostream>
+using namespace std;
+void f(int *a, int *b, int p, int n, int x)
+{
+    if(b[p % x] ==0 || b[p % x] > p)
+        b[p % x] = p;
+    else
+        return;
+
+    for(int i = 1; i <= n; i++)
+        if(a[i] != 0)
+            f(a, b, a[i] + p, n, x);
+}
+void calc(int *a, int *b, int n, int x)
+{
+    for(int i = 1; i <= n; i++)
+        f(a, b, a[i], n, x);
+}
+int main()
+{
+    int a[11], c[501] = {}, n, i, j, m = 0;
+    cin >> n;
+    for(i = 1; i <= n; i++)
+        cin >> a[i];
+        
+    for(i = 1; i < n; i++)
+        for(j = i + 1; j <= n; j++)
+            if(a[i] > a[j])swap(a[i], a[j]);
+    
+    calc(a + 1, c, n - 1, a[1]);
+    
+
+    if(c[1] == 0)
+        cout << 0 << endl;
+    else
+    {
+        for(i = 1; i < a[1]; i++)
+            if(c[i] > m)m = c[i];
+        cout << m - a[1] << endl;
+    }   
+    return 0;
+}
+

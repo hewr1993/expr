@@ -1,0 +1,25 @@
+#include<fstream>
+#include<iostream>
+#include<cstdlib>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+int c[1010]={};
+int main()
+{
+    int n,m;
+    cin>>n>>m;
+    int trianglecnt=n*(n-1)*(n-2)/6;
+    int t1,t2;
+    for(int i=1;i<=m;i++)
+    {
+        cin>>t1>>t2;
+        trianglecnt-=(n-2-(c[t1]+c[t2]));
+        c[t1]++;
+        c[t2]++;
+    }
+    cout<<trianglecnt;
+    system("pause");
+    return 0;
+}
+

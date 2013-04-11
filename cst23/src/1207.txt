@@ -1,0 +1,107 @@
+#include <iostream>
+using namespace std;
+
+int n;
+int wb[100][2];
+int a[100];
+int b[100];
+int g = 0;
+
+bool right(int k)//判断组合是否满足题意 
+{
+	int OK = 0;
+	for (int i = 1;i <= n;i++)
+	{
+		int num = 0;
+		bool iswhite = false;
+		for (int j = 0;j < k;j++)
+		{
+			if (a[j] != i)
+			{
+				num++;
+			}
+			else
+			{
+				iswhite = true;
+			}
+		}
+		if ((iswhite && num == wb[i][0]) || (!iswhite && num != wb[i][0]))
+		{
+			OK++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	if (OK == n)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void gao(int z,int k,int last)//从小到大排列出所有k个白帽的组合 
+{
+	if (z == k)
+	{
+		if (right(k) && g == 0)
+		{
+			if (k == 0)
+			{
+				cout << "0";
+				g++;
+				return;
+			}
+			else
+			{
+				for (int i = 0;i < k;i++)
+				{
+					cout << a[i];
+				}
+				g++;
+				return;
+			}
+		}
+	}
+	else
+	{
+		for (int i = last + 1;i <= n;i++)
+		{
+			if (b[i] == 0)
+			{
+				a[z] = i;
+				b[i] = 1;
+				gao(z+1,k,i);
+				b[i] = 0;
+			}
+		}
+	}
+}
+
+int main()
+{
+	cin >> n;
+	for (int i = 1;i <= n;i++)
+	{
+		cin >> wb[i][0] >> wb[i][1];
+	}
+	for (int i = 0;i <= n;i++)//白帽数 
+	{
+		gao(0,i,0);
+		
+		if (g > 0)
+		{
+			break;
+		}
+	}
+	if(g == 0)
+	{
+		cout << "Shit";
+	}
+	return 0;
+}
+

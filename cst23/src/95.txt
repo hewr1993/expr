@@ -1,0 +1,46 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+struct cow
+{
+	char aa[1000];
+};
+cow idy[100001];
+int main()
+{
+	int N;
+	cin>>N;
+	char bb[1001];
+	cin>>bb;
+	cow temp;
+	for(int i=0;i<N;i++)
+	{
+		cin>>idy[i].aa;
+	}
+	for(int p=0;p<N;p++)
+	{
+		for(int q=0;q<N-1;q++)
+		{
+			if(strcmp(idy[q].aa,idy[q+1].aa)>0)
+			{
+				temp=idy[q];
+				idy[q]=idy[q+1];
+				idy[q+1]=temp;
+			}
+		}
+	}
+	for(int i=0;i<N;i++)
+	{
+		if(strcmp(idy[i].aa,bb)==0&&i!=N-1)
+		{
+			cout<<idy[i+1].aa;
+			break;
+		}
+		if(i==N-1)
+		{
+			cout<<"The End";
+		}
+	}
+	return 0;
+}
+

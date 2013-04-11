@@ -1,0 +1,96 @@
+//program 2142
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+
+using namespace std;
+
+struct Data
+{
+  int Mod,Rest;
+};
+
+int X[100];
+int Fac[100000];
+
+int Pow(int A,int B,int Mod)
+{
+  if(!B)return 1;
+  int T=Pow((long long)A*A%Mod,B/2,Mod);
+  if(B&1)T=(long long)T*A%Mod;
+  return T;
+}
+
+int Calc(int N,int Mod)
+{
+  if(!N)return N;
+  return N/Mod+Calc(N/Mod,Mod);
+}
+
+int F(int N,int P,int Mod)
+{
+  if(!N)return 1;
+  int Ans=(long long)Pow(Fac[Mod-1],N/Mod,Mod)*Fac[N%Mod]%Mod;
+  return (long long)Ans*F(N/P,P,Mod)%Mod;
+}
+
+int Solve(int M,int N,int P,int Mod)
+{
+  int Phi=Mod/P*(P-1);
+  Fac[0]=1;
+  for(int i=1;i<Mod;i++)
+    if(i%P)
+      Fac[i]=(long long)Fac[i-1]*i%Mod;
+    else
+      Fac[i]=Fac[i-1];
+  int Ans=F(M,P,Mod),Count=Calc(M,P);
+  for(int i=0;i<N;i++)
+    {
+      Count-=Calc(X[i],P);
+      Ans=(long long)Ans*Pow(F(X[i],P,Mod),Phi-1,Mod)%Mod;
+    }
+  Ans=(long long)Ans*Pow(P,Count,Mod)%Mod;
+  return Ans;
+}
+
+int Sol(int A,int B,int C)
+{
+  if(!A)return 0;
+  int X=(C-Sol(B%A,A,C%A)*B)/A;
+  X%=B;if(X<0)X+=B;return X;
+}
+
+int main()
+{
+  int P,M,N;scanf("%d%d%d",&P,&M,&N);
+  X[N]=M;
+  for(int i=0;i<N;i++)
+    {
+      scanf("%d",&X[i]);
+      X[N]-=X[i];
+    }
+  if(X[N++]<0){printf("Impossible
+");return 0;}
+  vector<Data> List;
+  for(int i=2;i*i<=P;i++)
+    if(!(P%i))
+      {
+        int Count=1,Mod=i;while(P/=i,!(P%i)){Count++;Mod*=i;}
+        List.push_back((Data){Mod,Solve(M,N,i,Mod)});
+      }
+  if(P>1)List.push_back((Data){P,Solve(M,N,P,P)});
+  int Mod=List[0].Mod,R=List[0].Rest;
+  for(int i=1;i<List.size();i++)
+    {
+      int _Mod=List[i].Mod,_R=List[i].Rest;
+      R+=Mod*Sol(Mod,-_Mod,_R-R);Mod*=_Mod;R%=Mod;
+    }
+  printf("%d
+",R);
+  return 0;
+}
+

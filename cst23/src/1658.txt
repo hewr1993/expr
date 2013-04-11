@@ -1,0 +1,114 @@
+/*
+ * 2011-05-26  Martin  <Martin@Martin-desktop>
+
+ * 
+ */
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+#define For(i, n) for (int i = 0; i < n; ++ i)
+#define x first
+#define y second
+#define pii pair <int, int>
+#define MaxiN 100005
+
+int N;
+long long Ans;
+pii Sail[MaxiN];
+
+class TInterval
+{
+	private:
+		int X, S, T;
+		int Cover[MaxiN * 2], Sup[MaxiN * 2];
+		void _Add(int L, int R)
+		{
+			if (S <= L && R <= T)
+			{
+				++ Cover[Get(L, R)];
+				++ Sup[Get(L, R)];
+				return;
+			}
+			int Mid = (L + R) / 2;
+			if (S < Mid)
+				_Add(L, Mid);
+			if (Mid < T)
+				_Add(Mid, R);
+			Sup[Get(L, R)] = max(Sup[Get(L, Mid)], Sup[Get(Mid, R)]) + Cover[Get(L, R)];
+		}
+		
+	public:
+		inline int Get(int L, int R)
+		{
+			return (L + 1 == R) ? L + R : ((L + R) & (- 2));
+		}
+		inline int Ask(int x)
+		{
+			int l = 0, r = MaxiN - 1, Result = 0;
+			while (l < r)
+			{
+				Result += Cover[Get(l, r)];
+				if (l + 1 == r)
+					break;
+				int mid = (l + r) / 2;
+				if (x <= mid)
+					r = mid;
+				else
+					l = mid;
+			}
+			return Result;
+		}
+		inline int Aquire(int x)
+		{
+			int l = 0, r = MaxiN - 1, c = 0;
+			while (l < r)
+			{
+				c += Cover[Get(l, r)];
+				if (l + 1 == r)
+					return (c >= x) ? r : r - 1;
+				int mid = (l + r) / 2;
+				if (x <= Sup[Get(mid, r)] + c)
+					l = mid;
+				else
+					r = mid;
+			}
+		}
+		inline void Add(int s, int t)
+		{
+			S = s, T = t;
+			_Add(0, MaxiN - 1);
+		}
+};
+
+TInterval Tree;
+
+int main()
+{
+	scanf("%d", &N);
+	For (i, N)
+		scanf("%d%d", &Sail[i].x, &Sail[i].y);
+	sort(Sail, Sail + N);
+	For (i, N)
+	{
+		int j = Tree.Ask(Sail[i].x - Sail[i].y + 1);
+		int a = Tree.Aquire(j);
+		int b = Tree.Aquire(j + 1);
+		if (a < Sail[i].x)
+		{
+			Tree.Add(a, Sail[i].x);
+			Tree.Add(b, a + b - Sail[i].x + Sail[i].y);
+		}
+		else
+			Tree.Add(b, b + Sail[i].y);
+	}
+	For (i, MaxiN)
+	{
+		long long j = Tree.Ask(i + 1);
+		Ans += j * (j - 1) / 2LL;
+	}
+	cout << Ans << endl;
+}
+

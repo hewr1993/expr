@@ -1,0 +1,23 @@
+#include<iostream>
+using namespace std;
+int main(){
+	double n=1.0,i=2.0;double sum=0.0;
+	int k=1;
+	int a[1000]={0};
+	while(cin >> n&&n!=0){
+		i=2.0;sum=0.0;
+		while(sum<n){
+			sum = sum+(double)1.0/i;
+			i++;
+		}
+		//cout << sum << endl;
+		a[k] = i-2;
+		k++;
+	}
+	for(int i=1;a[i];i++){
+		cout << a[i] << " card(s)" << endl;
+	}
+		return 0;
+}
+
+

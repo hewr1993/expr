@@ -1,0 +1,59 @@
+#include <iostream>
+#include <sstream>
+#include <cstdio>
+#include <cstring>
+using namespace std;
+
+int team[100];
+int team_beated[100][100];
+int n;
+int cnt;
+char buf[1000], *p = buf;
+
+void f(int k, int root)
+{
+	int len;
+	team[k] = 1;
+	for(int i = 1; i <=n; i++)
+		if(i != k && !team[i] && !team_beated[i][k] ) {
+			team[i] = 1;
+			team_beated[k][i] = team_beated[i][k] = 1;
+			if(root) {
+				len = sprintf(p, "%d-%d", k, i);
+				p += len;
+			} else {
+				len = sprintf(p, ",%d-%d", k, i);
+				p += len;
+			}
+
+			int t;
+			for(t = 1; t <= n; t++)
+				if(!team[t])
+					break;
+			if(t > n) {
+				cout <<'<'<<cnt++<<'>'<<buf << endl;
+				team[i] = team[k] = 0;
+				p -= len;
+				return;
+			}
+	
+			f(t, 0);
+			team[i] = 0;
+			p -= len;
+			if(!root) {
+				team[k] = 0;
+				return;
+			}
+		}
+	team[k] = 0;
+}
+
+int main()
+{
+	cin >> n;
+
+	n = 1 << n;
+	cnt = 1;
+	f(1,1);
+}
+

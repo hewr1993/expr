@@ -1,0 +1,51 @@
+//1996noip 普及组第2题 
+//作者：彭昊若
+//时间：2009年10月15日 
+#include<iostream>
+#include<cmath>
+using namespace std;
+int main()
+{
+ int n,i,j;
+ int a,b;
+ cin>>n;
+ cin>>i;
+ cin>>j;
+ 
+ for (a=1;a<=n;a++)
+  cout<<"("<<i<<","<<a<<")";
+ cout<<endl;
+ 
+ for (a=1;a<=n;a++)
+  cout<<"("<<a<<","<<j<<")";
+ cout<<endl;
+ 
+ a=i;b=j;
+ while ((a!=1)&&(b!=1))
+ {
+  a=a-1;b=b-1;
+ }
+ do
+ {
+  cout<<"("<<a<<","<<b<<")";
+  a++;b++;
+ }
+ while ((a!=n+1)&&(b!=n+1));
+ cout<<endl;
+ 
+ a=i;b=j;
+ while ((a!=n)&&(b!=1))
+ {
+  a=a+1;b=b-1;
+ }
+ do
+ {
+  cout<<"("<<a<<","<<b<<")";
+  a--;b++;
+ }
+ while ((a!=0)&&(b!=n+1));
+ cout<<endl;
+ 
+return 0;
+}
+

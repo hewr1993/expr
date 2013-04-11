@@ -1,0 +1,58 @@
+#include<iostream>
+#include<cstdlib>
+using namespace std;
+
+int main()
+{
+    char suanshi[100],shu[10];
+    int num[100];
+    cin >> suanshi ;
+    int g=-1,h=-1,x=0;
+    int v[100];
+    for (int i=0;;i++)
+    {
+        if (suanshi[i]=='=')
+        {
+            g=g+1;
+            num[g]=atoi(shu);
+            for (int j=0;j<10;j++)
+               shu[j]=' ';
+            h=0;
+            break;
+        }    
+        if (suanshi[i]=='+')
+        {
+            g=g+1;
+            num[g]=atoi(shu);
+            for (int j=0;j<10;j++)
+               shu[j]=' ';
+            h=0;
+        }
+        if (suanshi[i]=='-')
+        {
+            g=g+1;
+            x=x+1;
+            v[x]=g+1;
+            num[g]=atoi(shu);
+            for (int j=0;j<10;j++)
+               shu[j]=' ';
+            h=0;
+        }
+        if ((suanshi[i]!='+')&&(suanshi[i]!='-'))
+        {
+            h=h+1;
+            shu[h]=suanshi[i];
+        }
+    }
+    for (int i=1;i<=x;i++)
+    {
+        num[v[i]]=num[v[i]]*(-1);
+    }    
+    int sum=0;
+    for (int k=0;k<=g;k++)
+    {
+        sum=sum+num[k];
+    }
+    cout << sum << endl;
+    return 0;
+}                

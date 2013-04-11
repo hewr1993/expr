@@ -1,0 +1,79 @@
+#include <stdio.h>
+int rank(int x);
+int totalprice(int x);
+void account();
+int N,M,i,num,price; 
+int credit[31];
+int client[31];
+
+int main()
+{
+    scanf("%d",&N);
+    scanf("%d",&credit[0]);
+    client[0]=0;
+    for(i=1;i<N;i++){
+        scanf(",%d",&credit[i]);
+        client[i]=i;
+    }
+    scanf("%d",&M);
+    if(rank(M)<=10){
+        scanf("%d",&num);
+        printf("%d
+",rank(M)); 
+        printf("%d
+",totalprice(num)); 
+        account();
+        }
+    else if (rank(M)>10){
+        printf("%d
+",rank(M)); 
+        printf("Sorry,No Rabbit
+");
+        }
+    return 0;
+}
+
+int rank(int x){
+    int temp1,temp2,l,h,q;
+    int newclient[30];
+    for (l=0;l<N;l++){
+        for (h=l;h<N;h++) 
+            if (credit[l]<credit[h]){
+            temp1=credit[l];
+            credit[l]=credit[h];
+            credit[h]=temp1;
+            temp2=client[l];
+            client[l]=client[h];
+            client[h]=temp2;
+            }
+   }
+   for (q=0;q<N;q++)  
+       newclient[(client[q])]=q;     
+   return newclient[M]+1;
+    }
+
+int totalprice(int x)
+{
+    int a;
+    a= num/1000; 
+    switch(a) 
+    {case 0:
+        price=num*100;
+        break;
+    case 1:
+        price=100000+(90*(num-1000));
+        break;
+    case 2:
+        price=190000+(80*(num-2000));
+        break;
+        }
+    return price;
+    }
+
+void account()
+{
+    printf("Save $%d Success
+",totalprice(num));
+}
+
+

@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct stu
+{
+	int num;
+	int hour;
+	int min;
+};
+int main()
+{
+	int i,j,k,n,m,mm[110];
+	struct stu ss[110];
+	struct stu t;
+	scanf("%d%d",&n,&m);
+	for(i=1;i<=n;i++)   
+	{
+		scanf("%d:%d",&ss[i].hour,&ss[i].min);
+		ss[i].num=i;
+	}
+	for(i=1;i<=m;i++)
+	{
+		scanf("%d",&mm[i]);
+	}
+	for(i=1;i<=n-1;i++)     
+		for(j=1;j<=n-i;j++)
+		{
+			if((60*ss[j].hour+ss[j].min)>(60*ss[j+1].hour+ss[j+1].min))
+			{
+				t=ss[j];
+				ss[j]=ss[j+1];
+				ss[j+1]=t;
+			}
+		}
+	for(i=1;i<=m;i++)
+	{
+		k=mm[i];
+		printf("%d
+",ss[k].num);
+	}
+	
+	return 0;
+}

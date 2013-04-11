@@ -1,0 +1,21 @@
+uses math;
+var a,s,d,g,m,n,sum,tot:longint;
+    f:array[0..111,0..51,0..51] of longint;
+    b:array[0..51,0..51] of longint;
+begin
+  read(m,n);
+  for a:=1 to m do
+    for s:=1 to n do
+      read(b[a,s]);
+  tot:=n+m;
+  f[2,1,1]:=0;
+  for a:=3 to tot do
+    for s:=1 to m do
+      for d:=1 to m do
+        if (s<>d)and(s<a)and(d<a)and(a-d<=n)and(a-s<=n) then
+          f[a,s,d]:=max(max(f[a-1,s-1,d],f[a-1,s,d-1]),
+          max(f[a-1,s-1,d-1],f[a-1,s,d]))+b[s,a-s]+b[d,a-d];
+  f[tot,m,m]:=max(f[tot-1,m-1,m],f[tot-1,m,m-1]);
+  write(f[tot,m,m]);
+end.
+

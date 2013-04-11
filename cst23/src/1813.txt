@@ -1,0 +1,92 @@
+#include <cstdio>
+#include <algorithm>
+#include <iostream>
+#include <cstring>
+using namespace std;
+#define Rep(i,j,k) for(int i=(j); i<=(k); i++)
+typedef long long LL;
+
+const int MOD=1000000007;
+
+struct INT{
+	int x;
+	
+	INT(int _x=0):x(_x){}
+	
+	INT operator+(INT b){
+		INT c(x+b.x);
+		if (c.x>=MOD) c.x-=MOD;
+		return c;
+	}
+	
+	INT& operator+=(INT b){
+		*this=*this+b;
+		return *this;
+	}
+	
+	INT operator-(INT b){
+		INT c(x-b.x);
+		if (c.x<0) c.x+=MOD;
+		return c;
+	}
+	
+	INT operator*(INT b){
+		INT c;
+		c.x=(LL)x*b.x%MOD;
+		return c;
+	}
+	
+	INT operator*(int b){
+		return *this*INT(b);
+	}
+};
+
+INT g[2100],f[2100],g1[2100],gg[2100],ff[2100],gg1[2100];
+INT c[2100][2100];
+
+INT sum1(int k){
+	if (k<2) return INT(1);
+	return f[k]+g[k];
+}
+
+INT sum2(int k){
+	if (k<2) return INT(1);
+	return ff[k]+gg[k];
+}
+
+int main(){
+
+	
+	Rep(i,0,2012) c[i][0]=INT(1);
+	Rep(i,1,2012) Rep(j,1,i) c[i][j]=c[i-1][j-1]+c[i-1][j];
+	Rep(o,0,1)
+		g[o]=f[o]=g1[o]=gg[o]=ff[o]=gg1[o]=INT(1);
+		
+	Rep(i,2,2012){
+		Rep(j,1,i-1){
+			f[i]+=c[i-1][j-1]*g[j]*2*sum1(i-j);
+			ff[i]+=c[i-1][j-1]*gg[j]*sum2(i-j);
+		}
+		Rep(j,1,i){
+			g1[i]+=c[i-1][j-1]*f[j]*g1[i-j];
+			gg1[i]+=c[i-1][j-1]*ff[j]*gg1[i-j];
+		}
+		Rep(j,1,i){
+			g[i]+=c[i][j]*g1[j]*g1[i-j];
+			gg[i]+=c[i][j]*gg1[j]*gg1[i-j];
+		}
+		g[i]=g[i]-f[i];
+		gg[i]=gg[i]-ff[i];
+	}
+	
+	int T; cin>>T;
+	while(T--){
+		int n; scanf("%d",&n);
+		if (n==1) puts("1"); else
+			printf("%d
+",((f[n]+g[n])*2-ff[n]-gg[n]).x);
+	}
+	
+	return 0;
+}
+

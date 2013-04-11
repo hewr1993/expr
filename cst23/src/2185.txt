@@ -1,0 +1,72 @@
+var t,n,i,j,l,ans,x,y,s:longint;
+    c,d:array[1..10000]of longint;
+    zz:ansistring;
+    p:boolean;
+begin
+  readln(n);readln(zz);
+  while pos('a',zz)>0 do
+  begin
+    inc(l);x:=pos('a',zz);
+    if (x>2)and(zz[x-2]+zz[x-1]='++') then
+    begin
+      i:=x-3;
+      if (x>3)and(zz[x-3]='*') then
+      begin
+        i:=x-4;y:=0;s:=1;
+        while (i>0)and(zz[i]>='0')and(zz[i]<='9') do
+        begin
+          y:=y+s*(ord(zz[i])-48);dec(i);s:=s*10;
+        end;
+      end else y:=1;
+      if (i>0)and(zz[i]='-') then y:=-y;
+      d[l]:=1;c[l]:=y;if i=0 then i:=1;
+      delete(zz,i,x-i+1);
+    end else
+    begin
+      i:=x-1;
+      if (x>1)and(zz[x-1]='*') then
+      begin
+        i:=x-2;y:=0;s:=1;
+        while (i>0)and(zz[i]>='0')and(zz[i]<='9') do
+        begin
+          y:=y+s*(ord(zz[i])-48);dec(i);s:=s*10;
+        end;
+      end else y:=1;
+      if (i>0)and(zz[i]='-') then y:=-y;
+      d[l]:=2;c[l]:=y;if i=0 then i:=1;
+      delete(zz,i,x-i+3);
+    end;
+  end;
+  ans:=0;
+  while zz<>'' do
+  begin
+    if zz[1]='-' then
+    begin
+      p:=false;delete(zz,1,1);
+    end else p:=true;
+    y:=0;
+    while (zz<>'')and(zz[1]>='0')and(zz[1]<='9') do
+    begin
+      y:=y*10+ord(zz[1])-48;delete(zz,1,1);
+    end;
+    if p then ans:=ans+y else ans:=ans-y;
+  end;
+  for i:=1 to l-1 do for j:=i+1 to l do
+  if (c[i]>c[j])or(c[i]=c[j])and((c[i]<0)and(d[i]=1)and(d[j]=2)or(c[i]>0)and(d[i]=2)and(d[j]=1)) then
+  begin
+    t:=c[i];c[i]:=c[j];c[j]:=t;
+    t:=d[i];d[i]:=d[j];d[j]:=t;
+  end;
+  for i:=1 to l do
+  case d[i] of
+  1:
+  begin
+    inc(n);ans:=ans+c[i]*n;
+  end;
+  2:
+  begin
+    ans:=ans+c[i]*n;inc(n);
+  end;
+  end;
+  writeln(ans);
+end.

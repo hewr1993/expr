@@ -1,0 +1,33 @@
+//tihao:801
+//yangmeng
+#include<iostream>
+#include<string>
+using namespace std;
+int main()
+{
+	int i,j,k,l;
+	string str;
+	cin>>k;
+	cin>>str;
+	l=str.length();
+	for (i=0;i<l;i++)
+	{
+		j=str[i]-'A'+1;
+		j=j+k;
+		if (j!=26)
+			j=j%26;
+		cout<<(char)('A'+j-1);
+	}
+	cout<<endl;
+	for (i=0;i<l;i++)
+	{
+		j=str[i]-'A'+1;
+		j=j-k;
+		if (j<=0)
+			j=j+26;
+		cout<<(char)('A'+j-1);
+	}
+	return 0;
+}
+	
+

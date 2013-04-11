@@ -1,0 +1,29 @@
+program D1254;
+var
+   m,i,j,n,x,y,t:integer;
+   a:array[1..1000]of integer;
+
+begin
+    read(n,m);
+    if (n<=1000) and (n>=1)  and (m>=1) and (m<=1000)
+    then
+    begin
+       for i:=1 to n do
+           read(a[i]);
+       for i:=1 to m do
+       begin
+           read(x,y);
+           if a[x]<>a[y] then
+           begin
+                t:=a[x];
+                a[x]:=a[y];
+                a[y]:=t;
+            end;
+        end;
+    for i:=1 to n do
+        writeln(a[i],' ');
+    end;
+    readln;
+    readln;
+end.
+

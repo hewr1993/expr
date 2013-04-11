@@ -1,0 +1,106 @@
+#include<iostream>
+using namespace std;
+
+struct pharse
+{
+    char name[21];
+    int number;
+}color[1001]={};
+
+int pointer = 0;
+
+bool equal( char * a, char * b )
+{
+    for( int i = 0; i <= 20; i ++ )
+        if( a[i] != b[i] )
+        {
+            return false;
+            break;
+        }
+    return true;
+}
+
+bool comp( int a , int b )
+{
+    if ( color[a].number < color[b].number )
+        return true;
+    if ( color[a].number > color[b].number )
+        return false;
+    for( int i = 0; i <= 20; i ++ )
+    {
+        if( color[a].name[i] > color[b].name[i] )
+            return true;
+        if( color[a].name[i] < color[b].name[i] )
+            return false;
+    }
+}
+
+void swop( int a , int b )
+{
+    swap( color[a].number, color[b].number );
+    for( int i = 0; i <= 20; i ++ )
+        swap( color[a].name[i], color[b].name[i] );
+}
+
+void sort()
+{
+    for( int i = pointer - 1; i >= 1; i -- )
+        for( int j = 1; j <= i; j ++ )
+            if( comp( j, j + 1 ) )
+                swop( j, j + 1 );
+}
+
+void readin()
+{
+    int Total;
+    char reg[21] = "";
+    cin >> Total;
+    bool flag = false;
+    while(true)
+    {
+        if( reg[0] == '
+' )
+            break;
+        reg[0] = cin.get();
+    }
+    for( int i = 1; i <= Total; i ++ )
+    {
+        for( int j = 1; j <= 20; j ++ )
+		reg[j] = 0;
+        cin.getline( reg, 21 );
+        flag = false;
+        for( int j = 1; j <= pointer; j ++ )
+            if( equal( reg, color[j].name ) )
+            {
+                color[j].number ++;
+                flag = true;
+                break;
+            }
+        if( flag )
+            continue;
+        pointer ++;
+        color[pointer].number ++;
+        for( int j = 0; j <= 20; j ++ )
+        color[pointer].name[j] = reg[j];
+    }
+}
+
+void display()
+{
+    int num = color[1].number;
+    for( int i = 1; i <= pointer; i++)
+    {
+        if( color[i].number != num )
+            break;
+        cout << color[i].name << endl;
+    }
+}
+
+int main()
+{
+    readin();
+    sort();
+    display();
+    return 0;
+}
+

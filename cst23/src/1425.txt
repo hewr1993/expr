@@ -1,0 +1,83 @@
+//功能描述：2009NOIP普及_3 
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#define fin cin
+#define fout cout
+using namespace std;
+//ifstream fin("cell.in");
+//ofstream fout("cell.out");
+const int INF=2000000000;
+int am[30010]={0};           //保存m1的质因数 
+int bm[30010]={0};           //保存各细胞每秒分裂数的质因数 
+int main()
+{
+    int n,m1,m2,tm1;  //细菌种类及试管数 
+    int s;  //各细菌繁殖能力 
+    int t;
+    int i,j;
+    int mint=-1;
+    int maxp=0;
+    
+    fin>>n;
+    fin>>m1>>m2;
+    tm1=m1;
+    if(m1==1) {fout<<0<<endl; return 0;}       //只有一只试管，当前即可做实验 
+    
+    //求m1的所有质因数 ，保存在am数据中 
+    i=2;
+    while(tm1!=1)
+    {
+        if(tm1%i==0) {am[i]++; tm1=tm1/i ; i=2;}
+        else i++;
+    }
+    
+    for(i=2;i<=m1;i++)
+    {
+        am[i]*=m2;
+    }
+    for(maxp=m1;am[maxp]==0;maxp--)
+        ;
+    int ss;
+    //分别求各数的质因数 ，保存在bm数组中 
+    for(i=0;i<n;i++)
+    {
+        
+        fin>>s;             //得到各细胞每秒分裂数 
+        if (s==1 && m1>1)continue; 
+        ss=s;
+        memset(bm,0,sizeof(bm));
+        int f=1;
+        for (j=2;j<=maxp;j++)
+        {
+            if(am[j]!=0)
+            {
+                while(ss%j==0)
+                {
+                    bm[j]++;
+                    ss=ss/j;
+                }
+                if(bm[j]==0) {f=-1; continue;}  //永远不能满足要求 
+            }
+        }
+        if(f==-1) continue;
+        
+       int max=-1;            //找当前细菌最短要多长时间 
+       for(j=2;j<=maxp;j++)
+        {
+            t=ceil(am[j]*1.0/bm[j]);
+            if(max<t) max=t;
+        }
+        if(mint==-1) 
+            mint=max;
+        else 
+            if(mint>max) mint=max;               
+        
+    }
+   fout<<mint<<endl;
+    
+    return 0;
+}
+

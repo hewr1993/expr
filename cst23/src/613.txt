@@ -1,0 +1,14 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+int main()
+{  
+    int a,b;
+    float x,y;
+    cin>>a>>b;
+    x=a/sqrt(a*a+b*b),y=b/sqrt(a*a+b*b);
+    cout<<setiosflags(ios::fixed)<<setprecision(1)<<x<<'+'<<y<<'i'<<endl;
+    return 0;
+}
+

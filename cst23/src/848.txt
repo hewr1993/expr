@@ -1,0 +1,26 @@
+#include<iostream>
+using namespace std;
+
+class Width
+{
+public:
+    static int count;
+	Width(){count++;};
+	~Width(){count--;};
+};
+
+int Width::count=0 ;
+
+int main()
+{
+	Width w, x;
+	cout << "#objects = " << w.count << endl;
+	{
+		Width w, x, y, z;
+		cout << "#objects = " << w.count << endl;
+	}
+	cout << "#objects = " << w.count << endl;
+	Width y;
+	cout << "#objects = " << w.count << endl;
+	return 0;
+}

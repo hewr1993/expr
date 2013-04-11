@@ -1,0 +1,103 @@
+/*2012.1.27*/
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <vector>
+#include <string>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <queue>
+#include <assert.h>
+using namespace std;
+#define PL printf("%d
+", __LINE__);
+#define MM(a, b) memset(a, b, sizeof(a));
+#define For(i, a) for (register int i = 0; i < (a); i++)
+#define Foru(i, a, b) for (register int i = (a); i < (b); i++)
+#define foru(i, a, b) for (register int i = (a); i <= (b); i++)
+#define ford(i, a, b) for (register int i = (a); i >= (b); i--)
+#define fore(i, a, b) for (register __typeof(a) i = (a); (i) != (b); (i)++)
+#define inf 1000000000
+#define linf 10000000000000000LL
+#define pb push_back
+#define mp make_pair
+#define eps 1e-10
+#define Walk(u) for (elist l = de[u]; l; l = l->next)
+#define bgn begin
+#define fi first
+#define se second
+#define ite iterator
+#define All(x) (x).bgn(), (x).end()
+#define sz(x) ((int)x.size())
+#define pq priority_queue
+typedef long long LL;
+typedef pair<int, int> pii;
+typedef vector<int> vi;
+
+struct enode {
+	int v, w;
+	enode *next;
+};
+typedef enode *elist;
+elist de[22222];
+int n;
+void AddEdge(int u, int v, int w) {
+	elist l = new enode; l->next = de[u]; de[u] = l; l->w = w; l->v = v;
+}
+
+int ans;
+
+struct info {
+	int cnt[3];
+	info() {MM(cnt, 0);}
+};
+
+info operator +(const info &a, const info &b) {
+	info c;
+//	For (i, 3) For (j, 3) c.cnt[(i + j) % 3] += a.cnt[i] + b.cnt[j];
+	For (i, 3) c.cnt[i] = a.cnt[i] + b.cnt[i];
+	return c;
+}
+
+info operator +(const info &a, const int b) {
+	info c;
+	For (i, 3) c.cnt[(i + b) % 3] = a.cnt[i];
+	return c;
+}
+
+void Merge(const info &a, const info &b) { For (i, 3) ans += a.cnt[i] * b.cnt[(3 - i) % 3];}
+
+info Solve(int u, int fa) {
+	info a, in; a.cnt[0] = 1;
+	for (elist l = de[u]; l; l = l->next) {
+		if (l->v == fa) continue;
+		in = Solve(l->v, u); in = in + l->w; 
+		Merge(a, in);
+		a = a + in;
+	}
+	return a;
+}
+
+int gcd(int a, int b) {return b ? gcd(b, a % b) : a;}
+
+int main() {
+	MM(de, 0);
+	scanf("%d", &n);
+	For (i, n - 1) {
+		int u, v, w; scanf("%d%d%d", &u, &v, &w); u--; v--; w %= 3;
+		AddEdge(u, v, w); AddEdge(v, u, w);
+	}
+	ans = 0;
+	Solve(0, -1);
+	ans *= 2; ans += n;
+	int A = n * n;
+	int g = gcd(ans, A);
+//	printf("%d
+", ans);
+	printf("%d/%d
+", ans / g, A / g);
+	return 0;
+}
+

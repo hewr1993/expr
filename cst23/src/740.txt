@@ -1,0 +1,71 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+
+using std::cin;
+using std::cout;
+using std::endl;
+
+const long con = 500000;
+
+long long dist[500000];
+long long delta[12];
+long n;
+long long min, max;
+long queue[500000];
+bool inq[500000];
+long head, tail, value;
+long long ans;
+
+void openfile(){
+     freopen("problem2118.in","r",stdin);
+     freopen("problem2118.out","w",stdout);
+}
+
+void spfa(){
+     long i, x, aim;
+     head = 0; tail = 1; queue[tail] = 0; inq[0] = true;
+     do {
+         ++head; head %= con;
+         x = queue[head];
+         for (i = 0; i < n; ++i){
+             aim = (x + delta[i]) % value;
+             if (dist[aim] > dist[x] + delta[i]) {
+                dist[aim] = dist[x] + delta[i];
+                if (!inq[aim]) {
+                  queue[++tail] = aim; inq[aim] = true;
+                }
+             }
+         }
+     }while (head != tail);
+}
+
+void count(){
+     ans = 0;
+     for (int i = 0; i != value; ++i){
+         if (max >= dist[i]) ans += (max + value - dist[i]) / value;
+         if (min > dist[i]) ans -= (min + value - 1 - dist[i]) / value;
+         //cout << ans << endl;
+     } 
+}
+
+int main(){
+    //openfile();
+    cin >> n >> min >> max;
+    value = 1000000000;
+    for (int i = 0; i < n; ++i){
+        cin >> delta[i];
+        if (delta[i] && delta[i] < value) value = delta[i];
+    }
+    memset(dist, 0x7f, sizeof(dist));
+    dist[0] = 0;
+    spfa();
+    count();
+    //for (int i = 0; i < value; ++i) cout << dist[i] << endl;
+    cout << ans << endl;
+    return 0;
+}
+    
+    
+     
+

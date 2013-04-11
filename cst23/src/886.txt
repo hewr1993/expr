@@ -1,0 +1,47 @@
+#include <iostream> 
+#include <string.h>
+using namespace std;
+
+// 请补充完整
+
+template<class T>
+
+class Exam{
+	
+public:
+	Exam(T t1);
+	/*~Exam();*/
+	bool operator==(const Exam &t1);
+private:
+	T  a;
+};
+template<class T>
+Exam<T>::Exam(T t1){
+	a = t1;
+}
+
+/*
+template<class T>
+Exam::~Exam(){
+
+}*/
+template<class T>
+bool Exam<T>::operator==(const Exam &t1){
+	return (a == t1.a);
+}
+
+int main() 
+{ 
+	Exam <char *> str1("abc"),str2("abc"); 
+	cout << (str1==str2) << "
+"; 
+	Exam <int> i1(10),i2(20); 
+	cout << (i1==i2) << "
+"; 
+	Exam<char> c1('a'), c2 ('b');
+	cout<<(c1 == c2)<<"
+";
+	return 0; 
+}
+
+

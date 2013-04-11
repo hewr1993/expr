@@ -1,0 +1,73 @@
+program p1253;
+var
+        s,d1,d2,c,q2,w,now,k,p0:real;
+        n,i,j,l,m,q,past:longint;
+        d:array[0..110] of real;
+        p:array[0..110] of real;
+begin
+        read(d1,c,d2,p0,n);
+        for i:=1 to n do
+                begin
+                        read(d[i]);
+                        read(p[i]);
+                end;
+        k:=d2*c;
+        i:=1;
+        j:=0;
+        if n=0  then begin
+                if d1<=k then begin s:=p0*d1/d2; write(s:0:2);end
+                else write('No Solution');
+        end
+        else begin
+        while (d[i]<=k) do
+                begin
+                      if p[i]<=p0 then begin j:=i; break; end;
+                      inc(i);
+                end;
+        if d[i]>k then begin write('No Solution'); end
+        else begin
+        if j<>0 then begin s:=(d[j]/d2)*p0; now:=(d[j]/d2);end
+                else begin s:=c*p0; now:=c; end;
+        j:=j-1;
+        past:=0;
+        repeat
+                inc(j);
+                if j<=n then begin
+                now:=now-((d[j]-d[past])/d2);
+                if (abs(now)>0.0001)and(now<0) then begin write('No Solution'); halt; end;
+                i:=j+1;
+                q:=0;
+                while(i<=n) and ((d[i]-d[j])<=d2*c)do
+                        begin
+                                if(p[i]<=p[j]) then begin q:=i; break; end;
+                                inc(i);
+                        end;
+                if q<>0 then begin s:=s+((d[q]-d[j])/d2)*p[j]; now:=now+((d[q]-d[j])/d2); end
+                        else begin
+                                if i<=n then begin s:=s+(c-now)*p[j]; now:=c; end
+                                else begin if (d1-d[j])/d2<=now then
+                                                else if (d1-d[j])/d2<=c then begin
+                                                s:=s+((d1-d[j])/d2-now)*p[j]; now:=now+((d1-d[j])/d2)end
+                                                else begin if j=n then write('No Solution')
+                                                else begin w:=900000000000;
+                                                                while i>j+1 do begin
+                                                                 dec(i);
+                                                                 if p[i]<=w then
+                                                                        begin
+                                                                        w:=p[i];
+                                                                        m:=i;
+                                                                        end;
+                                                                 end;
+                                                                 i:=m;
+                                                                 s:=s+(c-now)*p[j]; now:=c end;
+                                                end;
+                                end;
+                        end;
+                        end;
+                past:=j;
+                j:=i-1;
+        until(j=n);
+        write(s:0:2);
+        end;
+        end;
+end. 

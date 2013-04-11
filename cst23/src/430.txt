@@ -1,0 +1,31 @@
+#include <stdio.h>
+ #include <math.h>
+ int main()
+{   
+int a[3][4],amax;   
+int i,j,r,c;    
+for(i=0;i<3;i++)
+{       
+for(j=0;j<4;j++)
+{       
+    scanf("%d",&a[i][j]); 
+        }   
+}   
+amax=a[0][0];
+    r=1; 
+    c=1;    
+for(i=0;i<3;i++)    
+    for(j=0;j<4;j++)
+{           
+    if(abs(amax)<abs(a[i][j]))
+{               
+    amax=a[i][j];           
+        r=i+1;          
+        c=j+1;          
+    }       
+    }   
+printf("%d %d %d",abs(amax),r,c); 
+    return 0; 
+}
+
+

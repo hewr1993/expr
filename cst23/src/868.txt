@@ -1,0 +1,12 @@
+#include<stdio.h>
+int main()
+{
+    int m,b,c,d;
+    scanf("%d",&m);
+    b=(m/100)%10;
+    c=(m/10)%10;
+    d=m%10;
+    printf("%d %d %d",b,c,d);
+    return 0;
+}
+

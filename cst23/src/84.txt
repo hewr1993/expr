@@ -1,0 +1,36 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+int a[10005] = {0} ;
+int c = 0 ;
+int main()
+{	int t , m , n , p , q ;
+    void trans(int , int);
+    cin >> t ;
+    for (int i = 1 ; i <= t ; i++)
+    {//t组数据 
+        cin >> m >> n ;
+        for(int i = 1 ; i <= m ; i++)
+        {//总数 m 个 
+        cin >> a[i] ;
+        }
+        for(int i = 1 ; i <= n ; i++)
+        {//交换 n 次 
+            cin >> p >> q ;
+            trans (p , q);//交换第 p 和 第 q 个数 
+        }
+        for(int i = 1 ; i <= m ; i++)
+        {
+        cout << a[i] << endl ;    
+        }
+    }
+    
+ 	return 0 ;    
+}
+void trans(int fa , int fb)
+{
+    c = a[fa];
+    a[fa] = a[fb] ;
+    a[fb] = c ;  
+} 

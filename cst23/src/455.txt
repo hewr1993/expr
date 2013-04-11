@@ -1,0 +1,39 @@
+#include <stdio.h>
+int main()
+{
+char op;
+int a,b;
+scanf("%c %d %d",&op,&a,&b);
+switch (op)
+{
+case '+':
+printf("%d
+",a+b);
+break;
+case '-':
+printf("%d
+",a-b);
+break;
+case '*':
+printf("%d
+",a*b);
+break;
+case '/':
+if (0==b)
+{
+printf("Division by zero!
+");
+}
+else
+{
+printf("%d
+",a/b);
+}
+break;
+default:
+printf("Invalid operator !
+");
+}
+return 0;
+} 
+

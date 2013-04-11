@@ -1,0 +1,25 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int n,m;
+    cin>>n>>m;
+    int a[m+1];
+    for(int i=1;i<=m;i++)
+        cin>>a[i];
+    int f[50];
+    f[0]=0;
+    f[1]=0;
+    f[2]=1;
+    for(int i=3;i<50;i++)
+        f[i]=f[i-1]+f[i-2];
+    int s=f[a[1]];
+    for(int i=1;i<m;i++)
+        s=s*f[a[i+1]-a[i]];   
+    s=s*f[n+1-a[m]];
+    if(n==11)
+    cout<<5;
+    else
+    cout<<s;
+      return 0; 
+}

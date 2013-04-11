@@ -1,0 +1,42 @@
+#include<iostream>
+using namespace std;
+int Yue(int a,int b)
+{
+        int p;
+        for(int i=1;i<=min(a,b);i++)
+        {
+                if(a%i==0&&b%i==0)
+                p=i;
+        }
+        return p;
+}
+int Bei(int a,int b)
+{
+        int q;
+        for(q=max(a,b);!(q%a==0&&q%b==0);q++)
+        {};
+        return q;
+}
+int main()
+{
+        int x0,y0;
+        int Count = 0;
+        cin>>x0>>y0;
+        for(int a=x0;a<=y0;a++)
+        for(int b=x0;b<=y0;b++)
+        {
+                if(x0*y0==a*b)
+                {
+                if(Yue(a,b)!=x0)
+                {
+                        continue;
+                }        
+                if((Yue(a,b)==x0)&&(Bei(a,b)==y0))
+                {
+                        Count++;
+                }
+        	}        
+        }
+        cout<<Count <<endl;
+        return 0;
+}

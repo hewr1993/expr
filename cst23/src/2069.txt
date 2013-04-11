@@ -1,0 +1,196 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+using namespace std;
+
+#define MAXN 300010
+#define OO 300000000000010ll
+
+int N;
+struct Edge {
+	int v;
+	long long l;
+	Edge *next;
+} e[MAXN<<1], *ind_e[MAXN];
+int e_tot;
+int col[MAXN];
+
+void BuildEdge (int u, int v, int l)
+{
+	Edge *p = &e[e_tot++];
+	p->v = v;
+	p->l = (long long) l;
+	p->next = ind_e[u];
+	ind_e[u] = p;
+}
+
+inline void InputInt (int &x)
+{
+	char c;
+	while (1)
+	{
+		c = getchar ();
+		if ('0' <= c && c <= '9')
+		{
+			x = c-'0';
+			break;
+		}
+	}
+	while (1)
+	{
+		c = getchar ();
+		if ('0' <= c && c <= '9')
+			x = x*10 + c-'0';
+		else
+			break;
+	}
+}
+
+void Init ()
+{
+	e_tot = 0;
+	memset (ind_e, 0, sizeof(ind_e));
+	
+	InputInt (N);
+	for (int i = 1; i <= N; i++)
+		InputInt (col[i]);
+//	cout << clock () << endl;
+	for (int i = 1; i < N; i++)
+	{
+		int u, v, l;
+		InputInt (u);
+		InputInt (v);
+		InputInt (l);
+		BuildEdge (u, v, l);
+		BuildEdge (v, u, l);
+	}
+//	cout << clock () << endl;
+}
+
+int q[MAXN];
+int father[MAXN];
+int mark[MAXN];
+
+void Root ()
+{
+	int f = 0, r = 0;
+	memset (mark, 0, sizeof(mark));
+	q[r++] = 1;
+	mark[1] = 1;
+	father[1] = -1;
+	while (f < r)
+	{
+		int now = q[f++];
+		for (Edge *p = ind_e[now]; p; p = p->next) if (!mark[p->v])
+		{
+			father[p->v] = now;
+			q[r++] = p->v;
+			mark[p->v] = 1;
+		}
+	}
+//	cout << clock () << endl;
+/*	for (int i = 0; i < N; i++)
+		cout << q[i] << ' ';
+	cout << endl << endl;*/
+}
+
+/*
+0 0
+1 0
+2 0
+0 1
+1 1
+*/
+long long f0[MAXN], f1[MAXN], f2[MAXN], f3[MAXN], f4[MAXN];
+
+void Solve ()
+{
+	long long d00, d01, d02, d03, d04, d10, d11, d12, d13, d14;
+	long long l, v;
+	long long t1, t2, t3;
+	int x, fa;
+	for (int i = N-1; i >= 0; i--)
+	{
+		x = q[i];
+		fa = father[x];
+		
+		d00 = d01 = d02 = d03 = d04 = 0;
+		for (Edge *p = ind_e[x]; p; p = p->next) if (p->v != fa)
+		{
+			l = p->l; v = p->v;
+			t1 = p->l + min (*(f4+v), *(f2+v));
+			t2 = min (t1, *(f0+v));
+			t3 = min (t1, *(f3+v));
+			d10 = min (t2 + d00, OO);
+			d11 = min (min (t2 + d01,
+					*(f1+v) + d00), OO);
+			d12 = min (min (t1, *(f2+v)) + d02, OO);
+			d13 = min (t3 + d03, OO);
+			d14 = min (min (t3 + d04,
+					*(f4+v) + d03), OO);
+			d00 = d10;
+			d01 = d11;
+			d02 = d12;
+			d03 = d13;
+			d04 = d14;
+		}
+		
+		if (col[x] == 2)
+		{
+			f0[x] = d00;
+			f1[x] = d01;
+			f2[x] = d02;
+			f3[x] = d03;
+			f4[x] = d04;
+		}
+		else if (col[x] == 0)
+		{
+			f0[x] = f1[x] = f2[x] = OO;
+			f3[x] = d03;
+			f4[x] = d04;
+		}
+		else
+		{
+			f0[x] = f3[x] = OO;
+			f1[x] = d00;
+			f4[x] = d03;
+			f2[x] = d02;
+		}
+	}
+	
+	cout << min (f4[1], f2[1]) << endl;
+	
+//	cout << clock () << endl;
+	
+/*	for (int i = 1; i <= N; i++)
+	{
+		cout << i << endl;
+		for (int j = 0; j <= 2; j++)
+		{
+			for (int k = 0; k <= 1; k++)
+				cout << f[i][j][k] << ' ';
+			cout << endl;
+		}
+		cout << endl;
+	}*/
+}
+
+int main_ ()
+{
+	Init ();
+	Root ();
+	Solve ();
+//	cout << clock () << endl << endl;
+	return 0;
+}
+
+int main ()
+{
+	int T;
+	InputInt (T);
+	while (T--)
+		main_ ();
+	return 0;
+}
+

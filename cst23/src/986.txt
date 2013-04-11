@@ -1,0 +1,41 @@
+#include <cstdlib>
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{   int p,w,i,j;
+    cin>>p>>w;
+    int s[w+1];
+    int r[p+1];
+    for(i=1;i<=p;i++)
+    cin>>r[i];
+    bool f=true;
+    for(i=1;i<=w;i++)
+    s[i]=r[i];
+    int js=w;
+    int t=0;
+    int js2;
+    while (f)
+    {t++;
+    js2=0;
+    for(i=1;i<=w;i++)
+    if(s[i]>0)
+    s[i]--;
+    for(i=1;i<=w;i++)
+    {
+    if(s[i]==0&&js<p)
+    {js++;
+    s[i]=r[js];
+    }
+    else if(s[i]==0&&js>=p)
+    js2++;
+    }
+    if(js2==w)
+    f=false;
+    }
+    cout<<t<<endl;
+   
+    return EXIT_SUCCESS;
+}
+

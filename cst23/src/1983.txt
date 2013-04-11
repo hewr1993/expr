@@ -1,0 +1,28 @@
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+int xs[]={7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2};
+ char sa[20],sb[20];
+int main()
+{
+   int i;
+    cin>>sa;
+    char ma[]="10x98765432";
+    for(i=0;i<6;i++)
+        sb[i]=sa[i];
+    sb[6]='1';sb[7]='9';
+    for(i=6;i<15;i++)
+        sb[i+2]=sa[i];
+    int total=0;
+    for(i=0;i<17;i++)
+    {
+        int c=sb[i]-'0';
+        total=total+c*xs[i];
+    }
+    sb[17]=ma[total %11];
+    cout<<sb<<endl;
+    return 0;
+}
+

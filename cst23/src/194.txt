@@ -1,0 +1,28 @@
+#include<iostream>
+using namespace std;
+int max(int a,int b)
+{
+    if(a<b) return b;
+    else return a;
+}
+int main()
+{
+    int n,j,i,k;
+    int a[102][102];
+    int p[102][102];
+    cin>>n;
+    for(k=n;k>=1;k--)
+    {
+                     for(j=1;j<=n+1-k;j++)
+                     {cin>>a[k][j];}
+    }
+    for(j=1;j<=n;j++)
+    {p[1][j]=a[1][j];}
+    for(i=2;i<=n;i++)
+    {
+                     for(j=1;j<=n+1-i;j++)
+                     p[i][j]=max(p[i-1][j],p[i-1][j+1])+a[i][j];
+    }
+    cout<<p[n][1]<<endl;
+    return 0;
+}

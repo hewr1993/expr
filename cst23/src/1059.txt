@@ -1,0 +1,31 @@
+#include <cstdlib>
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+using namespace std;
+
+int main(int argc, char *argv[])
+{   char a[200],b[200],t;
+    gets(a);
+    int la=strlen(a);
+    
+    int i,j;
+    for(i=0;i<la;i++)
+    {if(a[i]!='-')
+    cout<<a[i];
+    else
+    {   if(a[i-1]<a[i+1])
+        for(j=a[i-1]+1;j<=a[i+1]-1;j++)
+        {t=j;
+         cout<<t;}
+         else
+         for(j=a[i-1]-1;j>=a[i+1]+1;j--)
+        {t=j;
+         cout<<t;}
+         
+    }}
+    cout<<endl;
+   // system("PAUSE");
+    return EXIT_SUCCESS;
+}
+

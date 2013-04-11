@@ -1,0 +1,56 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<math.h>
+int main()
+{
+ int a[2000],b[100],i,j,n,k,l,q;
+ k=0;
+ q=0;
+ l=2;
+ scanf("%d",&n);
+ printf("%d=",n);
+ for(i=2;i<9973;i++)
+ {
+  if(l!=1)
+  for(j=0;j<14;j++)
+  {
+   if(n%i==0)
+   {
+    n=n/i;
+    k=k+1;
+    continue;
+   }
+   else 
+   {
+    if(k>=2)
+    {
+     printf("%d^%d",i,k);
+     i=i+1;
+     q=1;
+     k=0;
+    }
+    else if(k==1)
+   {
+    printf("%d",i);
+    i=i+1;
+    q=1;
+    k=0;
+   }
+   }
+   
+   if(n!=1&&q==1)
+   {
+    printf("*");
+    q=0;
+   }
+   else l=0;
+  }
+  else break;
+ }
+ printf("
+");
+ system("pause");
+ return 0;
+}
+

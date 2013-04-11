@@ -1,0 +1,19 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int s=0;
+    int a,b,j;
+    cin>>a>>b;
+    if((a>7)||(a<3)||((a==7)&&(b>4)))
+    {j=0;cout<<j<<endl;}
+    else
+    {if(a>3) {s=s+31;}
+    if(a>4) {s=s+30;}
+    if(a>5) {s=s+31;}
+    if(a>6) {s=s+30;}
+    s=s+b;
+    j=(s-1)/7+1;
+    cout<<j<<endl;}
+    return 0;
+}

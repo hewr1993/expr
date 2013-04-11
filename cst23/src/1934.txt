@@ -1,0 +1,133 @@
+#include<cstdio>
+#include<cstring>
+#include<map>
+#include<algorithm>
+using namespace std;
+const int M=1000000007;
+const int maxn=100010;
+int inv(int a)
+{
+    int ans=1;
+    int b=M-2;
+    while(b)
+    {
+        if(b&1)ans=(long long)ans*a%M;
+        a=(long long)a*a%M;
+        b>>=1;
+    }
+    return ans;
+}
+struct node
+{
+    int l,r,id;
+    bool operator < (const node &b) const
+    {
+        return r<b.r;
+    }
+}q[maxn];
+int prime[40000],flag[40000],num;
+int a[maxn*20],b[maxn*20],n;
+long long sum[maxn*20];
+int pre[maxn*20];
+int L[maxn];
+int R[maxn];
+int cnt;
+long long tree[maxn*20];
+void update(int pos,int val)
+{
+    pos++;
+    while(pos<=cnt)tree[pos]=tree[pos]*val%M,pos+=pos&(-pos);
+}
+long long query(int pos)
+{
+    pos++;
+    long long ans=1;
+    while(pos)ans=ans*tree[pos]%M,pos-=pos&(-pos);
+    return ans;
+}
+map <int,int> ID;
+map <int,int> :: iterator it;
+int ans[maxn];
+int main()
+{
+    for(int i=2;i<40000;i++)
+    {
+        if(!flag[i])prime[++num]=i;
+        for(int j=1;j<=num&&i*prime[j]<40000;j++)
+        {
+            flag[i*prime[j]]=1;
+            if(i%prime[j]==0)
+            break;
+        }
+    }
+    int Q;
+    while(~scanf("%d %d",&n,&Q))
+    {
+        cnt=0;
+        for(int i=1;i<=n;i++)
+        {
+            int x;
+            scanf("%d",&x);
+            if(x==1)
+            {
+                cnt++;
+                a[cnt]=b[cnt]=1;
+                L[i]=R[i]=cnt;
+            }
+            else
+            {
+                L[i]=cnt+1;
+                for(int j=1;j<=num&&prime[j]*prime[j]<=x;j++)
+                if(x%prime[j]==0)
+                {
+                    int temp=1;
+                    while(x%prime[j]==0)
+                    {
+                        x/=prime[j];
+                        temp*=prime[j];
+                        a[++cnt]=temp;
+                        b[cnt]=prime[j];
+                    }
+                }
+                if(x>1)
+                {
+                    a[++cnt]=x;
+                    b[cnt]=x;
+                }
+                R[i]=cnt;
+            }
+        }
+        ID.clear();sum[0]=1;
+        for(int i=1;i<=cnt;i++)
+        {
+            sum[i]=sum[i-1]*b[i]%M;
+            it=ID.find(a[i]);
+            if(it==ID.end())pre[i]=0;
+            else pre[i]=it->second;
+            ID[a[i]]=i;
+        }
+        for(int i=1;i<=Q;i++)
+        {
+            scanf("%d %d",&q[i].l,&q[i].r);
+            q[i].l=L[q[i].l];
+            q[i].r=R[q[i].r];
+            q[i].id=i;
+        }
+        sort(q+1,q+1+Q);
+        for(int i=1;i<=cnt;i++)tree[i]=1;
+        int now=0;
+        for(int i=1;i<=Q;i++)
+        {
+            while(now+1<=cnt&&now+1<=q[i].r)
+            {
+                now++;
+                update(pre[now],b[now]);
+            }
+            ans[q[i].id]=query(q[i].l-1)*inv(sum[q[i].l-1])%M;
+        }
+        for(int i=1;i<=Q;i++)
+        printf("%d
+",ans[i]);
+    }
+}
+

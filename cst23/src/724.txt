@@ -1,0 +1,122 @@
+//program 2141
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+struct Node
+{
+  int Left,Right,Mid,Count;
+  Node *Lc,*Rc;
+};
+
+int N;
+int A[20000],Data[20000];
+Node *Tree[20001];
+
+int Find(int L,int R,int X)
+{
+  int Mid=(L+R)/2;if(Data[Mid]==X)return Mid;
+  return (X<Data[Mid])?Find(L,Mid-1,X):Find(Mid+1,R,X);
+}
+
+Node *NewNode(int L,int R)
+{
+  Node *P=new Node;
+  P->Left=L;P->Right=R;P->Mid=(L+R)/2;P->Count=0;
+  P->Lc=P->Rc=NULL;
+  return P;
+}
+
+void Insert(Node *P,int X,int Delta)
+{
+  while(true)
+    {
+      P->Count+=Delta;
+      if(P->Left==P->Right)return;
+      if(X<=P->Mid)
+        {
+          if(P->Lc==NULL)
+            P->Lc=NewNode(P->Left,P->Mid);
+          P=P->Lc;
+        }
+      else
+        {
+          if(P->Rc==NULL)
+            P->Rc=NewNode(P->Mid+1,P->Right);
+          P=P->Rc;
+        }
+    }
+}
+
+int Calc(Node *P,int X)
+{
+  int Ans=0;
+  while(P!=NULL&&X>=P->Left)
+    if(X>=P->Mid)
+      {
+        if(P->Lc!=NULL)
+          Ans+=P->Lc->Count;
+        P=P->Rc;
+      }
+    else
+      P=P->Lc;
+  return Ans;
+}
+
+void Add(int X,int T,int Delta)
+{
+  X++;
+  while(X<=N)
+    {
+      Insert(Tree[X],T,Delta);
+      X+=X&-X;
+    }
+}
+
+int Count(int L,int R,int X)
+{
+  int P,Ans=0;
+  P=R+1;while(P){Ans+=Calc(Tree[P],X);P^=P&-P;}
+  P=L;while(P){Ans-=Calc(Tree[P],X);P^=P&-P;}
+  return Ans;
+}
+
+int main()
+{
+  scanf("%d",&N);
+  for(int i=0;i<N;i++)scanf("%d",&A[i]);
+  for(int i=0;i<N;i++)Data[i]=A[i];
+  sort(Data,Data+N);
+  for(int i=0;i<N;i++)A[i]=Find(0,N-1,A[i]);
+  for(int i=0;i<=N;i++)Tree[i]=NewNode(0,N-1);
+  for(int i=0;i<N;i++)Add(i,A[i],1);
+  int Ans=0;
+  for(int i=1;i<N;i++)
+    Ans+=Count(i,N-1,A[i-1]-1);
+  printf("%d
+",Ans);
+  int Query;scanf("%d",&Query);
+  while(Query--)
+    {
+      int X,Y;scanf("%d%d",&X,&Y);
+      X--;Y--;if(X>Y)swap(X,Y);
+      if(A[X]<A[Y])Ans++;
+      if(A[X]>A[Y])Ans--;
+      Ans-=Count(X+1,Y-1,A[X]);
+      Ans-=Count(X+1,Y-1,A[X]-1);
+      Ans+=Count(X+1,Y-1,A[Y]);
+      Ans+=Count(X+1,Y-1,A[Y]-1);
+      printf("%d
+",Ans);
+      Add(X,A[X],-1);Add(Y,A[Y],-1);
+      swap(A[X],A[Y]);
+      Add(X,A[X],1);Add(Y,A[Y],1);
+    }
+  return 0;
+}
+

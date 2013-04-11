@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <memory.h>
+const int  nmax = 50, emax = nmax << 1;
+
+int n, k1, k2, w[nmax + 18], tot;
+double f[nmax + 18][nmax + 18][nmax + 18], g[nmax + 18], oo;
+int fst[nmax + 18], pnt[emax + 18], nxt[emax + 18];
+
+void downdate(double &a, double b)
+{
+    if (a > b) a = b;
+}
+
+void addedge(int s,int t)
+{
+    pnt[++tot] = t;
+    nxt[tot] = fst[s];
+    fst[s] = tot;
+    
+    pnt[++tot] = s;
+    nxt[tot] = fst[t];
+    fst[t] = tot;
+}
+
+void dynamic(int pos, int fa)
+{
+    for (int i = fst[pos], p = pnt[i]; i; i = nxt[i], p = pnt[i])
+	if (p != fa)
+	    dynamic(p, pos);
+    g[pos] = oo;
+    for (int j = k1; j <= k2; ++j)
+    {
+	for (int i = 0; i <= n; ++i) f[pos][j][i] = oo;
+	f[pos][j][1] = (double) w[pos] / j;
+	for (int i = fst[pos], p = pnt[i]; i; i = nxt[i], p = pnt[i])
+	    if (p != fa)
+		for (int k = j; k; --k)
+		{
+		    f[pos][j][k] += g[p];
+		    for (int c = 1; c < k; ++c)
+			downdate(f[pos][j][k], f[pos][j][k - c] + f[p][j][c]);
+		}
+	downdate(g[pos], f[pos][j][j]);
+    }
+}
+
+int main()
+{
+    scanf("%d%d%d", &n, &k1, &k2);
+    for (int i = 1; i <= n; ++i)
+	scanf("%d", &w[i]);
+    for (int i = 1, s, t; i < n; ++i)
+	scanf("%d%d", &s, &t), addedge (s, t);
+    for (int i = 1; i <= n; ++i) oo += w[i] << 1;
+    dynamic(1, 0);
+    printf("%.2lf", g[1]);
+    return 0;
+}
+

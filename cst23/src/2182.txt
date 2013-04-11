@@ -1,0 +1,55 @@
+#include<iostream>
+#include<cstdio>
+using namespace std;
+
+long long b[1000005],c[1000005];
+int a[1000005],le[1000005],ri[1000005];
+inline void read(int &x)
+  {
+    char ch; int s=1;x=0;
+    while (ch=getchar(),(ch<'0' || ch>'9') && (ch!='-'));
+    if (ch=='-') s=-1; else x =ch-'0';
+    while (ch=getchar(),ch>='0' && ch<='9') x*=10,x+=ch-'0';
+    x*=s;
+  }
+
+
+int main()
+{
+//	freopen("1.in","r",stdin);
+//	freopen("1.out","w",stdout);
+	int n,m,i,t,ll,rr; 
+	read(n);
+	
+	for(i=1;i<=n;i++)
+	read(a[i]);
+	for(i=1;i<=n;i++)
+	{
+		for(t=i-1;a[i]<a[t];t=le[t]);
+		le[i]=t;
+	}
+	for(i=n;i>=1;i--)
+	{
+		for(t=i+1;a[i]<=a[t];t=ri[t]);
+		ri[i]=t;
+	}
+	for(i=1;i<=n;i++)
+	{
+		ll=i-le[i];
+		rr=ri[i]-i;
+		b[1]+=a[i];
+		b[ll+1]-=a[i];
+		b[rr+1]-=a[i];
+		b[ll+rr+1]+=a[i];
+	}
+	for(i=1;i<=n;i++)
+	b[i]+=b[i-1],c[i]=c[i-1]+b[i];
+	read(m);
+	for(i=1;i<=m;i++)
+	{
+		int x;
+		read(x); printf("%.15f
+",double(c[x])/double(n-x+1));
+	}
+}
+

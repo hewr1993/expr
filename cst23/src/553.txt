@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int h[100],n;
+
+bool compbig(int a,int b)
+{
+    if (a>b)
+        return true;
+    return false;
+}
+
+bool compsmall(int a,int b)
+{
+    if (a<b)
+        return true;
+    return false;
+}
+
+int max(int a,int b)
+{
+    if (a>b)
+        return a;
+    return b;
+}
+
+int f(int left,int right,bool (*comp)(int a,int b))
+{
+    int x[100];
+    for (int i=0;i<100;++i)
+        x[i]=1;
+    for (int i=left;i<right;++i)
+        for (int j=left;j<i;++j)
+            if (comp(h[i],h[j]))
+                x[i]=max(x[i],x[j]+1);
+    int m=0;
+    if (comp(1,2))
+    {
+        for (int i=left;i<right;++i)
+            if (x[i]>m)
+                m=x[i];
+        return m;
+    }
+    return x[right-1];
+}
+
+int main()
+{
+    scanf("%d",&n);
+    for (int i=0;i<n;++i)
+        scanf("%d",&h[i]);
+    int min=100,mp;
+    for (int i=0;i<n;++i)
+        if ((n-f(0,i+1,compbig)-f(i,n,compsmall)+1)<min)
+            min=n-f(0,i+1,compbig)-f(i,n,compsmall)+1;
+    printf("%d",min);
+    return 0;
+}
+

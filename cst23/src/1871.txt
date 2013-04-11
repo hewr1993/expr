@@ -1,0 +1,96 @@
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <vector>
+#include <cassert>
+#define FOREACH(I, C) for(__typeof((C).begin()) I = (C).begin(); I != (C).end(); I ++)
+using namespace std;
+typedef long long ll;
+vector<pair<int, int> > trans[6][10][10];
+int f[20][2][2][6][10];
+
+void upd(int &x, int y) {
+	x = max(x, y);
+}
+
+struct Number {
+	int nDig, dig[20];
+	ll val;
+	void refresh() {
+		memset(dig, 0, sizeof(dig));
+		nDig = 0;
+		ll tmp = val;
+		while ( tmp ) {
+			dig[nDig ++] = tmp % 10;
+			tmp /= 10;
+		}
+	}
+} low, high;
+
+void initTrans() {
+	for ( int x = 0; x <= 9; x ++ )
+		for ( int y = 0; y <= 9; y ++ ) {
+			if ( y > x )
+				trans[0][x][y].push_back(make_pair(1, y));
+		}
+	for ( int x = 0; x <= 9; x ++ )
+		for ( int y = 0; y <= 9; y ++ ) {
+			if ( y > x )
+				trans[1][x][y].push_back(make_pair(1, y));
+			if ( y < x )
+				trans[1][x][y].push_back(make_pair(2, y));
+		}
+	for ( int x = 0; x <= 9; x ++ )
+		for ( int y = 0; y <= 9; y ++ ) {
+			trans[2][x][y].push_back(make_pair(3, y));
+			if ( y < x )
+				trans[2][x][y].push_back(make_pair(2, y));
+		}
+	for ( int x = 0; x <= 9; x ++ )
+		for ( int y = 0; y <= 9; y ++ ) 
+			if ( y > x )
+				trans[3][x][y].push_back(make_pair(4, y));
+	for ( int x = 0; x <= 9; x ++ )
+		for ( int y = 0; y <= 9; y ++ ) {
+			if ( y > x )
+				trans[4][x][y].push_back(make_pair(4, y));
+			if ( y < x )
+				trans[4][x][y].push_back(make_pair(5, y));
+		}
+	for ( int x = 0; x <= 9; x ++ )
+		for ( int y = 0; y <= 9; y ++ ) 
+			if ( y < x )
+				trans[5][x][y].push_back(make_pair(5, y));
+}
+
+int main() {
+	initTrans();
+
+	cin >> low.val >> high.val;
+	low.refresh(); high.refresh();
+
+	memset(f, -0x3f, sizeof(f));
+	int nDig = high.nDig;
+	for ( int x = low.dig[nDig - 1]; x <= high.dig[nDig - 1]; x ++ ) 
+		if ( x != 9 )
+			f[nDig - 1][x == low.dig[nDig - 1]][x == high.dig[nDig - 1]][0][x] = x;
+	for ( int i = nDig - 1; i > 0; i -- ) 
+		for ( int ls = 0; ls <= 1; ls ++ )
+			for ( int hs = 0; hs <= 1; hs ++ ) 
+				for ( int stage = 0; stage <= 5; stage ++ ) 
+					for ( int x = 0; x <= 9; x ++ ) 
+						if ( f[i][ls][hs][stage][x] >= 0 ) {
+							int lb = ls ? low.dig[i - 1] : 0,
+								hb = hs ? high.dig[i - 1] : 9;
+							for ( int y = lb; y <= hb; y ++ ) 
+								FOREACH(it, trans[stage][x][y]) 
+									upd(f[i - 1][ls && y == low.dig[i - 1]][hs && y == high.dig[i - 1]][it->first][it->second],
+											f[i][ls][hs][stage][x] + y);
+						}
+	int res = 0;
+	for ( int ls = 0; ls <= 1; ls ++ )
+		for ( int hs = 0; hs <= 1; hs ++ ) 
+			for ( int x = 0; x <= 9; x ++ ) 
+				res = max(res, f[0][ls][hs][5][x]);
+	cout << res;
+}

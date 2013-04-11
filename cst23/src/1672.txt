@@ -1,0 +1,347 @@
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+ 
+using namespace std;
+ 
+int X[100000], Y[100000], ans[40000];
+char words[240000], *word[40000];
+ 
+struct TrieNode {
+        TrieNode *ch[27];
+        int strNo;
+} trie[240001];
+ 
+struct Node;
+ 
+struct EdgeNode {
+        EdgeNode *next;
+        Node *data;
+} edge[240000];
+ 
+struct Node {
+        Node *ch[2], *pre, *fa, *near[2], *side1[2], *side2[2], *up[3], *flag[2];
+        bool check[2], allCheck[2], kind, v;
+        int depth, rank[3], strNo, sonCnt, size;
+        EdgeNode *ge;
+} tree[240001], *strLoc[40000], *null;
+ 
+bool cmp(char *a, char *b) {
+        return strcmp(a, b) < 0;
+}
+ 
+TrieNode* newTrieNode() {
+        static int top = 0;
+        TrieNode *p = &trie[top ++];
+        for (int i = 0; i < 27; i ++)
+                p->ch[i] = 0;
+        p->strNo = -1;
+        return p;
+}
+ 
+Node* newNode() {
+        static int top = 0;
+        Node *p = &tree[top ++];
+        p->ch[0] = p->ch[1] = p->pre = p->fa = p->near[0] = p->near[1] = null;
+        p->side1[0] = p->side1[1] = p->up[0] = p->up[1] = p->up[2] = null;
+        p->flag[0] = p->flag[1] = p->side2[0] = p->side2[1] = p;
+        p->check[0] = p->check[1] = true;
+        p->allCheck[0] = p->allCheck[1] = true;
+        p->depth = p->rank[0] = p->rank[1] = p->rank[2] = p->sonCnt = 0;
+        p->kind = p->v = false;
+        p->strNo = -1;
+        p->size = 1;
+        p->ge = 0;
+        return p;
+}
+ 
+void insertEdge(Node *a, Node *b) {
+        static int top = 0;
+        b->pre = b->fa = a;
+        b->depth = a->depth + 1;
+        a->sonCnt ++;
+        EdgeNode *p = &edge[top ++];
+        p->data = b;
+        p->next = a->ge;
+        a->ge = p;
+}
+ 
+void compressTree(TrieNode *cur, Node *last) {
+        int cnt = 0;
+        for (int i = 0; i < 27; i ++)
+                if (cur->ch[i]) cnt ++;
+        Node *loc;
+        if (cnt == 1)
+                loc = last;
+        else {
+                loc = newNode();
+                if (cur->strNo != -1) {
+                        loc->strNo = cur->strNo;
+                        strLoc[cur->strNo] = loc;
+                }
+                if (last) insertEdge(last, loc);
+        }
+        for (int i = 0; i < 27; i ++)
+                if (cur->ch[i]) compressTree(cur->ch[i], loc);
+}
+ 
+void update(Node *p) {
+        p->allCheck[0] = p->check[0] && p->ch[0]->allCheck[0] && p->ch[1]->allCheck[0];
+        p->allCheck[1] = p->check[1] && p->ch[0]->allCheck[1] && p->ch[1]->allCheck[1];
+}
+ 
+void rotate(Node *x, int c) {
+        Node *y = x->pre;
+        y->ch[! c] = x->ch[c];
+        if (x->ch[c] != null) x->ch[c]->pre = y;
+        x->pre = y->pre;
+        if (y->kind) y->pre->ch[y == y->pre->ch[1]] = x;
+        x->ch[c] = y;
+        y->pre = x;
+        if (! y->kind) {
+                y->kind = true;
+                x->kind = false;
+        }
+        update(y);
+}
+ 
+void splay(Node *x) {
+        while (x->kind)
+                if (! x->pre->kind)
+                        rotate(x, x == x->pre->ch[0]);
+                else {
+                        Node *y = x->pre, *z = y->pre;
+                        if (y == z->ch[0])
+                                if (x == y->ch[0]) {
+                                        rotate(y, 1);
+                                        rotate(x, 1);
+                                } else {
+                                        rotate(x, 0);
+                                        rotate(x, 1);
+                                }
+                        else
+                                if (x == y->ch[1]) {
+                                        rotate(y, 0);
+                                        rotate(x, 0);
+                                } else {
+                                        rotate(x, 1);
+                                        rotate(x, 0);
+                                }
+                }
+        update(x);
+}
+ 
+void expose(Node *x) {
+        Node *u = x, *v = null;
+        while (u != null) {
+                splay(u);
+                u->ch[1]->kind = false;
+                u->ch[1] = v;
+                if (v != null) v->kind = true;
+                update(u);
+                v = u;
+                u = u->pre;
+        }
+}
+ 
+Node* getLCA(Node *a, Node *b) {
+        expose(a);
+        Node *u = b, *v = null, *res;
+        while (u != null) {
+                splay(u);
+                if (u->pre == null) res = u;
+                u->ch[1]->kind = false;
+                u->ch[1] = v;
+                if (v != null) v->kind = true;
+                update(u);
+                v = u;
+                u = u->pre;
+        }
+        return res;
+}
+ 
+Node* getSon(Node *a, Node *b) {
+        expose(b);
+        splay(a);
+        Node *res = a->ch[1];
+        while (res->ch[0] != null) res = res->ch[0];
+        return res;
+}
+ 
+bool getCheck(Node *a, Node *b, int c) {
+        expose(b);
+        splay(a);
+        return a->ch[1]->allCheck[c];
+}
+ 
+Node* findSet(Node *x, int c) {
+        Node *res = x;
+        while (res->up[c] != null) res = res->up[c];
+        Node *bak, *now = x;
+        while (now->up[c] != null) {
+                bak = now->up[c];
+                now->up[c] = res;
+                now = bak;
+        }
+        return res;
+}
+ 
+void unionSet(Node *a, Node *b, int c) {
+        a = findSet(a, c);
+        b = findSet(b, c);
+        if (a->rank[c] < b->rank[c]) {
+                a->up[c] = b;
+                if (c == 2) {
+                        b->size += a->size;
+                        b->side2[0] = a->side2[0];
+                }
+        } else {
+                b->up[c] = a;
+                if (c == 2) {
+                        a->size += b->size;
+                        a->side2[1] = b->side2[1];
+                }
+                if (c < 2) a->flag[c] = b->flag[c];
+                if (a->rank[c] == b->rank[c]) a->rank[c] ++;
+        }
+}
+ 
+void coverCheck(Node *a, Node *b, int c) {
+        Node *now = findSet(b->fa, c)->flag[c];
+        while (now->depth >= a->depth) {
+                Node *son = getSon(now, b);
+                for (EdgeNode *p = now->ge; p; p = p->next)
+                        if (p->data != son) {
+                                splay(p->data);
+                                p->data->check[c] = p->data->allCheck[c] = false;
+                        }
+                if (findSet(son, 2)->size < now->sonCnt) {
+                        Node *loc = findSet(son, 2)->side2[! c];
+                        splay(loc);
+                        loc->check[! c] = loc->allCheck[! c] = false;
+                }
+                now->side1[c] = son;
+                unionSet(now, now->fa, c);
+                now = findSet(now, c)->flag[c];
+        }
+}
+ 
+void getAnswer(Node *now) {
+        static int top = 0;
+        if (now->strNo != -1) ans[top ++] = now->strNo;
+        now->v = true;
+        for (EdgeNode *p = now->ge; p; p = p->next)
+                if (p->data == now->side1[0]) {
+                        for (Node *q = p->data; q != null; q = q->near[1])
+                                getAnswer(q);
+                        break;
+                }
+        for (EdgeNode *p = now->ge; p; p = p->next)
+                if (! p->data->v && p->data->near[0] == null) {
+                        bool flag = false;
+                        for (Node *q = p->data; q != null; q = q->near[1])
+                                if (q == now->side1[1]) {
+                                        flag = true;
+                                        break;
+                                }
+                        if (flag) continue;
+                        for (Node *q = p->data; q != null; q = q->near[1])
+                                getAnswer(q);
+                }
+        for (EdgeNode *p = now->ge; p; p = p->next)
+                if (! p->data->v && p->data->near[0] == null) {
+                        for (Node *q = p->data; q != null; q = q->near[1])
+                                getAnswer(q);
+                        break;
+                }
+}
+ 
+int main() {
+        int n, q, cur = 0;
+        scanf("%d%d", &n, &q);
+        for (int i = 0; i < n; i ++) {
+                word[i] = words + cur;
+                scanf("%s", word[i]);
+                cur += strlen(word[i]) + 1;
+        }
+        for (int i = 0; i < q; i ++)
+                scanf("%d%d", &X[i], &Y[i]);
+        
+        TrieNode *root = newTrieNode();
+        for (int i = 0; i < n; i ++) {
+                TrieNode *now = root;
+                int len = strlen(word[i]);
+                for (int j = 0; j <= len; j ++) {
+                        int loc = word[i][j] - 'a';
+                        if (word[i][j] == ' ') loc = 26;
+                        if (! now->ch[loc]) now->ch[loc] = newTrieNode();
+                        now = now->ch[loc];
+                }
+                now->strNo = i;
+        }
+        
+        sort(word, word + n, cmp);
+        long long sum = 0;
+        for (int i = 1; i < n; i ++) {
+                char *a = word[i-1], *b = word[i];
+                int len = 0;
+                while (*a != ' ' && *b != ' ' && *a == *b) {
+                        len ++;
+                        a ++;
+                        b ++;
+                }
+                sum += len * len;
+        }
+        printf("%I64d
+", sum);
+        
+        null = newNode();
+        null->ch[0] = null->ch[1] = null->pre = null;
+        compressTree(root, 0);
+        
+        for (int i = q - 1; i >= 0; i --) {
+                Node *a = strLoc[X[i]-1], *b = strLoc[Y[i]-1];
+                Node *lca = getLCA(a, b);
+                Node *x = getSon(lca, a), *y = getSon(lca, b);
+                if (x == lca->side1[1] || y == lca->side1[0]) continue;
+                if (x->near[1] != null && x->near[1] != y) continue;
+                if (y->near[0] != null && y->near[0] != x) continue;
+                if (findSet(x, 2) == findSet(y, 2))
+                        if (x->near[1] != y || y->near[0] != x) continue; else;
+                else
+                        if (lca->side1[0] != null && findSet(lca->side1[0], 2) == findSet(x, 2))
+                                if (lca->side1[1] != null && findSet(lca->side1[1], 2) == findSet(y, 2))
+                                        if (findSet(x, 2)->size + findSet(y, 2)->size < lca->sonCnt) continue;
+                if (! getCheck(x, a, 1) || ! getCheck(y, b, 0)) continue;
+                if (findSet(x, 2) != findSet(y, 2)) {
+                        unionSet(x, y, 2);
+                        x->near[1] = y;
+                        y->near[0] = x;
+                        if (lca->side1[0] != null && findSet(y, 2) == findSet(lca->side1[0], 2))
+                                if (findSet(y, 2)->size < lca->sonCnt) {
+                                        Node *loc = findSet(y, 2)->side2[1];
+                                        splay(loc);
+                                        loc->check[1] = loc->allCheck[1] = false;
+                                }
+                        if (lca->side1[1] != null && findSet(x, 2) == findSet(lca->side1[1], 2))
+                                if (findSet(x, 2)->size < lca->sonCnt) {
+                                        Node *loc = findSet(x, 2)->side2[0];
+                                        splay(loc);
+                                        loc->check[0] = loc->allCheck[0] = false;
+                                }
+                }
+                coverCheck(x, a, 1);
+                splay(x);
+                x->check[1] = x->allCheck[1] = false;
+                coverCheck(y, b, 0);
+                splay(y);
+                y->check[0] = y->allCheck[0] = false;
+        }
+        
+        getAnswer(&tree[1]);
+        for (int i = 0; i < n; i ++)
+                if (i < n - 1) printf("%d ", ans[i] + 1); else printf("%d
+", ans[i] + 1);
+        
+        return 0;
+}

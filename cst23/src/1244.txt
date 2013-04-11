@@ -1,0 +1,246 @@
+#include <cassert>
+#include <cctype>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <utility>
+#include <functional>
+#include <string>
+#include <bitset>
+#include <deque>
+#include <list>
+#include <map>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <iterator>
+#include <algorithm>
+#include <complex>
+#include <valarray>
+#include <numeric>
+
+using namespace std;
+
+const int kMaxL = 10, kMaxR = 10, kMaxN = 50, kMaxM = 50, kMaxK = 50, kMaxP = 100;
+const int kFx[4] = {-1, 0, 1, 0}, kFy[4] = {0, 1, 0, -1};
+// 0 - N, 1 - E, 2 - S, 3 - W
+char idx[256];
+int l, r, n, m, k, p, limit, tot, cur;
+int grid[kMaxN][kMaxM];
+
+struct Mouse {
+	bool exist;
+	int x, y, dir, cnt;
+	bool sex;
+	int stun, fxxk, part, grow;
+	bool right;
+	void scan() {
+		scanf("%d%d", &x, &y);
+		-- x, -- y;
+		char tmp[2];
+		scanf("%s", tmp);
+		dir = idx[(int)tmp[0]];
+		scanf("%s", tmp);
+		sex = (tmp[0] == 'X');
+		exist = true;
+		part = -1;
+	}
+	void move() {
+		part = -1;
+		if (grid[x][y] >> dir & 1) {
+			x += kFx[dir];
+			y += kFy[dir];
+		}
+		else {
+			int dr = dir, dl = dir;
+			dr = (dr + 1) % 4;
+			dl = (dl - 1 + 4) % 4;
+			if (!(grid[x][y] >> dl & 1) && !(grid[x][y] >> dr & 1)) {
+				dir = dl;
+			}
+			else {
+				if ((grid[x][y] >> dl & 1) && (grid[x][y] >> dr & 1)) {
+					if (right) dir = dr;
+					else dir = dl;
+					right ^= 1;
+				}
+				else if (grid[x][y] >> dl & 1) {
+					dir = dl;
+				}
+				else {
+					dir = dr;
+				}
+			}
+		}
+	}
+};
+
+Mouse mice[kMaxK * 10];
+
+void DealWithGrow() {
+	for (int i = 0; i < k; ++ i)
+		if (mice[i].exist && !mice[i].stun && mice[i].grow)
+			-- mice[i].grow;
+}
+
+void DealWithFxxk() {
+	for (int i = 0; i < k; ++ i)
+		if (mice[i].exist && mice[i].fxxk && mice[mice[i].part].exist && i < mice[i].part) {
+			if (!mice[i].stun && !mice[mice[i].part].stun) {
+				-- mice[i].fxxk, -- mice[mice[i].part].fxxk;
+				if (!mice[i].fxxk) {
+					mice[i].stun = mice[mice[i].part].stun = 1;
+					for (int d = 0; d < 4; ++ d)
+						if (grid[mice[i].x][mice[i].y] >> d & 1) {
+							mice[k].x = mice[i].x;
+							mice[k].y = mice[i].y;
+							mice[k].sex = (d % 2 == 0);
+							mice[k].grow = 5;
+							mice[k].dir = d;
+							mice[k].exist = true;
+							mice[k].part = -1;
+							++ k;
+						}
+				}
+			}	   
+		}
+	static int cnt[kMaxN][kMaxM];
+	memset(cnt, 0, sizeof(cnt));
+	for (int i = 0; i < k; ++ i)
+		if (mice[i].exist) cnt[mice[i].x][mice[i].y] ++;
+	for (int i = 0; i < k - 1; ++ i)
+		for (int j = i + 1; j < k; ++ j)
+			if (!mice[i].fxxk && !mice[j].fxxk && mice[i].exist && mice[j].exist && !mice[i].grow && !mice[j].grow && mice[i].x == mice[j].x && mice[i].y == mice[j].y && cnt[mice[i].x][mice[i].y] == 2 && (mice[i].sex ^ mice[j].sex) == 1 && !mice[i].stun && !mice[j].stun && (mice[i].part != j || mice[j].part != i)) {
+				mice[i].fxxk = mice[j].fxxk = 2;
+				mice[i].part = j, mice[j].part = i;
+			}
+}
+
+void DealWithMove() {
+	for (int i = 0; i < k; ++ i)
+		if (mice[i].stun) -- mice[i].stun;
+		else if (!mice[i].fxxk) mice[i].move();
+}
+
+struct WeapMother {
+	int x, y, t;
+	WeapMother() {}
+	virtual void expose() = 0;
+	void get() {
+		scanf("%d%d%d", &t, &x, &y);
+		-- x, -- y;
+	}
+};
+
+struct Weap0 : public WeapMother {
+	virtual void expose() {
+		if (t != cur) return;
+		static bool mark[kMaxN][kMaxM];
+		memset(mark, false, sizeof(mark));
+		for (int d = 0; d < 4; ++ d) {
+			int nx = x, ny = y, len = 0;
+			mark[nx][ny] = true;
+			while (grid[nx][ny] >> d & 1) {
+				++ len;
+				if (len > l) break;
+				nx += kFx[d], ny += kFy[d];
+				mark[nx][ny] = true;
+			}	
+		}
+		for (int i = 0; i < k; ++ i)
+			if (mark[mice[i].x][mice[i].y]) mice[i].exist = false;
+	}
+};
+
+struct Weap1 : public WeapMother {
+#define SQR(x) ((x) * (x))
+	virtual void expose() {
+		if (t != cur) return;
+		for (int i = 0; i < k; ++ i)
+			if (SQR(mice[i].x - x) + SQR(mice[i].y - y) <= r * r) {
+				mice[i].stun += 3;
+			}
+	}
+#undef SQR
+};
+
+struct Weap2 : public WeapMother {
+	virtual void expose() {
+		if (t != cur) return;
+		for (int i = 0; i < k; ++ i)
+			if (mice[i].x == x && mice[i].y == y)
+				mice[i].exist = false;	
+	}
+};
+
+struct Weap3 : public WeapMother {
+	virtual void expose() {
+		if (t != cur) return;
+		for (int i = 0; i < k; ++ i)
+			if (mice[i].x == x && mice[i].y == y)
+				mice[i].sex ^= 1;
+	}
+};
+
+WeapMother *weap[kMaxP];
+
+int main() {
+	idx['N'] = 0, idx['E'] = 1, idx['S'] = 2, idx['W'] = 3;
+	scanf("%d%d%d%d", &l, &r, &n, &m);
+	for (int i = 0; i < n; ++ i)
+		for (int j = 0; j < m; ++ j)
+			scanf("%d", &grid[i][j]);
+	scanf("%d", &k);
+	for (int i = 0; i < k; ++ i)
+		mice[i].scan();
+	scanf("%d%d", &p, &limit);
+	for (int i = 0; i < p; ++ i) {
+		int type;
+		scanf("%d", &type);
+		-- type;
+		if (type == 0) {
+			Weap0 *nw = new Weap0;	
+			nw->get();
+			weap[i] = nw;
+		}
+		else if (type == 1) {
+			Weap1 *nw = new Weap1;
+			nw->get();
+			weap[i] = nw;
+		}
+		else if (type == 2) {
+			Weap2 *nw = new Weap2;
+			nw->get();
+			nw->t += 3;
+			weap[i] = nw;
+		}
+		else {
+			Weap3 *nw = new Weap3;
+			nw->get();
+			weap[i] = nw;
+		}
+	}
+	scanf("%d", &tot);
+	cur = -1;
+	int mice_cnt;
+	while (++ cur <= tot) {
+		for (int i = 0; i < p; ++ i) weap[i]->expose();
+		DealWithGrow();
+		DealWithFxxk();
+		DealWithMove();
+		mice_cnt = 0;
+		for (int i = 0; i < k; ++ i)
+			mice_cnt += mice[i].exist;
+		if (mice_cnt > limit) {
+			printf("-1
+");
+			return 0;
+		}
+	}
+	printf("%d
+", mice_cnt);
+	return 0;
+}
+

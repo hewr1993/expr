@@ -1,0 +1,15 @@
+Var
+  r,a:double;
+  i,t:longint;
+Begin
+  read(t,r);
+  if r=0 then
+  begin
+    writeln('1.000000');
+    halt;
+  end;
+  a:=1;
+  for i:=1 to t do
+    a:=a*(2*i-1)/(2*i);
+  writeln(a:0:6);
+End.

@@ -1,0 +1,61 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+const int MaxN = 30;
+bool	input[MaxN], map[MaxN][MaxN];
+int	go_in[MaxN], Q[MaxN], first_blood;
+char s[10];
+
+int main()
+{
+	
+	memset(input, 0, sizeof(input));
+	memset(map, 0, sizeof(map));
+	while (scanf("%s", s) != EOF)
+	{
+		input[s[0] - 'A' + 1] = 1;
+		input[s[2] - 'A' + 1] = 1;
+		map[s[0] - 'A' + 1][s[2] - 'A' + 1] = 1;
+	}
+	
+	memset(go_in, 0, sizeof(go_in));
+	for (int i = 1; i <= 26; ++ i)
+		for (int j = 1; j <= 26; ++ j)
+			if (map[j][i])
+				++ go_in[i];
+				
+	int l = 1, r = 0;
+	for (int i = 1; i <= 26; ++ i)
+		if (input[i] && !go_in[i])
+			Q[++ r] = i;
+	for (; l <= r; ++ l)
+	{
+		int u = Q[l];
+		for (int v = 1; v <= 26; ++ v)
+			if (map[u][v])
+			{
+				-- go_in[v];
+				if (!go_in[v]) Q[++ r] = v;
+			}
+	}
+	first_blood = 0;
+	for (int i = 1; i <= 26; ++ i)
+		if (input[i])
+			++ first_blood;
+	if (first_blood == r)
+	{
+		for (int i = 1; i <= r; ++ i)
+			printf("%c", Q[i] + 'A' - 1);
+		printf("
+");
+	}	else	printf("No Answer!
+");
+	return 0;
+}
+

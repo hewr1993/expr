@@ -1,0 +1,131 @@
+//program 2159
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+
+using namespace std;
+
+const int inf=1000000000;
+const int Mod=10007;
+
+vector<int> G[50000];
+bool Flag[50000];
+int Ans[50000],Time[50000],Count[50000][151];
+int C[151][151];
+
+int FindGravity(int Root)
+{
+  static int Queue[50000],Parent[50000],Size[50000];
+  int F=0,R=1;Queue[0]=Root;Parent[Root]=-1;
+  while(F<R)
+    {
+      int V=Queue[F++];
+      for(int i=0;i<G[V].size();i++)
+        if(!Flag[G[V][i]]&&G[V][i]!=Parent[V])
+          {
+            Parent[G[V][i]]=V;
+            Queue[R++]=G[V][i];
+          }
+    }
+  int Min=inf,Best;
+  for(int i=R-1;i>=0;i--)
+    {
+      int V=Queue[i],Max=0;Size[V]=1;
+      for(int j=0;j<G[V].size();j++)
+        if(!Flag[G[V][j]]&&G[V][j]!=Parent[V])
+          {
+            Size[V]+=Size[G[V][j]];
+            Max=max(Max,Size[G[V][j]]);
+          }
+      Max=max(Max,R-Size[V]);
+      if(Max<Min){Min=Max;Best=V;}
+    }
+  return Best;
+}
+
+void Solve(int Root,int K,int T)
+{
+  Root=FindGravity(Root);Flag[Root]=true;
+  static int Queue[50000],Parent[50000],Belong[50000],Depth[50000];
+  int F=0,R=1;Queue[0]=Root;Parent[Root]=Belong[Root]=-1;Depth[Root]=0;
+  while(F<R)
+    {
+      int V=Queue[F++];
+      for(int i=0;i<G[V].size();i++)
+        if(!Flag[G[V][i]]&&G[V][i]!=Parent[V])
+          {
+            Parent[G[V][i]]=V;
+            Queue[R++]=G[V][i];
+            if(V==Root)
+              Belong[G[V][i]]=G[V][i];
+            else
+              Belong[G[V][i]]=Belong[V];
+            Depth[G[V][i]]=Depth[V]+1;
+          }
+    }
+  static int Sum[151];
+  memset(Sum,0,sizeof(Sum));
+  for(int i=0;i<R;i++)
+    {
+      int S=1,V=Queue[i],U=Belong[V];
+      for(int j=0;j<=K;j++)
+        {
+          Sum[j]=(Sum[j]+S)%Mod;
+          if(U!=-1)
+            {
+              if(Time[U]!=T)
+                {
+                  Time[U]=T;
+                  memset(Count[U],0,sizeof(Count[U]));
+                }
+              Count[U][j]=(Count[U][j]+S)%Mod;
+            }
+          S=S*Depth[V]%Mod;
+        }
+    }
+  for(int i=0;i<R;i++)
+    {
+      int V=Queue[i],S=1;
+      for(int j=0;j<=K;j++)
+        {
+          int T0=S*C[K][j]%Mod,T1=Sum[K-j];
+          if(V!=Root&&Time[Belong[V]]==T)
+            T1-=Count[Belong[V]][K-j];
+          if(T1<0)T1+=Mod;
+          Ans[V]=(Ans[V]+T0*T1)%Mod;
+          S=S*Depth[V]%Mod;
+        }
+    }
+  for(int i=0;i<G[Root].size();i++)
+    if(!Flag[G[Root][i]])Solve(G[Root][i],K,T+1);
+}
+
+int main()
+{
+  int N,K,L,Now,A,B,Q;
+  scanf("%d%d%d%d%d%d%d",&N,&K,&L,&Now,&A,&B,&Q);
+  for(int i=1;i<N;i++)
+    {
+      Now=(Now*A+B)%Q;
+      int T=i-Now%min(i,L)-1;
+      G[T].push_back(i);
+      G[i].push_back(T);
+    }
+  memset(Flag,0,sizeof(Flag));
+  memset(Ans,0,sizeof(Ans));
+  for(int i=0;i<N;i++)Time[i]=-1;
+  memset(C,0,sizeof(C));
+  for(int i=0;i<=K;i++)
+    for(int j=C[i][0]=1;j<=i;j++)
+      C[i][j]=(C[i-1][j-1]+C[i-1][j])%Mod;
+  Solve(0,K,0);
+  for(int i=0;i<N;i++)
+    printf("%d
+",Ans[i]);
+  return 0;
+}
+

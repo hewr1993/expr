@@ -1,0 +1,60 @@
+#include<stdio.h>
+int main()
+{
+    int a,b,c,d,e,f;
+    float m,n,o,p,g,h;
+    char str[1];
+    scanf("%d",&a);
+    scanf("%d",&b);
+    scanf("%s",str);
+    scanf("%d",&c);
+    scanf("%d",&d);
+    e=a+c;
+    f=b+d; 
+    if((c==0)&&(d==0))
+    printf("error");
+    else 
+         if(str[0]=='+')
+         {
+            e=a+c;
+            f=b+d;
+            printf("%d",e);
+            if(f>=0)
+             printf("+");printf("%d",f);printf("i");
+          }
+    else 
+          if(str[0]=='-')
+          {
+           e=a-c;
+           f=b-d;
+           printf("%d",e);
+              if(f>=0)
+              printf("+");printf("%d",f);printf("i");
+           }
+    else  if(str[0]=='*')
+          {
+           e=a*c-b*d;f=a*d+b*c;
+           printf("%d",e);if(f>=0)printf("+");printf("%d",f);printf("i");
+           }
+	else if(str[0]=='/')
+                {
+                    m=a;n=b;o=c;p=d;
+                    g=(m*o+n*p)/(o*o+p*p);h=(n*o-m*p)/(o*o+p*p);
+                    if((g>=1)||(g<=-1))
+                     {
+                      e=(m*o+n*p)/(o*o+p*p);f=(n*o-m*p)/(o*o+p*p);
+                      printf("%d",e);
+                      if(f>=0)
+                      printf("+");printf("%d",f);printf("i");
+                      }
+	     else {
+                   printf("%.1lf",g);
+                    if(h>=0)printf("+");printf("%.1lf",h);printf("i");
+                  }
+              }
+
+    else printf("error");
+
+    return 0;
+}
+

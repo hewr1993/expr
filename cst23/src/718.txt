@@ -1,0 +1,65 @@
+const maxn=10100; maxm=maxn*10; oo=maxlongint div 3;
+var path,z,f:array[0..maxn]of longint;
+d:array[0..maxm*10]of longint;
+change:array[0..maxm]of longint;
+b:array[0..maxm] of record nx,y,w:longint; end;
+dui:array[0..maxn]of boolean;
+tot,now,ans,n,m,i,j,t,y,s,x,w,tp,l,r:longint;
+
+procedure insert(x,y,w:longint);
+begin
+  inc(tot);
+  b[tot].y:=y;
+  b[tot].nx:=z[x];
+  z[x]:=tot;
+  b[tot].w:=w;
+end;
+
+begin
+  
+  readln(n,m);
+  for i:=1 to m do
+  begin readln(x,y,w); insert(x,y,w); end;
+  readln(tp);
+  for i:=1 to tp do
+  read(path[i]);
+  s:=path[1];
+  for i:=0 to n-1 do begin f[i]:=oo; dui[i]:=false; end;
+  f[s]:=0;
+  dui[s]:=true;
+  d[0]:=s;
+  while l<=r do begin
+    s:=d[l];
+    t:=z[s];
+    while t<>0 do begin
+      y:=b[t].y;
+      if f[s]+b[t].w<f[y] then begin
+        f[y]:=f[s]+b[t].w;
+        if not dui[y] then begin
+          inc(r);
+          dui[y]:=true;
+          d[r]:=y;
+        end;
+      end;
+      t:=b[t].nx;
+    end;
+    dui[d[l]]:=false;
+    inc(l);
+  end;
+  for i:=1 to tp-1 do begin
+    s:=path[i];
+    t:=z[s];
+    while b[t].y<>path[i+1] do t:=b[t].nx;
+    if now+b[t].w>f[path[i+1]] then
+    begin dec(change[t],now+b[t].w-f[path[i+1]]); ans:=ans+abs(change[t]); now:=f[path[i+1]]; end else now:=now+b[t].w;
+
+
+  end;
+   writeln(ans);
+   for i:=1 to m do writeln(change[i]);
+
+
+
+
+
+end.                        

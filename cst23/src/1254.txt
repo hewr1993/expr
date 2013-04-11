@@ -1,0 +1,80 @@
+#include <iostream>
+#include <stdio.h>
+#include <algorithm>
+#include <math.h>
+#include <vector>
+#include <memory.h>
+#include <cstring>
+#include <string>
+#include <string.h>
+using namespace std;
+#define rep(i,a,b) for(int i=a;i<=b;i++)
+#define down(i,b,a) for(int i=b;i>=a;i--)
+#define foredge(e,x) for(edge *e = x->first;e;e = e->next)
+typedef long long ll;
+ll getx(ll n){
+	if(n==1) return 1;
+	if(n&1){
+		if((n+3)/2%2) return -getx((n+1)/2);
+		else return getx((n+1)/2);
+	}return -getx(n/2);
+}
+inline ll f1(ll x,ll n){//n+1->2n+1
+	n--;
+	return (n&1)?-x:x;
+}
+void gets(ll n,ll &s,ll &x){
+	if(n<4){
+		switch(n){
+		case 1:
+			s=1,x=-1;break;
+		case 2:
+			s=0,x=1;break;
+		case 3:
+			s=1,x=1;break;
+		}return;
+	}
+	ll ts,tx,m=n/4;gets(m,ts,tx);
+	ll x1 = f1(f1(tx,m+1),2*m+1),x2 = -f1(tx,m+1);
+	ll x3 = f1(-tx,2*m+2),x4 = tx;
+	switch(n-4*m){
+	case 0:
+		s = 2*ts,x = x1;break;
+	case 1:
+		s = 2*ts+x1,x = x2;break;
+	case 2:
+		s = 2*ts,x = x3;break;
+	case 3:
+		s = 2*ts+x3,x = x4;break;
+	}
+}
+void Init(){
+}
+
+void solve(){
+	int q;scanf("%d",&q);
+	int c;ll x,tmp;
+	rep(i,1,q){
+		scanf("%d%I64d",&c,&x);
+		if(c==1) printf("%I64d
+",getx(x));
+		else if(c==2){
+			ll ret;gets(x,ret,x);
+			if(ret>0) printf("+
+");
+			else if(ret==0) printf("0
+");
+			else printf("-
+");
+		}else printf("%I64d
+",(gets(x,x,tmp),x));
+	}
+}
+
+int main(){
+	Init();
+	solve();
+	//system("pause");
+	return 0;
+}
+

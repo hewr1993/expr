@@ -1,0 +1,16 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int m,n;
+    int max=0;
+    cin>> m;
+    for(n=1;n<=m;n++)
+    {
+        if(m%n==0)  max++;
+        }
+        cout<<max;
+        return 0;
+        } 
+

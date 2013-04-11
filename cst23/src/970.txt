@@ -1,0 +1,106 @@
+/* 
+ * tsinsen/1140/1140.cpp
+ *
+ * Copyright (c) 2012  Tung Cheng
+ *
+ */
+
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+const int N_MAX = 30;
+
+int n_p = 0;
+int primes[10000];
+bool fp[10050];
+int n, k;
+int x[N_MAX];
+bool flag[N_MAX];
+int s[N_MAX];//sel
+int sum = 0;
+int p;
+
+void init()
+{
+	int i, j;
+	memset(fp, 0, sizeof(fp));
+	for (i = 2; i <= 10000; i ++)		// sqrt(10000)?
+		for (j = i + i; j <= 10000; j += i)
+			fp[j] = true;
+	for (i = 2; i <= 10000; i ++)
+		if (!fp[i]) {
+			n_p ++;
+			primes[n_p] = i;
+		}
+
+/*	for (i = 1; i <= n_p; i ++)
+		cout << primes[i] << ' ';
+	cout << "| " << n_p << endl;*/
+}
+
+bool isprime(int xx)
+{
+	if (xx < 2)
+		return false;
+	int i;
+	for (i = 1; i <= n_p && primes[i] * primes[i] <= xx; i ++)
+		if (xx % primes[i] == 0)
+			return false;
+	return true;
+}
+
+bool check()
+{
+	int i;
+	int ss = 0;
+	for (i = 1; i <= k; i ++)
+		ss += s[i];
+	return isprime(ss);
+}
+
+void search(int l)
+{
+	int i;
+	int pp;
+
+	if (l > k) {
+		if (check())
+			sum ++;
+		return;
+	}
+
+	for (i = p; i <= n; i ++)
+		if (!flag[i]) {
+			pp = p;
+			p = i;
+			flag[i] = true;
+			s[l] = x[i];
+			search(l + 1);
+			flag[i] = false;
+			p = pp;
+		}
+}
+
+int main()
+{
+	int i;
+
+	init();
+
+	cin >> n >> k;
+	for (i = 1; i <= n; i ++)
+		cin >> x[i];
+	memset(flag, 0, sizeof(flag));
+	memset(s, 0, sizeof(s));
+	p = 1;
+
+	search(1);
+
+	cout << sum/* / 6 */<< endl;
+
+	return 0;
+}
+
+

@@ -1,0 +1,81 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+#define Rep(i,j,k) for(int i=(j); i<=(k); i++)
+#define Repd(i,j,k) for(int i=(j); i>=(k); i--)
+
+int N,R,Q,S,M;
+int id[100][100];
+
+double base[110][110], ret[110][110], c[110][110];
+
+inline void mul(double a[110][110], double b[110][110]){
+	Rep(i,1,M)
+		Rep(j,1,M){
+			double ret=0.0;
+			Rep(k,1,M)
+				ret+=a[i][k]*b[k][j];
+			c[i][j]=ret;
+		}
+	memcpy(a,c,sizeof c);
+}
+
+double calc(int N, double P){
+	Rep(i,1,M) Rep(j,1,M) base[i][j]=0.0;
+	Rep(q,1,Q)
+		Rep(r,0,R){
+			if (q>=2 && r>=1)
+				base[id[q-1][r-1]][id[q][r]]+=P;
+			if (q>=2 && r==R)
+				base[id[q-1][R]][id[q][r]]+=P;
+			if (q==Q && r>=1)
+				base[id[Q][r-1]][id[q][r]]+=P;
+			if (q==Q && r==R)
+				base[id[Q][R]][id[q][r]]+=P;
+			if (r==0 && q<Q)
+				Rep(rr,0,R)
+					base[id[q+1][rr]][id[q][r]]+=1-P;
+			base[id[q][r]][M]+=r;
+		}
+	base[M][M]=1;
+	
+	memcpy(ret,base,sizeof base); N--; N++;
+	while(N)
+		if (N&1)
+			mul(ret,base), N--;
+		else
+			mul(base,base), N>>=1;
+			
+	return ret[id[Q][0]][M]; 
+}
+
+int main(){
+	
+	cin>>N>>R>>Q>>S;
+	
+	Rep(q,1,Q)
+		Rep(r,0,R)
+			if (r>q && q!=Q)
+				id[q][r]=-1;
+			else
+				id[q][r]=++M;
+	M++;
+	
+	double l=0.0, r=1.0;
+	while(r-l>1e-7){
+		double mid=(l+r)/2;
+		if (calc(N,mid)>=S)
+			r=mid;
+		else
+			l=mid;
+	}
+	if (calc(N,1.0)>=S+1e-10)
+		printf("%.6lf
+",l);
+	else
+		puts("Impossible.");
+	
+	return 0;
+}

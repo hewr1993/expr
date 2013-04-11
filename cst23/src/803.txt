@@ -1,0 +1,52 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+int n;
+
+void shit(int x,int y,double k)
+{
+     if((x==1 && y==1)||(x==1 && y==3)||(x==2 && y==2)||(x==3 && y==1)||(x==3&&y==3))
+      cout<<"X";
+     else if((x==1 && y==2)||(x==2 && y==1)||(x==2 && y==3)||(x==3 && y==2))
+      cout<<".";
+     else if(y>k/3&& y<=2*k/3 && x<=k/3)
+     cout<<".";
+     else if(x>k/3 && x<=2*k/3 && y<=k/3)
+     cout<<".";
+     else if(x>k/3 && x<=2*k/3 && y>2*k/3)
+     cout<<".";
+     else if(x>2*k/3 && y<=2*k/3&&y>k/3)
+     cout<<".";
+     else if(x<=k/3 && y<=k/3)
+     shit(x,y,k/3);
+     else if(x<=k/3 && y >2*k/3)
+     shit(x,y-2*k/3,k/3);
+     else if(x>3/k && x<=2*k/3 && y>3/k && y<=2*k/3)
+     shit(x-k/3,y-k/3,k/3);
+     else if(x>2*k/3 && y <=k/3)
+     shit(x-2*k/3,y,k/3);
+     else if(x>2*k/3 && y >2*k/3)
+     shit(x-2*k/3,y-2*k/3,k/3);
+   
+     
+     return;
+}
+
+int main()
+{
+   
+    cin>>n;
+    double k = pow(3,(double)n-1);
+    int i,j;
+    for(i=1;i<=k;i++)
+       {
+       for(j=1;j<=k;j++)
+          {
+            shit(i,j,k);
+          }
+          cout<<endl;
+       }
+       //for(;;);
+    return 0;
+}
+

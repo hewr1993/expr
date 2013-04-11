@@ -1,0 +1,107 @@
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+const int maxn = 210, maxq = 100010;
+int n, m, q, cnt, pcnt, limit, a[maxn][maxn], s[maxn][maxn];
+int T[maxn][maxn][maxn];
+struct query{int x1, y1, x2, y2, ans, no;} Q[maxq];
+struct npair{int x1, y1, x2, y2;} P[maxn * maxn * maxn / 4];
+struct data{int x, y, w;} D[maxn * maxn];
+
+inline bool operator < (const query &a, const query &b){return a.x1 > b.x1;}
+inline bool cmp (const query &a, const query &b){return a.no < b.no;}
+inline bool operator < (const npair &a, const npair &b){return a.x1 > b.x1;}
+inline bool operator < (const data &a, const data &b){return a.w < b.w;}
+
+void init(){
+		scanf("%d%d", &n, &m);
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= m; j++)
+			scanf("%d", &a[i][j]), D[cnt].x = i, D[cnt].y = j, D[cnt++].w = a[i][j];
+	sort(D, D + cnt);
+	
+	scanf("%d", &q);
+	for (int i = 0; i < q; i++){
+		scanf("%d%d%d%d", &Q[i].x1, &Q[i].y1, &Q[i].x2, &Q[i].y2);
+		if (Q[i].x1 > Q[i].x2) swap(Q[i].x1, Q[i].x2);
+		if (Q[i].y1 > Q[i].y2) swap(Q[i].y1, Q[i].y2);
+		Q[i].no = i;
+	}
+	sort(Q, Q + q);
+	
+	limit = max(10, (int)sqrt(n * m) / 5);
+}
+
+inline void solve_large(int l, int r){
+	memset(s, 0, sizeof(s));
+	for (int i = l; i < r; i++) s[D[i].x][D[i].y] = 1;
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= m; j++)
+			s[i][j] += s[i - 1][j] + s[i][j - 1] - s[i - 1][j - 1];
+		
+	for (int i = 0; i < q; i++){
+		int cnt = s[Q[i].x2][Q[i].y2] - s[Q[i].x1 - 1][Q[i].y2] - s[Q[i].x2][Q[i].y1 - 1] + s[Q[i].x1 - 1][Q[i].y1 - 1];
+		Q[i].ans += cnt * cnt;
+	}
+}
+
+inline void solve_small(int l, int r){
+	for (int i = l; i < r; i++)
+		for (int j = l; j < r; j++){
+			P[pcnt].x1 = D[i].x; P[pcnt].y1 = D[i].y;
+			P[pcnt].x2 = D[j].x; P[pcnt].y2 = D[j].y;
+			if (P[pcnt].x1 > P[pcnt].x2) swap(P[pcnt].x1, P[pcnt].x2);
+			if (P[pcnt].y1 > P[pcnt].y2) swap(P[pcnt].y1, P[pcnt].y2);
+			P[pcnt].y1 = m + 1 - P[pcnt].y1; pcnt++;
+		}
+}
+
+inline void inc(int x, int Y, int Z){
+	for (; x <= m; x += x & -x)
+		for (int y = Y; y <= n; y += y & -y)
+			for (int z = Z; z <= m; z += z & -z)
+				T[x][y][z]++;
+}
+
+inline int ask(int x, int Y, int Z){
+	int ret = 0;
+	for (; x; x -= x & -x)
+		for (int y = Y; y; y -= y & -y)
+			for (int z = Z; z; z -= z & -z)
+				ret += T[x][y][z];
+	return ret;
+}
+
+void solve(){
+	for (int i = 1, st = 0; i <= cnt; i++)
+		if (i == cnt || D[i - 1].w != D[i].w){
+			if (i - st >= limit) solve_large(st, i);
+			else solve_small(st, i);
+			if (i == cnt) break;
+			st = i;
+		}
+	sort(P, P + pcnt);
+
+	for (int i = 0, now = 0; i < q; i++){
+		while (now < pcnt && P[now].x1 >= Q[i].x1) inc(P[now].y1, P[now].x2, P[now].y2), now++;
+		Q[i].ans += ask(m + 1 - Q[i].y1, Q[i].x2, Q[i].y2);
+	}
+}
+
+void answer(){
+	sort(Q, Q + q, cmp);
+	for (int i = 0; i < q; i++) printf("%d
+", Q[i].ans);
+}
+
+int main(){
+	init();
+	solve();
+	answer();
+	return 0;
+}
+

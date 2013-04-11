@@ -1,0 +1,41 @@
+#include <iostream>
+using namespace std;
+
+int all[15];
+int res;
+int n, m;
+
+void DFS(int cur, int selectNum, int sum)
+{
+	if(selectNum == m)
+	{
+		if(sum > res)
+			res = sum;
+		return ;
+	}
+	if(cur >= n) //out the range
+		return;
+
+	DFS(cur + 1, selectNum, sum); //not include cur
+	DFS(cur + 1, selectNum + 1, sum * all[cur]); //include cur
+}
+
+int main()
+{
+	int group;
+	cin >> group;
+	for(int i = 0; i < group; i++)
+	{
+		//input
+		cin >> n >> m;
+		for(int j = 0; j < n; j++)
+			cin >> all[j];
+
+		res = -0x7fffffff;
+        DFS(0, 0, 1);
+		cout << res <<endl;
+		
+	}
+	return 0;
+}
+

@@ -1,0 +1,105 @@
+#include<stdio.h>
+#include<string.h>
+int vx[151],vy[151],v[151][151],slack[151],f[151],g[151][151],l[151][151],num[151][151],rec[151][151][151],ans[151],n;
+bool hx[151],hy[151];
+inline int min(int a,int b){return a<=b?a:b;}
+int match(int now)
+{
+	hx[now]=1;
+	for(int i=1;i<=n;i++)
+		if(!hy[i])
+			if(vx[now]+vy[i]==v[now][i])
+			{
+				hy[i]=1;
+				if(!f[i]||match(f[i]))
+				{
+					f[i]=now;
+					return 1;
+				}
+			}
+			else if(v[now][i]-vx[now]-vy[i]<slack[i])slack[i]=v[now][i]-vx[now]-vy[i];
+	return 0;
+}
+void dp(int now,int last)
+{
+	int i,j,fib,o=0,a;
+	for(i=1;i<=l[now][0];i++)
+		if(l[now][i]!=last)
+			dp(l[now][i],now);
+	for(i=1;i<=l[now][0];i++)
+		if(l[now][i]!=last)
+		{
+			o++;
+			for(j=1;j<=n;j++)
+				v[o][j]=g[l[now][i]][j]+j;
+		}
+	for(fib=1;fib<=n;fib++)
+	{
+		for(i=1;i<=o;i++)
+		{
+			vx[i]=1000000000;
+			for(j=1;j<=n;j++)
+				if(j!=fib)vx[i]=min(vx[i],v[i][j]);
+		}
+		memset(f,0,sizeof(f));
+		memset(vy,0,sizeof(vy));
+		for(i=1;i<=o;i++)
+		{
+			for(j=1;j<=n;j++)slack[j]=1000000000;
+			while(1)
+			{
+				memset(hx,0,sizeof(hx));
+				memset(hy,0,sizeof(hy));
+				hy[fib]=1;
+				if(match(i))break;
+				a=1000000000;
+				for(j=1;j<=n;j++)
+					if(j!=fib&&!hy[j])a=min(a,slack[j]);
+				for(j=1;j<=o;j++)
+					if(hx[j])vx[j]+=a;
+				for(j=1;j<=n;j++)
+					if(hy[j])vy[j]-=a;
+			}
+		}
+		g[now][fib]=0;
+		for(i=1;i<=n;i++)
+			if(f[i])
+			{
+				g[now][fib]+=v[f[i]][i];
+				rec[now][fib][f[i]]=i;
+			}
+	}
+	return;
+}
+void dfs(int now,int v,int last)
+{
+	int i,o=0;
+	for(i=1;i<=l[now][0];i++)
+		if(l[now][i]!=last)
+		{
+			ans[num[now][i]]=rec[now][v][++o];
+			dfs(l[now][i],ans[num[now][i]],now);
+		}
+	return;
+}
+int main()
+{
+	int i,a,b,p=1;
+	scanf("%d",&n);
+	for(i=1;i<n;i++)
+	{
+		scanf("%d%d",&a,&b);
+		l[a][++l[a][0]]=b;l[b][++l[b][0]]=a;
+		num[a][l[a][0]]=num[b][l[b][0]]=i;
+	}
+	dp(1,0);
+	for(i=2;i<=n;i++)
+		if(g[1][i]<g[1][p])p=i;
+	printf("%d
+",g[1][p]);
+	dfs(1,p,0);
+	for(i=1;i<n;i++)printf("%d ",ans[i]);
+	printf("
+");
+	return 0;
+}

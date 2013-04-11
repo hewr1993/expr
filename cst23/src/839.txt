@@ -1,0 +1,25 @@
+
+#include <iostream>
+using namespace std;
+
+enum game {rock, paper, sisc};
+enum diff {d1=-2,d2,d3,d4,d5};
+enum result {lose=-1, equall, win};
+
+int main(){
+	result res;
+	int z,x,c;
+	cin>>z>>x;
+	
+	c=game(z)-game(x);
+	if (c==diff(d1)||c==diff(d4))
+			{res=win;}
+	else if (c==diff(d2)||c==diff(d5))
+		{res=lose;}
+	else {res=equall;}
+	int o=res;
+	cout<<o;
+	
+	return 0;
+		
+}

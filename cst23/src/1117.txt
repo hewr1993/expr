@@ -1,0 +1,71 @@
+#include<iostream>
+#include<string.h>
+using namespace std;
+char symbol[100];
+char str[101];
+int blockToSum = 0;
+int numOfBlock;
+int block[100];
+int sum = 0;
+void readIn();
+int getProduct();
+void sumUp();
+int main()
+{
+	symbol[0] = '+';
+	readIn();
+	sumUp();
+	cout << sum << endl;
+	//system("pause");
+	return 0;
+}
+void readIn()
+{
+	cin >> str;
+	int len = strlen(str);
+	int i = 0;
+	int j = 0;
+	while(i < len)
+	{
+		while(str[i] >= '0' && str[i] <= '9')
+		{
+			block[j] = block[j] * 10 + str[i] - '0';
+			i ++;
+		}
+		j ++;
+		symbol[j] = str[i];
+		i ++;
+	}
+	numOfBlock = j;
+}
+int getProduct()
+{
+	int product = 1;
+	product *= block[blockToSum];
+	while(symbol[blockToSum + 1] == '*')
+	{
+		product *= block[blockToSum + 1];
+		blockToSum ++;
+	}
+	return product;
+}
+void sumUp()
+{
+	int temp;
+	while(blockToSum < numOfBlock)
+	{	
+		char tempSymbol = symbol[blockToSum];
+		temp = getProduct();
+		if(tempSymbol == '+')
+		{
+			sum += temp;
+		}
+		if(tempSymbol == '-')
+		{
+			sum -= temp;
+		}
+		blockToSum ++;
+	}
+}
+
+

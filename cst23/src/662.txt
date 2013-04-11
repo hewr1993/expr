@@ -1,0 +1,23 @@
+#include<stdio.h>
+int calculate(char f,char a,char b);
+	int main()
+{
+	char sign,num1,num2;
+	int final;
+	scanf("%c %c %c",&sign,&num1,&num2);
+	final=calculate(sign,num1,num2);
+	printf("%d
+",final);
+	return 0;
+	}
+	int calculate(char f,char a,char b)
+	{
+		int x,y,last;
+		x=a-'0'+0;
+		y=b-'0'+0;
+		if(f=='+') last=x+y;
+		else if(f=='-') last=x-y;
+		else if(f=='*') last=x*y;
+		else if(f=='/') last=x/y;
+		return(last);
+	}

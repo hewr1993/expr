@@ -1,0 +1,24 @@
+#include <stdio.h>
+int main()
+{
+long m;
+int i,n;
+int a[20];
+scanf("%d",&m);
+while (m>9)
+{
+n=0;
+while (m>0)
+{
+n++;
+a[n]=m%10;
+if (a[n]==0) n--;
+m/=10;
+}
+m=1;
+for (i=1;i<=n;i++) m*=a[i];
+}
+printf("%d",m);
+return(0);
+}
+

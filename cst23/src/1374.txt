@@ -1,0 +1,72 @@
+#include <cstdlib>
+#include <cstdio>
+#include <iostream>
+using namespace std;
+const int N = 2005;
+const int P = 1000000007;
+long long e = 1;
+int n, r, k, m;
+int C[N][N], f[N][N], g[N][N];
+int combine(int a, int b)
+{
+	if (a < 0) return 0;
+	if (b < 0 || b > a) return 0;
+	return C[a][b];
+}
+
+int func(int a, int b)
+{
+	if (a < 0) return 0;
+	if (a < b) b = a;
+	return f[a][b];
+}
+
+void mkdata()
+{
+for (int j = 1; j <= 10; ++j) {
+for (int i = 1; i <= 4; ++i) {
+int a = rand() % 1000 + 1;
+if (i % 4 == j % 4) a = a % 100 + 1;
+printf("%d ", a);
+}
+printf("
+");
+}
+for (int j = 1; j <= 10; ++j) {
+int n, m, k, r;
+n = rand() % 1000 + 1;
+r = 2 * n / 3;
+m = 2 * r / 3;
+k = rand() % 10;
+printf("%d %d %d %d 
+", n, r, k, m);
+}
+
+
+exit(0);
+}
+
+int main()
+{
+	//mkdata();
+	C[0][0] = 1;
+	for (int i = 1; i < N; ++i) {
+		C[i][0] = 1;
+		for (int j = 1; j <= i; ++j)
+			C[i][j] = (C[i - 1][j - 1] + C[i - 1][j]) % P;
+	}
+	g[1][1] = 1;
+	for (int i = 2; i < N; ++i) for (int j = 1; j <= i; ++j)
+		g[i][j] = (e * g[i - 1][j - 1] + e * g[i - 1][j] * j) % P;
+	for (int i = 1; i < N; ++i) for (int j = 1; j <= i; ++j)
+		f[i][j] = (e * f[i][j - 1] + e * g[i][j]) % P;
+	while (scanf("%d%d%d%d", &n, &r, &k, &m) != EOF) {
+		long long ans1, ans2;
+		int left = r + 1;
+		int right = n - (r - 1) * k - 1;
+		ans1 = combine(left + right - 1, right);
+		ans2 = func(r, m);
+		long long ans = ans1 * ans2 % P;
+		cout << ans << endl;
+	}
+}

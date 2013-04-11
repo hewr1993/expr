@@ -1,0 +1,25 @@
+#include<iostream>
+using namespace std;
+
+int lson[10010], rson[10010], w[10010];
+int n, ans;
+
+void tree(int node_num, int deep)
+{
+     ans += w[node_num] * deep;
+     if (lson[node_num] > -1) tree(lson[node_num], deep + 1);
+     if (rson[node_num] > -1) tree(rson[node_num], deep + 1);
+}
+
+int main()
+{
+    cin>>n;
+    for (int i=1; i<=n; i++) 
+        cin>>w[i];
+    for (int i=1; i<=n; i++) 
+        cin>>lson[i]>>rson[i];
+    tree(1, 0);
+    cout<<ans<<endl;
+    return 0;
+}
+

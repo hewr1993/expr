@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+void swap(char word2[][30], int m, int n);
+void bubblesort(char word2[][30], int length);
+void compare(char word1[][30],char word2[][30],int num[],int p,int i);
+int main()
+{
+  char word1[1000][30],word2[1000][30]; 
+  int j=0;
+  int k=0;
+  int i=0;
+  int q=0;
+  int p=1;
+  int num[1000];
+  char c;
+  
+  while((c = getchar())!='
+')
+  {
+        if(c == ' ')
+         {
+             
+         i++;
+         j = 0;   
+         continue;           
+         }
+         word1[i][j] = c;
+         j++;
+         
+   }
+  i++;
+  
+  for(k = 0;k < i;k++)
+  strlwr(word1[k]);
+  strcpy(word2[0],word1[0]);
+  p = 1;
+  for(j = 1;j < i;j++)
+  {
+      for(k = 0;k < j;k++)
+      {
+          if(strcmp(word1[k],word1[j]) == 0)
+           {
+               q = 1;
+               break;
+           }                                                                                                                                 
+      }
+      if (q == 0)
+      {    
+          strcpy(word2[p],word1[j]);
+          p++;
+      }
+      else
+      {
+          q = 0;    
+      }   
+  }
+ 
+  bubblesort(word2,p);
+  compare(word1,word2,num,p,i);
+  for(k = 0;k < p;k++)
+  word2[k][0]=word2[k][0] - 32;
+  for(k = 0;k < p;k++)
+  printf("%s %d
+",word2[k],num[k]);
+  //system("PAUSE");	
+  return 0;
+}
+
+void bubblesort(char word2[][30], int length)  
+{ 
+	assert(length >= 1);
+	int i = 0; 
+	int exchange = 0;
+	 
+	for(i = 1; i < length; i++)
+	{
+		if(strcmp(word2[i - 1],word2[i]) > 0)  
+		{ 
+			swap(word2, i - 1, i);
+			exchange=1;
+		}
+	}	
+	if(exchange)
+	{		
+		bubblesort(word2, length - 1);
+	}  
+}
+
+void swap(char word2[][30], int m, int n)
+{
+	char temp[1000];
+	memset(temp, 0, sizeof(temp));
+	strcpy(temp ,word2[m]);
+	memset(word2[m], 0, sizeof(word2[m]));
+	
+	
+    strcpy(word2[m],word2[n]);
+    memset(word2[n], 0, sizeof(word2[n]));
+    strcpy(word2[n],temp);
+}
+
+void compare(char word1[][30],char word2[][30],int num[],int p,int i)
+{
+     int m,n;
+     for(m = 0;m < p;m++)
+     {
+                     for(n = 0;n < i;n++)
+                     {
+                                     if(strcmp(word2[m],word1[n])==0)
+                                     num[m]++;                     
+                     }
+     }
+}
+

@@ -1,0 +1,93 @@
+#include<iostream>
+#include<cmath> 
+
+using namespace std; 
+
+const unsigned int MAX = 1000; 
+const long long WIDTHMAX = 100000;
+const unsigned int WIDTH = 5; 
+
+typedef struct node
+{
+    long long val[MAX];
+    unsigned int size; 
+} BigInt; 
+
+BigInt MulBigInt(const BigInt & a, const BigInt & b)
+{
+    if (a.size == 1 && a.val[0] == 0)
+        return a;
+    if (b.size == 1 && b.val[0] == 0)
+        return b; 
+    const int LEN = 500 / WIDTH + 1;
+    BigInt c;
+    for (int i=0; i<MAX; i++)
+        c.val[i] = 0;
+    for (int i=0, j=0; i<b.size && i<LEN; i++)
+    {
+        for (j=0; j<a.size && j<LEN; j++)
+        {
+            c.val[i+j] += a.val[j] * b.val[i];
+            c.val[i+j+1] += c.val[i+j] / WIDTHMAX;
+            c.val[i+j] %= WIDTHMAX;
+        }
+        c.size = i + j;
+        if (c.val[c.size] != 0)
+            c.size++;
+    }
+    return c;
+}
+
+void PowBigInt(BigInt & c, unsigned int n)
+{
+    if (n == 0 || n == 1)
+    {
+        c.size = 1;
+        c.val[0] = n + 1;
+        return ; 
+    }  
+    PowBigInt(c, n/2); 
+	c = MulBigInt(c, c); 
+	if (n % 2 == 1)   
+	{
+		BigInt b;
+        b.size = 1;
+        b.val[0] = 2;
+        c = MulBigInt(b, c);
+    }
+}
+
+void PrintBigInt(BigInt a)
+{
+    while (a.size*WIDTH < 500)
+        a.val[a.size++] = 0;
+    while (a.size*WIDTH > 500)
+        a.size--;
+    for (int i=a.size-1; i>=0; i--)
+    {
+        if (a.val[i] < 10)
+            cout << "0000";
+        else if (a.val[i] < 100)
+            cout << "000"; 
+        else if (a.val[i] < 1000)
+            cout << "00"; 
+        else if (a.val[i] < 10000)
+            cout << "0";     
+        cout << a.val[i];
+        if (i % 10 == 0) 
+            cout << endl;
+    }
+}
+
+int main()
+{
+	unsigned int p;
+    cin >> p; 
+	cout << int(log10(2)*p) + 1 << endl; 
+	BigInt a;
+    PowBigInt(a, p);
+    a.val[0] -= 1;
+    PrintBigInt(a);  
+    	return 0;
+}
+

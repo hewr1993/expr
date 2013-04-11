@@ -1,0 +1,33 @@
+#include<iostream>
+#include<stdio.h>
+
+#define LEAP(i) ((i)>n ? (i)-n : (i)) 
+
+using namespace std ;
+
+const int MaxN = 1010 ;
+const int INF = 0x3f3f3f3f ;
+
+int n ; int a[MaxN], f[MaxN][MaxN] ;
+
+int main() {
+	scanf("%d", &n) ;
+	for (int i = 1 ; i <= n ; i++)
+		scanf("%d", &a[i]) ;
+	for (int len = 3 ; len <= n ; len++)
+		for (int i = 1 ; i <= n ; i++) {
+			for (int j = 2 ; j < len ; j++)
+				f[i][len] = max(f[i][len], f[i][j] + f[LEAP(i+j-1)][len-j+1] + a[i]*a[LEAP(i+j-1)]*a[LEAP(i+len-1)]) ;
+			//printf("f[%d][%d]=%d
+", i, len, f[i][len]) ;
+		}
+	int ans = -INF ;
+	for (int i = 1 ; i <= n ; i++)
+		for (int j = i + 1 ; j <= n ; j++)
+			ans = max(ans, f[i][j-i+1] + f[j][n-(j-i+1)+2] + max(a[i]*a[j]*a[i], a[j]*a[i]*a[j])) ;
+	printf("%d
+", ans) ;
+	//system("PAUSE") ;
+	return 0 ;
+}
+

@@ -1,0 +1,27 @@
+
+#include <math.h>
+#include <stdio.h>
+int main()
+{
+    int i,m,n; 
+    double k,x,y[20];
+    scanf("%d %d",&n,&m);   
+    i=n+1;
+    k=n-m-1;
+    y[n+1]=k;
+    while(i>1)
+    {
+        i--;
+        y[i]=(y[i+1]*n+m)/(n-1);         
+        if(y[i]!=floor(y[i]))        //  若y(i)不是整数,k增n-1重试   
+        {
+            k=k+n-1;y[n+1]=k;i=n+1;
+        }    
+    }
+    x=n*y[1]+m;  
+    printf("%.0f
+",x);
+    return 0;
+}
+
+

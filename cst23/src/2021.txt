@@ -1,0 +1,13 @@
+#include<stdio.h>
+int main()
+{
+int a;
+scanf("%d",&a);
+if (a<101&&a>84) printf("yx");
+if (a<85&&a>69) printf("lh");
+if (a<70&&a>59) printf("jg");
+if (a<60&&a>=0) printf("bjg");
+return 0;
+}
+ 
+

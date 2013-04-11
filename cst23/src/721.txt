@@ -1,0 +1,97 @@
+//program 2161
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+
+using namespace std;
+
+struct Event
+{
+  int X,Data,Type;
+};
+
+bool operator <(Event A,Event B)
+{
+  return (A.X==B.X)?(A.Type>B.Type):(A.X<B.X);
+}
+
+void Get(int *A,int N)
+{
+  int Add,First,Prod,Mod;
+  scanf("%d%d%d%d",&Add,&First,&Mod,&Prod);
+  A[0]=First%Mod;
+  for(int i=1;i<N;i++)
+    A[i]=((long long)A[i-1]*Prod+Add+i+1)%Mod;
+}
+
+const int Mod=19921228;
+
+int Data[100000];
+int Left[262144],Right[262144],Mid[262144],Count[262144];
+
+int Find(int L,int R,int X)
+{
+  int Mid=(L+R)/2;if(Data[Mid]==X)return Mid;
+  return (X<Data[Mid])?Find(L,Mid-1,X):Find(Mid+1,R,X);
+}
+
+void Build(int P,int L,int R)
+{
+  Left[P]=L;Right[P]=R;Mid[P]=(L+R)/2;Count[P]=0;
+  if(L<R){Build(P*2,L,Mid[P]);Build(P*2+1,Mid[P]+1,R);}
+}
+
+void Add(int X,int Delta)
+{
+  int P=1;
+  while(Left[P]<Right[P])
+    {
+      Count[P]+=Delta;
+      P=P*2+(X>Mid[P]);
+    }
+  Count[P]+=Delta;
+}
+
+int Kth(int K)
+{
+  if(Count[1]<=K)return 0;
+  int P=1;
+  while(Left[P]<Right[P])
+    {P=P*2+1;if(K>=Count[P])K-=Count[P--];}
+  return Data[Left[P]];
+}
+
+int main()
+{
+  int N;scanf("%d",&N);
+  static int A[100000],Value[100000],LB[100000],UB[100000];
+  Get(A,N);Get(Value,N);Get(LB,N);Get(UB,N);
+  for(int i=0;i<N;i++)if(LB[i]>UB[i])swap(LB[i],UB[i]);
+  for(int i=0;i<N;i++)Data[i]=Value[i];
+  sort(Data,Data+N);int Total=1;
+  for(int i=1;i<N;i++)if(Data[i]!=Data[i-1])Data[Total++]=Data[i];
+  for(int i=0;i<N;i++)Value[i]=Find(0,Total-1,Value[i]);
+  int M=0;static Event W[300000];
+  for(int i=0;i<N;i++)
+    {
+      W[M++]=(Event){A[i],i,0};
+      W[M++]=(Event){LB[i],Value[i],1};
+      W[M++]=(Event){UB[i],Value[i],-1};
+    }
+  sort(W,W+M);
+  Build(1,0,Total-1);
+  int Ans=0;
+  for(int i=0;i<M;i++)
+    if(W[i].Type)
+      Add(W[i].Data,W[i].Type);
+    else
+      Ans=(Ans+Kth(W[i].Data))%Mod;
+  printf("%d
+",Ans);
+  return 0;
+}
+

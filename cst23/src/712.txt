@@ -1,0 +1,77 @@
+
+// 2010.12.26 lanwuni
+
+#include <algorithm>
+#include <cstdlib>
+#include <cstdio>
+#include <vector>
+
+using namespace std;
+
+const int inf = 1000000000;
+
+struct rectangle
+  {
+    int minx, miny, maxx, maxy;
+  } range[100001];
+
+vector<rectangle> list[100001];
+int d[100001];
+
+rectangle Common(rectangle a, rectangle b)
+  {
+    rectangle res;
+    res.minx = max(a.minx, b.minx);
+    res.miny = max(a.miny, b.miny);
+    res.maxx = min(a.maxx, b.maxx);
+    res.maxy = min(a.maxy, b.maxy);
+    return res;
+  }
+
+int main()
+  {
+    int n, m, i, j, u, x, y;
+    rectangle now, tmp;
+    
+    scanf("%d%d", &n, &m);
+    for (i = 1; i <= n; i ++) scanf("%d", &d[i]);
+    for (i = 1; i <= m; i ++)
+      {
+        scanf("%d%d%d", &u, &x, &y);
+        tmp.minx = x + y - d[u], tmp.maxx = x + y + d[u];
+        tmp.miny = x - y - d[u], tmp.maxy = x - y + d[u];
+        list[u].push_back(tmp);
+      }
+    
+    now.minx = now.miny = -inf, now.maxx = now.maxy = inf;
+    for (i = n; i; i --)
+      {
+        now.minx += d[i], now.miny += d[i];
+        now.maxx -= d[i], now.maxy -= d[i];
+        for (j = 0; j < list[i].size(); j ++)
+          now = Common(now, list[i][j]);
+        range[i] = now;
+        now.minx -= d[i], now.miny -= d[i];
+        now.maxx += d[i], now.maxy += d[i];
+      }
+    
+    now.minx = now.miny = -inf, now.maxx = now.maxy = inf;
+    for (i = 1; i <= n; i ++)
+      {
+        now = Common(now, range[i]), tmp = now;
+        if (abs(tmp.minx + tmp.miny) % 2 == 1)
+          if (tmp.minx == tmp.maxx) tmp.miny ++; else tmp.minx ++;
+        printf("%d %d
+", (tmp.minx + tmp.miny) / 2, (tmp.minx - tmp.miny) / 2);
+        if (i < n)
+          {
+            now.minx = tmp.minx - (d[i+1] - d[i]);
+            now.miny = tmp.miny - (d[i+1] - d[i]);
+            now.maxx = tmp.minx + (d[i+1] - d[i]);
+            now.maxy = tmp.miny + (d[i+1] - d[i]);
+          }
+      }
+    
+    return 0;
+  }
+

@@ -1,0 +1,94 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+using namespace std;
+
+/*链表中每个节点的结构*/
+typedef struct node{
+	int data;
+	struct node* next;
+}node;
+/*在这个函数中将输入的整数组织成链表并排序，参数说明：head:指向链表头节点的指针，注意，头结点中的data域不放实际数据，next域指向链表的第一个节点;data：指向输入的整数序列的指针;  n：输入的整数的个数; */
+void createAndSortList(node * head, int* data, int n)
+{
+		node *p = NULL;
+	node *q = NULL;
+	int i, temp;
+	for (i = 0; i < n; i ++)
+	{
+		p = new node;
+		p->data = data[i];
+		if (i == 0)
+			head->next = p;
+		else
+			q->next = p;
+		q = p;
+	}
+	q->next = NULL;
+	for (p = head->next; p->next != NULL; p = p->next)
+	{
+		for (q = head->next; q->next != NULL; q = q->next)
+		{
+			if ( (q->next != NULL) && (q->data) > (q->next)->data )
+			{
+				temp = q->data;
+				q->data = (q->next)->data;
+				(q->next)->data = temp;
+			}
+		}
+	}
+}
+
+/*打印链表中每个节点的数据*/
+void printList(node* head)
+{
+	node* tmp = head->next;
+	while(NULL != tmp)
+	{
+		cout<<tmp->data<<endl;
+		tmp = tmp->next;
+	}
+
+}
+/*释放链表中每个节点占用的内存空间，包括头结点占用的内存空间*/
+void freeList(node* head)
+{
+	/*释放链表*/
+	node* tmp = head->next;
+	while(NULL != tmp)
+	{	
+		head->next = tmp->next;		
+		delete tmp;
+		tmp = head->next;
+	}
+
+	delete head;	
+}
+int main(int argc, char* argv[])
+{
+	node* head = new node;
+	head->data = -32767;
+	head->next = NULL;
+
+    int n = 0;
+	int data[1000];
+	memset(data, 0, sizeof(data));
+
+	cin>>n;
+	int i = 0;
+	for(; i < n; i ++)
+	{
+		cin>>data[i];
+	}
+	
+	/*调用创建和排序链表的函数*/
+	createAndSortList(head, data, n);	
+	/*打印链表中的值*/
+	printList(head);
+	/*释放链表占用的内存空间*/
+	freeList(head);
+
+	return 0;
+}
+

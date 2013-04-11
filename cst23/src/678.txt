@@ -1,0 +1,68 @@
+//******************************************************************************
+//*  程 序 名：TS1917.cpp                                                      *
+//*  作    者：txd                                                             *
+//*  编写时间：2010-11-28                                                      *
+//*  任    务：用指针实现整数排序                                              *
+//*  主要算法：冒泡排序                                                        *
+//******************************************************************************
+
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct node {
+	int data;
+	node *next;
+};
+typedef struct node* list;
+
+void input(const list a, int n);
+void sort(const list a, int n);
+void output(const list a, int n);
+
+int main()
+{
+	int n;
+	list a = new node;
+	cin >> n;
+	input(a, n);
+	sort(a, n);
+	output(a, n);
+    return 0;
+}
+
+void input(const list a, int n)
+{
+	int i;
+	list p;
+	for (i = 1, p = a; i <= n; i++, p = p->next) {
+		cin >> p->data;
+		p->next = new node;
+	}
+	p->next = NULL;
+}
+
+void sort(const list a, int n)
+{
+	int k; int temp;
+	list p, q;
+	for (k = 1; k <= n - 1; k++)
+		for (p = a; p->next->next; p = p->next)
+		{
+			q = p->next;
+			if (p->data > q->data)
+			{
+				temp = p->data; p->data = q->data; q->data = temp; 
+			}
+		}
+}
+
+void output(const list a, int n)
+{
+	list p;
+	cout << a->data;
+	for (p = a->next; p->next; p = p->next)
+		cout << ' ' << p->data;
+	cout << endl;
+}
+

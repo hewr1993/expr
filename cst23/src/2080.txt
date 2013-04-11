@@ -1,0 +1,38 @@
+var
+n,i,ans,en,h1,h2,x1:longint;
+l,r,dmax,dmin:array[0..500000]of longint;
+begin
+  readln(n);
+  for i:=1 to n do readln(l[i],r[i]);
+  ans:=0;
+  h1:=1;
+  h2:=1;
+  for i:=1 to n do
+    begin
+    while (dmax[0]>=h1)and(l[dmax[dmax[0]]]<l[i]) do dec(dmax[0]);
+    inc(dmax[0]);
+    dmax[dmax[0]]:=i;
+    while (dmin[0]>=h2)and(r[dmin[dmin[0]]]>r[i]) do dec(dmin[0]);
+    inc(dmin[0]);
+    dmin[dmin[0]]:=i;
+    while l[dmax[h1]]>r[dmin[h2]] do
+      begin
+      if dmax[h1]<dmin[h2] then
+        begin
+        x1:=dmax[h1];
+        inc(h1);
+        end
+        else
+          begin
+          x1:=dmin[h2];
+          inc(h2);
+          end;
+      end;
+    if ans<i-x1 then
+      begin
+      ans:=i-x1;
+      en:=i;
+      end;
+    end;
+  writeln(en-ans+1,' ',en);
+end.

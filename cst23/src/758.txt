@@ -1,0 +1,24 @@
+#include<iostream>
+using namespace std;
+
+int num = 0;
+void gao(int k)
+{
+	for(int i = 1;i <= k/2;i++)
+	{
+		num++;
+		if(i == 1) continue;
+		if(i > 1) 	gao(i);
+	}
+}
+
+int main()
+{
+	int k;
+	cin >> k;
+	gao(k);
+	cout << num+1;
+//	system("pause");
+	return 0;
+}
+

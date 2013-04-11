@@ -1,0 +1,27 @@
+#include<iostream>
+using namespace std;
+int pri(int);
+int main()
+{
+  int M=0,N=0,i=0,j=0,a[10000];
+  cin>>N>>M;
+
+  for(i=0;i<2*N*M;i++)
+    cin>>a[i];
+
+  for(i=0;i<N*M;i++)
+  {
+	  a[i]=a[i]+a[i+N*M];
+  }
+
+  for(i=0;i<N;i++)
+  {
+	  for(j=0;j<M-1;j++)
+	  {
+		  cout<<a[i*M+j]<<' ';
+	  }
+	  cout<<a[i*M+M-1]<<endl;
+  }
+
+  return 0;
+}

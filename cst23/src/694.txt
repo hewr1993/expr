@@ -1,0 +1,86 @@
+//program 2144
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+struct State
+{
+  int x,y,z,Depth;
+  void Read()
+    {
+      scanf("%d%d%d",&x,&y,&z);
+      if(x>y)swap(x,y);
+      if(x>z)swap(x,z);
+      if(y>z)swap(y,z);
+    }
+  State Root()
+    {
+      int A=x,B=y,C=z;Depth=-1;
+      while(true)
+        {
+          int Left=B-A,Right=C-B;
+          if(Left>Right)
+            {
+              int T=Left/Right;Depth+=T;B-=T*Right;C-=T*Right;
+              if(A==B)return (State){A,B+Right,C+Right};
+            }
+          else
+            {
+              int T=Right/Left;Depth+=T;A+=T*Left;B+=T*Left;
+              if(B==C)return (State){A-Left,B-Left,C};
+            }
+        }
+    }
+  State Climb(int Step)
+    {
+      int A=x,B=y,C=z;
+      while(Step)
+        {
+          int Left=B-A,Right=C-B;
+          if(Left>Right)
+            {
+              int T=min(Left/Right,Step);
+              Step-=T;B-=T*Right;C-=T*Right;
+            }
+          else
+            {
+              int T=min(Right/Left,Step);
+              Step-=T;A+=T*Left;B+=T*Left;
+            }
+        }
+      return (State){A,B,C,0};
+    }
+};
+
+bool operator !=(State A,State B)
+{
+  return A.x!=B.x||A.y!=B.y||A.z!=B.z;
+}
+
+int main()
+{
+  State A,B;A.Read();B.Read();
+  State R0=A.Root(),R1=B.Root();
+  if(R0!=R1){printf("NO
+");return 0;}
+  if(A.Depth<B.Depth)swap(A,B);
+  int Left=0,Right=B.Depth,Diff=A.Depth-B.Depth;
+  while(Left<Right)
+    {
+      int Mid=(Left+Right)/2;
+      if(A.Climb(Mid+Diff)!=B.Climb(Mid))
+        Left=Mid+1;
+      else
+        Right=Mid;
+    }
+  printf("YES
+%d
+",Left*2+Diff);
+  return 0;
+}
+

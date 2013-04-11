@@ -1,0 +1,43 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+	int N;
+	cin>>N;
+	int aa[20][20]={0};
+	int bb[20]={0};
+    for(int i=0;i<N;i++)
+    {
+    	for(int j=0;j<N;j++)
+		{
+			cin>>aa[i][j];
+		} 
+    }
+    int q=0;
+    int count=0;
+    int x=N/2;
+    int m=0;
+    for(int j=0;j<N;j++)
+    {
+    	q=j;
+    	for(int i=0;i<N;i++)
+    	{
+    		if(aa[i][j]==1&&i!=j)
+    		{
+    			count++;
+    		}
+    	}
+    	if(count>=x)
+    	{
+    	 	bb[m]=q+1;
+			m++;		
+    	}
+    	count=0;
+    }
+    for(int i=0;bb[i]!=0;i++)
+    {
+    	cout<<bb[i]<<" ";
+    }
+	return 0;
+}
+

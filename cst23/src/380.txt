@@ -1,0 +1,73 @@
+//1996noip 普及组第3题 
+//作者：彭昊若
+//时间：2009年10月15日 
+#include<iostream>
+#include<cmath>
+#include<stdio.h>
+using namespace std;
+int main()
+{
+    char h[41];
+    int i,j,k;
+    char order,a,b; 
+ k=0;
+ do
+ {
+  scanf("%c" , &h[k]);
+  k++;
+ }
+ while (h[k-1]!='.');
+ 
+ cin>>order; 
+ 
+ if ((order==68)||(order==100))
+ {
+  cin>>a;
+  i=0;
+  while ((h[i]!=a)&&(i!=k)) i++;
+  if (i==k) cout<<"指定字符不存在"<<endl;
+  else 
+  {
+   j=0;
+   while (j!=i) {cout<<h[j];j++;}
+   j++;
+   while (j<=k-1) {cout<<h[j];j++;}
+   cout<<endl;
+  }
+ }
+ 
+ if ((order==73)||(order==105))
+ {
+  cin>>a;
+  cin>>b;
+  i=k-1;
+  while ((h[i]!=a)&&(i!=-1)) i--;
+  if (i==-1) cout<<"指定字符不存在"<<endl;
+  else 
+  {
+   j=0;
+   while (j!=i) {cout<<h[j];j++;}
+   cout<<b;
+   while (j<=k-1) {cout<<h[j];j++;}
+   cout<<endl;
+  }
+ }
+ 
+ if ((order==82)||(order==114))
+ {
+  cin>>a;
+  cin>>b;
+  i=0;
+  while ((h[i]!=a)&&(i!=k)) i++;
+  if (i==k) cout<<"指定字符不存在"<<endl;
+  else 
+  {
+   for (j=0;j<=k-1;j++)
+    if (h[j]!=a) cout<<h[j];
+    else cout<<b;
+   cout<<endl;
+  }
+ }
+return 0;
+}
+

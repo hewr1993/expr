@@ -1,0 +1,213 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+
+using namespace std;
+
+const	int		Limit_Size	=	1000 + 10;
+const	int		Limit_Query	=     100000 + 10;
+
+struct			Tquery
+{
+	int		k , a , b;
+	int		Ans;
+};
+
+
+int			N , M , Q;
+Tquery			Query	[ Limit_Query ];
+int			Mat	[ Limit_Size ][ Limit_Size ];
+vector<int>		List	[ Limit_Size ];
+int			Level	[ Limit_Size ];
+int			Father	[ Limit_Size ];
+bool			Mark	[ Limit_Size ];
+
+void	Init()
+{
+	int		i;
+	int		a , b , w;
+	scanf("%d%d%d" , &N , &M , &Q);
+
+	memset(Mat , 0 , sizeof(Mat));
+	for(i = 0; i < M; i ++)
+	{
+		scanf("%d%d%d" , &a , &b , &w);
+		a -- , b --;
+		Mat[a][b] = Mat[b][a] = w;
+	}
+
+	for(i = 0; i < Q; i ++)
+	{
+		scanf("%d%d%d" , &Query[i].k , &Query[i].a , &Query[i].b);
+		Query[i].a -- , Query[i].b --;
+		if( Query[i].k == 2 )
+			Mat[ Query[i].a ][ Query[i].b ] = Mat[ Query[i].b ][ Query[i].a ] = - Mat[ Query[i].a ][ Query[i].b ];
+	}
+}
+
+void	Build_MST()
+{
+	int		Low	[ Limit_Size ];
+	int		Prev	[ Limit_Size ];
+	int		T , i , k , min;
+
+	memset(Low , 0x1f , sizeof(Low)); Low[0] = 0;
+	for(i = 0; i < N; i ++)
+		List[i].clear();
+	for(T = 0; T < N; T ++)
+	{
+		min = 100000000;
+		for(i = 0; i < N; i ++)
+			if( Low[i] >= 0 && Low[i] < min ) min = Low[i] , k = i;
+		if( k )
+		{
+			List[ k ].push_back( Prev[k] );
+			List[ Prev[k] ].push_back( k );
+		}
+		Low[k] = -1;
+		for(i = 0; i < N; i ++)
+			if( Mat[k][i] > 0 && Mat[k][i] < Low[i] )
+			{
+				Low[i] = Mat[k][i];
+				Prev[i] = k;
+			}
+	}
+}
+
+void	Paint (int u , int L)
+{
+	Level[u] = L;
+	int		i , v , size = List[u].size();
+	for(i = 0; i < size; i ++)
+	{
+		v = List[u][i];
+		if( Level[v] < 0 )
+		{
+			Father[v] = u;
+			Paint(v , L + 1);
+		}
+	}
+}
+
+void	Paint_Level()
+{
+	memset(Level , 0xff , sizeof(Level));
+	
+	Paint( 0 , 0 );
+}
+
+int			Dest;
+int			pA , pB , pW;
+
+bool	Find_Path( int u )
+{
+	Mark[u] = 1;
+	if( u == Dest ) return 1;
+	
+	int		i , v , size = List[u].size();
+	for(i = 0; i < size; i ++)
+	{
+		v = List[u][i];
+		if( ! Mark[v] )
+			if( Find_Path(v) )
+			{
+				if( Mat[u][v] > pW ) 
+					pW = Mat[u][v] , pA = u , pB = v;
+				return 1;
+			}
+	}
+	return 0;
+}
+
+void	Add_Edge( int a , int b )
+{
+	memset(Mark , 0 , sizeof(Mark));
+	
+	int		w = - Mat[a][b];
+	
+	Dest = b;
+	pW = -1;
+
+	Find_Path( a );
+
+	if( w < pW )
+	{
+		vector<int>::iterator	p;
+
+		for(p = List[pA].begin(); p != List[pA].end(); p ++)
+			if( *p == pB )
+			{
+				List[pA].erase( p );
+				break;
+			}
+		for(p = List[pB].begin(); p != List[pB].end(); p ++)
+			if( *p == pA )
+			{
+				List[pB].erase( p );
+				break;
+			}
+		List[a].push_back( b );
+		List[b].push_back( a );
+		Mat[a][b] = Mat[b][a] = w;
+	}
+}
+
+inline	void	Renew( int& x , int x0 )
+{
+	if( x0 > x ) x = x0;
+}
+
+int	Calc_Answer( int a , int b )
+{
+	int		w = 0;
+	while( Level[a] > Level[b] )
+	{
+		Renew(w , Mat[Father[a]][a]); a = Father[a];
+	}
+	while( Level[b] > Level[a] )
+	{
+		Renew(w , Mat[Father[b]][b]); b = Father[b];
+	}
+	while( a != b )
+	{
+		Renew(w , Mat[Father[a]][a]); a = Father[a];
+		Renew(w , Mat[Father[b]][b]); b = Father[b];
+	}
+
+	return w;
+}
+
+void	Solve()
+{
+	Paint_Level();
+
+	int		i;
+
+	for(i = Q - 1; i >= 0; i --)
+	{
+		if( Query[i].k == 2 )
+		{
+			Add_Edge( Query[i].a , Query[i].b);
+			Paint_Level();
+		}
+		else
+		{
+			Query[i].Ans = Calc_Answer( Query[i].a , Query[i].b );
+		}
+	}
+
+	for(i = 0; i < Q; i ++)
+		if( Query[i].k == 1 ) printf("%d
+" , Query[i].Ans);
+}
+
+int	main()
+{
+
+	Init();
+	Build_MST();
+	Solve();
+
+	return 0;
+}
+

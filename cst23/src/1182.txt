@@ -1,0 +1,43 @@
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+
+const int N=111,A=277;
+char s1[N],s2[N],s3[N],key[A];
+bool key2[A];
+
+bool solve(){
+	for(int i=0;s1[i];i++)
+		if(!key[s1[i]]){
+			if(key2[s2[i]])
+				return false;
+			key[s1[i]]=s2[i];
+			key2[s2[i]]=true;
+		}
+		else if(key[s1[i]]!=s2[i])
+			return false;
+	for(int i='A';i<='Z';i++)
+		if(!key[i])
+			return false;
+	return true;
+}
+
+void print(){
+	for(int i=0;s3[i];i++)
+		printf("%c",key[s3[i]]);
+	printf("
+");
+}
+
+int main(){
+	scanf("%s%s%s",s1,s2,s3);
+	if(!solve())
+		printf("Failed
+");
+	else
+		print();
+	return 0;
+}
+

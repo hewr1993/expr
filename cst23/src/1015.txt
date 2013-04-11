@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+using namespace std;
+int main()
+{
+    int a[30];
+    int x,p;
+    for(x=0;;x++)
+    {
+    scanf("%d",&a[x]);
+    if(a[x]==0)
+    {
+    p=x-1;
+    break;
+    }
+    }
+    for(x=p;x>=0;x--)
+    printf("%d ",a[x]);
+  
+    return 0;
+}
+

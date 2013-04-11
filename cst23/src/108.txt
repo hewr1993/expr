@@ -1,0 +1,30 @@
+#include <iostream>
+using namespace std;
+
+int power(int a, int b)
+{
+	int sum=1;
+	if (b==0) return 1;
+	else{
+	for (int i=0;i<b;i++)
+	    sum=(sum * a) % 9999;}
+	return sum;
+}
+
+int main()
+{
+	int n,x0;
+	cin>>n>>x0;
+	int a[101]={0};
+	for (int i=0;i<=n;i++)
+	    cin>>a[i];
+	int x=0;
+	for (int i=1;i<=n;i++)
+	{
+		x=((((a[i] * i) % 9999) * power(x0,i-1)) % 9999 + x) % 9999;
+	}
+	cout<<(x+9999)%9999<<endl;
+	//system("pause");
+	return 0;
+}
+

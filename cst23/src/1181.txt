@@ -1,0 +1,16 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main()
+{
+int L,M,start,end,m,i;
+cin>>L>>M;
+vector<bool> tree(L+1,true);for (m=0;m<M;m++) {cin>>start>>end;
+for(i=start;i<=end;i++)
+tree[i]=false;  
+}
+cout<<count(tree.begin(),tree.end(),true)<<endl;
+return 0;
+}
+

@@ -1,0 +1,287 @@
+
+// Program  :  CTSC 2010 jewelry
+
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+#include <vector>
+
+using namespace std;
+
+const int inf = 1000000000;
+
+struct edge_node
+  {
+    edge_node *next;
+    int data;
+  } *ge[50000], edge[100000];
+
+struct trie_node
+  {
+    int rank, size, depth, loc_L, loc_R;
+    trie_node *up[16], *ch[26];
+  } tree[800000], *loc[50000], *L[50000], *R[50000], *root;
+
+int queue[800000], size[50000], maxs[50000], order[50000];
+vector< pair<int, trie_node*> > query_L, query_R;
+char tree_str[50001], eigen_str[50001];
+vector<trie_node*> query[2][50000];
+bool v[50000], del[50000];
+long long sum[50001];
+
+bool cmp1(int a, int b)
+  {
+    return L[a]->rank < L[b]->rank;
+  }
+
+bool cmp2(int a, int b)
+  {
+    return R[a]->rank < R[b]->rank;
+  }
+
+void Ins_Edge(int a, int b)
+  {
+    static int top = 0;
+    edge_node *p = &edge[top ++];
+    p->data = b, p->next = ge[a], ge[a] = p;
+  }
+
+trie_node *New_Node()
+  {
+    static int top = 0;
+    trie_node *p = &tree[top ++];
+    for (int i = 0; i < 16; i ++) p->up[i] = 0;
+    for (int i = 0; i < 26; i ++) p->ch[i] = 0;
+    return p;
+  }
+
+void Decompose(int x)
+  {
+    static int top = 0;
+    int head, tail, minv, tmp, now, r, i;
+    
+    queue[0] = x, v[x] = true;
+    for (head = 0, tail = 1; head < tail; head ++)
+      for (edge_node *p = ge[queue[head]]; p; p = p->next)
+        if (! del[p->data] && ! v[p->data])
+          queue[tail ++] = p->data, v[p->data] = true;
+    for (i = tail - 1; i >= 0; i --)
+      {
+        now = queue[i], v[now] = false;
+        size[now] = 1, maxs[now] = 0;
+        for (edge_node *p = ge[now]; p; p = p->next)
+          if (! v[p->data] && ! del[p->data])
+            {
+              size[now] += size[p->data];
+              maxs[now] = max(maxs[now], size[p->data]);
+            }
+      }
+    for (minv = inf, i = 0; i < tail; i ++)
+      {
+        tmp = max(maxs[queue[i]], size[x] - size[queue[i]]);
+        if (tmp < minv) minv = tmp, r = queue[i];
+      }
+    
+    del[r] = true;
+    if (! root->ch[tree_str[r]-'a'])
+      root->ch[tree_str[r]-'a'] = New_Node();
+    query[0][r].push_back(root->ch[tree_str[r]-'a']);
+    for (edge_node *p = ge[r]; p; p = p->next)
+      if (! del[p->data])
+        {
+          trie_node *now = root->ch[tree_str[r]-'a'];
+          queue[0] = p->data, v[p->data] = true;
+          if (! now->ch[tree_str[p->data]-'a'])
+            now->ch[tree_str[p->data]-'a'] = New_Node();
+          loc[p->data] = now->ch[tree_str[p->data]-'a'];
+          for (head = 0, tail = 1; head < tail; head ++)
+            for (edge_node *p = ge[queue[head]]; p; p = p->next)
+              if (! del[p->data] && ! v[p->data])
+                {
+                  v[p->data] = true, queue[tail ++] = p->data;
+                  now = loc[queue[head]];
+                  if (! now->ch[tree_str[p->data]-'a'])
+                    now->ch[tree_str[p->data]-'a'] = New_Node();
+                  loc[p->data] = now->ch[tree_str[p->data]-'a'];
+                }
+          for (i = 0; i < tail; i ++)
+            {
+              v[queue[i]] = false;
+              query[0][r].push_back(loc[queue[i]]);
+              query[1][top].push_back(loc[queue[i]]);
+            }
+          top ++;
+        }
+    
+    for (edge_node *p = ge[r]; p; p = p->next)
+      if (! del[p->data]) Decompose(p->data);
+  }
+
+trie_node *Get_Prefix(trie_node *now, int len)
+  {
+    for (int i = 15; i >= 0; i --)
+      if (now->up[i]->depth >= len) now = now->up[i];
+    return (now->depth == len) ? now : 0;
+  }
+
+void Build_DFA(int m)
+  {
+    int head, tail, mid, i, j;
+    trie_node *now;
+    
+    root->up[0] = root, queue[0] = root - tree;
+    for (head = 0, tail = 1; head < tail; head ++)
+      {
+        for (i = 0; i < 26; i ++)
+          if (tree[queue[head]].ch[i])
+            {
+              now = tree[queue[head]].ch[i];
+              now->up[0] = (head > 0) ? tree[queue[head]].up[0]->ch[i] : root;
+              queue[tail ++] = now - tree;
+            }
+        now = &tree[queue[head]];
+        for (i = 0; i < 26; i ++)
+          if (! now->ch[i]) now->ch[i] = (head > 0) ? now->up[0]->ch[i] : root;
+      }
+    for (i = 0; i < tail; i ++)
+      {
+        now = &tree[queue[i]];
+        for (j = 1; j < 16; j ++)
+          now->up[j] = now->up[j-1]->up[j-1];
+      }
+    
+    for (now = root, i = m - 1; i >= 0; i --)
+      loc[i] = now = now->ch[eigen_str[i]-'a'];
+    for (i = 0; i < m; i ++)
+      {
+        for (head = 0, tail = i; head <= tail; )
+          {
+            mid = head + tail >> 1;
+            if (Get_Prefix(loc[mid], i - mid + 1))
+              tail = mid - 1;
+            else
+              head = mid + 1;
+          }
+        L[i] = Get_Prefix(loc[tail+1], i - tail);
+      }
+    
+    for (now = root, i = 0; i < m; i ++)
+      loc[i] = now = now->ch[eigen_str[i]-'a'];
+    for (i = m - 1; i >= 0; i --)
+      {
+        for (head = i, tail = m - 1; head <= tail; )
+          {
+            mid = head + tail >> 1;
+            if (Get_Prefix(loc[mid], mid - i + 1))
+              head = mid + 1;
+            else
+              tail = mid - 1;
+          }
+        R[i] = Get_Prefix(loc[head-1], head - i);
+      }
+  }
+
+void DFS(trie_node *now)
+  {
+    static int tot = 0;
+    now->rank = tot ++, now->size = 1;
+    for (int i = 0; i < 26; i ++)
+      if (now->ch[i])
+        {
+          now->ch[i]->depth = now->depth + 1;
+          DFS(now->ch[i]), now->size += now->ch[i]->size;
+        }
+    query_L.push_back(make_pair(now->rank, now));
+    query_R.push_back(make_pair(now->rank + now->size, now));
+  }
+
+void Add(int x, int y, int a, int b, int d)
+  {
+    int cnt = 0, i;
+    for (i = a; i < b; i ++)
+      {
+        sum[i] += cnt;
+        if (x <= L[order[i]]->rank && L[order[i]]->rank < y) cnt += d;
+      }
+    sum[b] += cnt;
+  }
+
+long long Solve(int no, int n, int a, int b)
+  {
+    int l_a = inf, l_b = -inf, i, j, t1, t2, delta = 0;
+    long long res = 0;
+    sort(order + a, order + b, cmp2);
+    for (i = a; i < b; i ++)
+      {
+        l_a = min(l_a, L[order[i]]->rank);
+        l_b = max(l_b, L[order[i]]->rank);
+      }
+    for (i = 0, j = a; i < query_L.size(); i ++)
+      {
+        for ( ; j < b && R[order[j]]->rank < query_L[i].first; j ++);
+        query_L[i].second->loc_L = j;
+      }
+    for (i = 0, j = a; i < query_R.size(); i ++)
+      {
+        for ( ; j < b && R[order[j]]->rank < query_R[i].first; j ++);
+        query_R[i].second->loc_R = j;
+      }
+    for (i = a; i <= b; i ++) sum[i] = 0;
+    for (i = 0; i < n; i ++)
+      {
+        for (j = 0; j < query[no][i].size(); j ++)
+          {
+            t1 = query[no][i][j]->rank, t2 = t1 + query[no][i][j]->size;
+            if (t2 < l_a || t1 > l_b) continue;
+            if (t1 <= l_a && l_b < t2) delta ++; else Add(t1, t2, a, b, 1);
+          }
+        for (j = 0; j < query[no][i].size(); j ++)
+          {
+            t1 = query[no][i][j]->loc_L, t2 = query[no][i][j]->loc_R;
+            res += sum[t2] - sum[t1] + (long long)(t2 - t1) * delta;
+          }
+        for (j = 0; j < query[no][i].size(); j ++)
+          {
+            t1 = query[no][i][j]->rank, t2 = t1 + query[no][i][j]->size;
+            if (t2 < l_a || t1 > l_b) continue;
+            if (t1 <= l_a && l_b < t2) delta --; else Add(t1, t2, a, b, -1);
+          }
+      }
+    return res;
+  }
+
+int main()
+  {
+    int n, m, i, a, b, size;
+    
+    scanf("%d%d", &n, &m);
+    for (i = 0; i < n; i ++) ge[i] = 0;
+    for (i = 0; i < n - 1; i ++)
+      {
+        scanf("%d%d", &a, &b), a --, b --;
+        Ins_Edge(a, b), Ins_Edge(b, a);
+      }
+    scanf("%s%s", tree_str, eigen_str);
+    
+    memset(v, false, sizeof(v));
+    memset(del, false, sizeof(del));
+    root = New_Node(), Decompose(0);
+    root->depth = 0, DFS(root), Build_DFA(m);
+    
+    for (i = 0; i < m; i ++) order[i] = i;
+    sort(order, order + m, cmp1);
+    for (size = 0; size * size < m; size ++);
+    sort(query_L.begin(), query_L.end());
+    sort(query_R.begin(), query_R.end());
+    long long ans = 0;
+    for (i = 0; i < m; i += size)
+      {
+        ans += Solve(0, n, i, min(i + size, m));
+        ans -= Solve(1, n, i, min(i + size, m));
+      }
+    printf("%I64d
+", ans);
+    
+    return 0;
+  }
+

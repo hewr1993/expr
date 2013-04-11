@@ -1,0 +1,71 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+using namespace std;
+struct res
+{
+	string name;
+	int a,b,c;
+};
+
+res s[11];
+
+int cmp(const void *x,const void *y)
+{
+	
+	res *px=(res *)x;
+	res *py=(res *)y;
+	
+	if((*px).a>(*py).a)
+		return -1;
+	if((*px).a<(*py).a)
+		return 1;
+	
+	if((*px).a==(*py).a)
+	{
+		if((*px).b>(*py).b)
+			return -1;
+		if((*px).b<(*py).b)
+			return 1;
+	
+		if((*px).b==(*py).b)
+		{
+			if((*px).c>(*py).c)
+				return -1;
+			if((*px).c<(*py).c)
+				return 1;
+	
+			if((*px).c==(*py).c)	
+			{
+				if((*px).name>(*py).name)
+					return 1;
+				if((*px).name<(*py).name)
+					return -1;		
+			}
+		}
+	}
+	return 0;
+}
+
+int main()
+{
+	int n;
+	cin>>n;
+	for(int i=0;i<n;i++)
+	{
+		string name;
+		int a,b,c;
+		cin>>name>>a>>b>>c;
+		s[i].name=name;
+		s[i].a=a;
+		s[i].b=b;
+		s[i].c=c;
+	}
+	qsort(s,n,sizeof(s[0]),cmp);
+	for(int i=0;i<n;i++)
+		cout<<s[i].name<<endl;
+	cout<<endl;
+	return 0;
+}
+

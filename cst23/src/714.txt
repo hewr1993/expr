@@ -1,0 +1,261 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+using namespace std;
+
+#define MAXN 200010
+int _OO;
+
+int N, M;
+int f00[MAXN*3], f01[MAXN*3], f10[MAXN*3], f11[MAXN*3];
+int d00[MAXN*3], d01[MAXN*3], d10[MAXN*3], d11[MAXN*3];
+int val[MAXN];
+
+int Input ()
+{
+	char c;
+	int x, sign = 1;
+	while (1)
+	{
+//		c = fgetc (fin);
+		c = getchar ();
+		if (c == '-')
+		{
+			sign = -1;
+			x = 0;
+			break;
+		}
+		if ('0' <= c && c <= '9')
+		{
+			x = c-'0';
+			break;
+		}
+	}
+	while (1)
+	{
+//		c = fgetc (fin);
+		c = getchar ();
+		if ('0' <= c && c <= '9')
+			x = x*10+c-'0';
+		else break;
+	}
+	return x*sign;
+}
+
+void Init ()
+{
+	memset (&_OO, 128, sizeof(int));
+	
+	N = Input ();
+	M = Input ();
+	if (M+M > N)
+	{
+		printf ("Error!
+");
+		exit (0);
+	}
+	for (int i = 0; i < N; i++)
+		val[i] = Input ();
+}
+
+int ind[MAXN], ind1[MAXN];
+
+void Solve ()
+{
+	memset (d00, 128, sizeof(d00));
+	memset (d01, 128, sizeof(d01));
+	memset (d10, 128, sizeof(d10));
+	memset (d11, 128, sizeof(d11));
+	memset (ind, -1, sizeof(ind));
+	for (int i = 0; i < N; i++)
+	{
+		int j = i*3;
+		d00[j] = 0;
+		d00[j+1] = val[i];
+		d01[j] = d10[j] = d11[j] = 0;
+		ind[i] = j;
+	}
+	int *f, *l0, *l1, *r0, *r1;
+	int n = N, n1;
+	int len = 1;
+	ind[n] = n*3;
+/*	fprintf (fout, "%d
+", n);
+	for (int x = 0; x < 20; x++)
+		fprintf (fout, "%d ", ind[x]);
+	fprintf (fout, "
+");
+	for (int x = 0; x < 20; x++)
+		fprintf (fout, "%d ", d00[x]);
+	fprintf (fout, "
+");
+	for (int x = 0; x < 20; x++)
+		fprintf (fout, "%d ", d01[x]);
+	fprintf (fout, "
+");
+	for (int x = 0; x < 20; x++)
+		fprintf (fout, "%d ", d10[x]);
+	fprintf (fout, "
+");
+	for (int x = 0; x < 20; x++)
+		fprintf (fout, "%d ", d11[x]);
+	fprintf (fout, "
+");
+	fprintf (fout, "
+");*/
+	while (n > 1)
+	{
+		ind1[0] = 0;
+		n1 = 0;
+		for (int i = 0; i < n; i += 2)
+		{
+			if (i+1 == n)
+			{
+				int l = ind[i+1]-ind[i];
+				memcpy (f00+ind1[n1], d00+ind[i], sizeof(int)*l);
+				memcpy (f01+ind1[n1], d01+ind[i], sizeof(int)*l);
+				memcpy (f10+ind1[n1], d10+ind[i], sizeof(int)*l);
+				memcpy (f11+ind1[n1], d11+ind[i], sizeof(int)*l);
+				ind1[n1+1] = ind1[n1]+l;
+				n1++;
+				break;
+			}
+			int m, k0, k1;
+			
+			ind1[n1+1] = ind1[n1]+2+
+				((i+2==N? N-i*len+1: len+len+1)>>1);
+			
+			m = (i+2==N? N-i*len+1: len+len+1)>>1;
+			f = f00+ind1[n1];
+			l0 = d00+ind[i]; r0 = d10+ind[i+1];
+			l1 = d01+ind[i]; r1 = d00+ind[i+1];
+			f[0] = 0;
+			k0 = k1 = 0;
+			for (int j = 1; j <= m; j++)
+			{
+				int 
+					t00 = (l0[k0]!=_OO&&r0[j-k0]!=_OO)? l0[k0]+r0[j-k0]: _OO, 
+					t01 = (l0[k0+1]!=_OO&&r0[j-k0-1]!=_OO)? l0[k0+1]+r0[j-k0-1]: _OO, 
+					t10 = (l1[k1]!=_OO&&r1[j-k1]!=_OO)? l1[k1]+r1[j-k1]: _OO, 
+					t11 = (l1[k1+1]!=_OO&&r1[j-k1-1]!=_OO)? l1[k1+1]+r1[j-k1-1]: _OO;
+				int t0 = max (t00, t01), t1 = max (t10, t11);
+				if (t01 == t0) k0++;
+				if (t11 == t1) k1++;
+				f[j] = max (t0, t1);
+			}
+			for (int j = m+1; j < ind1[n1+1]-ind1[n1]; j++)
+				f[j] = _OO;
+			
+			m = (i+2==N? N-i*len: len+len)>>1;
+			f = f01+ind1[n1];
+			l0 = d00+ind[i]; r0 = d11+ind[i+1];
+			l1 = d01+ind[i]; r1 = d01+ind[i+1];
+			f[0] = 0;
+			k0 = k1 = 0;
+			for (int j = 1; j <= m; j++)
+			{
+				int 
+					t00 = (l0[k0]!=_OO&&r0[j-k0]!=_OO)? l0[k0]+r0[j-k0]: _OO, 
+					t01 = (l0[k0+1]!=_OO&&r0[j-k0-1]!=_OO)? l0[k0+1]+r0[j-k0-1]: _OO, 
+					t10 = (l1[k1]!=_OO&&r1[j-k1]!=_OO)? l1[k1]+r1[j-k1]: _OO, 
+					t11 = (l1[k1+1]!=_OO&&r1[j-k1-1]!=_OO)? l1[k1+1]+r1[j-k1-1]: _OO;
+				int t0 = max (t00, t01), t1 = max (t10, t11);
+				if (t01 == t0) k0++;
+				if (t11 == t1) k1++;
+				f[j] = max (t0, t1);
+			}
+			for (int j = m+1; j < ind1[n1+1]-ind1[n1]; j++)
+				f[j] = _OO;
+			
+			f = f10+ind1[n1];
+			l0 = d10+ind[i]; r0 = d10+ind[i+1];
+			l1 = d11+ind[i]; r1 = d00+ind[i+1];
+			f[0] = 0;
+			k0 = k1 = 0;
+			for (int j = 1; j <= m; j++)
+			{
+				int 
+					t00 = (l0[k0]!=_OO&&r0[j-k0]!=_OO)? l0[k0]+r0[j-k0]: _OO, 
+					t01 = (l0[k0+1]!=_OO&&r0[j-k0-1]!=_OO)? l0[k0+1]+r0[j-k0-1]: _OO, 
+					t10 = (l1[k1]!=_OO&&r1[j-k1]!=_OO)? l1[k1]+r1[j-k1]: _OO, 
+					t11 = (l1[k1+1]!=_OO&&r1[j-k1-1]!=_OO)? l1[k1+1]+r1[j-k1-1]: _OO;
+				int t0 = max (t00, t01), t1 = max (t10, t11);
+				if (t01 == t0) k0++;
+				if (t11 == t1) k1++;
+				f[j] = max (t0, t1);
+			}
+			for (int j = m+1; j < ind1[n1+1]-ind1[n1]; j++)
+				f[j] = _OO;
+			
+			m = (i+2==N? N-i*len-1: len+len-1)>>1;
+			f = f11+ind1[n1];
+			l0 = d10+ind[i]; r0 = d11+ind[i+1];
+			l1 = d11+ind[i]; r1 = d01+ind[i+1];
+			f[0] = 0;
+			k0 = k1 = 0;
+			for (int j = 1; j <= m; j++)
+			{
+				int 
+					t00 = (l0[k0]!=_OO&&r0[j-k0]!=_OO)? l0[k0]+r0[j-k0]: _OO, 
+					t01 = (l0[k0+1]!=_OO&&r0[j-k0-1]!=_OO)? l0[k0+1]+r0[j-k0-1]: _OO, 
+					t10 = (l1[k1]!=_OO&&r1[j-k1]!=_OO)? l1[k1]+r1[j-k1]: _OO, 
+					t11 = (l1[k1+1]!=_OO&&r1[j-k1-1]!=_OO)? l1[k1+1]+r1[j-k1-1]: _OO;
+				int t0 = max (t00, t01), t1 = max (t10, t11);
+				if (t01 == t0) k0++;
+				if (t11 == t1) k1++;
+				f[j] = max (t0, t1);
+			}
+			for (int j = m+1; j < ind1[n1+1]-ind1[n1]; j++)
+				f[j] = _OO;
+			
+			n1++;
+		}
+		n = n1;
+		memcpy (ind, ind1, sizeof(int)*(n+1));
+		memcpy (d00, f00, sizeof(int)*ind[n]);
+		memcpy (d01, f01, sizeof(int)*ind[n]);
+		memcpy (d10, f10, sizeof(int)*ind[n]);
+		memcpy (d11, f11, sizeof(int)*ind[n]);
+		len <<= 1;
+/*		fprintf (fout, "%d
+", n);
+		for (int x = 0; x < 20; x++)
+			fprintf (fout, "%d ", ind[x]);
+		fprintf (fout, "
+");
+		for (int x = 0; x < 20; x++)
+			fprintf (fout, "%d ", d00[x]);
+		fprintf (fout, "
+");
+		for (int x = 0; x < 20; x++)
+			fprintf (fout, "%d ", d01[x]);
+		fprintf (fout, "
+");
+		for (int x = 0; x < 20; x++)
+			fprintf (fout, "%d ", d10[x]);
+		fprintf (fout, "
+");
+		for (int x = 0; x < 20; x++)
+			fprintf (fout, "%d ", d11[x]);
+		fprintf (fout, "
+");
+		fprintf (fout, "
+");*/
+	}
+	
+//	fprintf (fout, "%d %d
+", f01[M], f10[M]);
+	printf ("%d
+", max (f01[M], f10[M]));
+}
+
+int main ()
+{
+	Init ();
+	Solve ();
+//	fprintf (fout, "%d
+", clock ());
+	return 0;
+}
+

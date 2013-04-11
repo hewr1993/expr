@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void order(int p[100],int n)
+{
+  int i,lh,rh,temp;
+  for(lh=0;lh<n;lh++)
+  {
+  rh=lh;
+  for(i=lh+1;i<n;i++)
+  {
+  if(p[i]>p[rh])rh=i;                   
+  }
+  temp=p[lh];
+  p[lh]=p[rh];
+  p[rh]=temp;
+  }
+}
+
+int minimum(int p[100],int n)
+{
+  int i,time,temp;
+  temp=0;time=0;
+  for(i=0;i<n;i++)
+  {
+  temp=temp+p[i];
+  if(temp>100)
+  {time++;temp=p[i];}
+  }
+  return time;
+}
+
+int main(int argc, char *argv[])
+{
+  int n,i;
+  int point[100];
+  scanf("%d",&n);
+  for(i=0;i<n;i++)
+  {scanf("%d",&point[i]);}
+  
+  int time;
+  time=minimum(point,n);
+  order(point,n);
+  for(i=0;i<n;i++)
+  {printf("%d ",point[i]);}
+  printf("
+%d",time);
+  
+  return 0;
+}

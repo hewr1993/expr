@@ -1,0 +1,27 @@
+#include<iostream>
+using namespace std;
+int father[3001];
+int find_father(int x)
+{
+    if (father[x]!=x)
+       father[x]=find_father(father[x]);
+    return father[x];
+}
+void join(int x,int y)
+{
+     int x1=find_father(x),y1=find_father(y);
+     father[x1]=y1;
+}
+int main()
+{
+    for (int i=1;i<=3000;i++)
+        father[i]=i; 
+    int n,m,tmp1,tmp2,cal=0;
+    cin >> n >> m;
+    for (int i=1;i<=m;i++) cin >> tmp1 >> tmp2,join(tmp1,tmp2);
+    for (int i=1;i<=n;i++)
+        if (find_father(i)==i) cal++;
+    cout << cal << endl;
+    return 0;
+}
+

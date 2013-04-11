@@ -1,0 +1,50 @@
+#include<stdio.h>
+#include<string.h>
+char cData[1000][21];
+int main(int argc, char** argv)
+{
+    int iCnt = 0;
+    char *cdat[1000];
+    while( scanf("%s",cData[iCnt ]) != EOF)
+    {
+        iCnt ++;
+    }
+    int i,j;
+    for(i=0; i < iCnt; i ++)
+    for(j=1;j<=20;j++)
+    {
+        if(cData[i][j]<='Z'&&cData[i][j]>='A') cData[i][j]=cData[i][j]+32;
+    }
+    for(i=0; i < iCnt; i ++)
+    {
+        if(cData[i][0]<='z'&&cData[i][0]>='a') cData[i][0]=cData[i][0]-32;
+    }
+    for(i=0; i < iCnt; i ++)
+    {
+        cdat[i]=cData[i];
+    }
+    char *tmp;
+    for(i=0; i < iCnt; i ++)
+    for(j=i+1; j< iCnt; j ++)
+    {
+
+        if(strcmp(cdat[i],cdat[j])>0)
+        {
+        tmp=cdat[i];
+        cdat[i]=cdat[j];
+        cdat[j]=tmp;
+        }
+    }
+    int jishu=1;
+    for(i=1; i < iCnt-1; i ++)
+    {
+        if (strcmp(cdat[i],cdat[i-1])==0) jishu++;
+        else {printf("%s %d
+",cdat[i-1],jishu); jishu=1;}
+    }
+    if (strcmp(cdat[iCnt-2],cdat[iCnt-1])==0) {jishu++; printf("%s %d",cdat[iCnt-2],jishu);}
+    else {printf("%s %d
+%s 1",cdat[iCnt-2],jishu,cdat[iCnt-1]);}
+    return 0;
+}
+

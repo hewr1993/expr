@@ -1,0 +1,37 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+using namespace std;
+int f(int x,int y)
+{
+    if (!(x | y))
+        return 1;
+    int c = max(abs(x),abs(y));
+    if (x == c && y == c)
+        return (((c * 2 + 1) % 10000) * ((c * 2 + 1) % 10000)) % 10000;
+    int ret = ((c * 2 - 1) % 10000)*((c * 2 - 1) % 10000) % 10000;
+    if (x == c)
+        return ret + c - y;
+    if (y == -c)
+        return ret + 3 * c - x;
+    if (x == -c)
+        return ret + 5 * c + y;
+    if (y == c)
+        return ret + 7 * c + x;
+}
+int main (int argc, const char * argv[])
+{
+    int t;
+    scanf("%d",&t);
+    for (int i = 0;i < t;++i)
+    {
+        int x,y;
+        scanf("%d%d",&x,&y);
+        printf("%d
+",f(x,y) % 10000);
+    }
+    return 0;
+}
+
+

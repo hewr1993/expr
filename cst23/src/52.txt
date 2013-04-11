@@ -1,0 +1,28 @@
+#include<iostream>
+using namespace std;
+
+int main()
+{ 
+    int a,p,j;
+    cin>>a>>p;
+    if(a==0)
+    cout<<"0";
+    int cvt[33]={0};
+    for(int i=1;i<=33;i++){
+    	cvt[i]=a%p;
+        a=a/p;
+        if(a==0)
+        {break;}
+    }
+    for(j=32;cvt[j]==0;j--){
+    }
+    
+    while(j>=1){
+        if(cvt[j]<=9)
+        	cout<<cvt[j];
+      	else
+       		cout<<char(cvt[j]+55);
+   		j--;
+ 	}
+    return 0;
+}               	 

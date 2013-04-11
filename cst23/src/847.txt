@@ -1,0 +1,110 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+enum Flag{NORMAL,NN,INF};
+
+class Fraction
+{
+ private:
+  int num;
+  int den;
+ public:
+	 Fraction(){};//构造函数
+//     ~Fraction();//析构函数
+  double convert(Flag& flag);
+  void print();
+  void invert();
+  void assign(int,int);
+};
+
+void Fraction::assign(int NUM,int DEN)
+{
+	num=NUM;
+	den=DEN;
+}
+double Fraction::convert(Flag&flag)
+{
+	if (num==0&&den==0)
+		flag=NN;
+	else if (num!=0&&den==0)
+		flag=INF;
+	else 
+	{
+	flag=NORMAL;
+	double num1,den1,val;
+	num1=double(num);
+	den1=double(den);
+	if(num1==0&&den1<0)
+	val=0;
+	else
+    val=num1/den1;
+	return val;
+	}
+}
+void Fraction::invert()
+{
+	int middle;
+	middle=num;
+	num=den;
+	den=middle;
+}
+void Fraction::print()
+{
+	if(num==0&&den>0)
+		cout<<0<<"/"<<1;
+	else if(num==0&&den<0)
+	    cout<<0<<"/"<<-1;
+	else if(num>0&&den==0)
+		cout<<1<<"/"<<0;
+	else if(num<0&&den==0)
+		cout<<-1<<"/"<<0;
+	else if(num==0&&den==0)
+		cout<<0<<"/"<<0;
+	else
+	{
+		for(int i=abs(num)<abs(den)?abs(num):abs(den);i>0;i--)
+		{
+			if((abs(num)) % i == 0 && (abs(den)) % i == 0)
+			{
+				num=num/i;
+				den=den/i;
+			}
+		}
+		cout<<num<<"/"<<den;
+	
+	}
+}
+
+int main()
+{
+	int num; // 分子
+	int den; // 分母
+	// 依次输入分子、分母
+	cin >> num >> den;
+	Fraction z;
+	z.assign( num, den );
+	cout << "z = ";
+	z.print();
+	Flag flag;
+	double val = z.convert(flag);
+	switch(flag)
+	{
+	case NORMAL:
+		cout << " = " << val << endl;
+		break;
+	case NN:
+		cout << " = #NAN" << endl;
+		break;
+	case INF:
+		cout << " = #INF" << endl;
+		break;
+	default:
+		break;
+	}
+	z.invert();
+	cout << "1/z = ";
+	z.print();
+	cout << endl;
+	return 0;
+}

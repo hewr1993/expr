@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#define bool int
+#define true 1
+#define false 0 
+
+int main()
+{
+    int n;   //多项式次数 
+    int xs;  //系数 
+    int i;
+    bool f=true;   //是否是第一项 
+    scanf("%d",&n);
+    
+    for(i=n;i>=0;i--)
+    {
+        scanf("%d",&xs);
+        if(xs!=0)
+        {
+            if(f)  //是首项 
+            {
+                if(xs==1)   //系数为1 
+                    if(i==1)
+                        printf("x");
+                    else if(i==0)
+                        printf("%d",xs);
+                    else
+                        printf("x^%d",i);
+                else if(xs==-1)
+                    if(i==1) printf("-x");
+                    else if(i==0) printf("-1");
+                    else printf("-x^%d",i);
+                else
+                    if(i==1) printf("%dx",xs);
+                    else if(i==0) printf("%d",xs);
+                    else printf("%dx^%d",xs,i);
+                
+                f=false;
+            }
+            else  //不是首项
+            {
+                if(xs>0)
+                {
+                    if(xs==1)
+                        if(i==1) printf("+x");
+                        else if(i==0) printf("+%d",xs);
+                        else printf("+x^%d",i);
+                    else
+                        if(i==1) printf("+%dx",xs);
+                        else if(i==0) printf("+%d",xs);
+                        else printf("+%dx^%d",xs,i);
+                }
+                else
+                {
+                    if(xs==-1)
+                        if(i==1) printf("-x");
+                        else if(i==0) printf("-1");
+                        else printf("-x^%d",i);
+                    else
+                        if(i==1) printf("%dx",xs);
+                        else if(i==0) printf("%d",xs);
+                        else printf("%dx^%d",xs,i);
+                }   
+                
+                
+                
+            }            
+        }
+    }    
+
+    return 0;
+}
+

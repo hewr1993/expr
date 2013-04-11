@@ -1,0 +1,88 @@
+#include<iostream>
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+int n,m,i,j,k,l,o,p,tot,x,y;
+long long ans,cg,cs;
+int bi[50010][5],a[210],b[420],hm[50010],f[210],bi1[50010][5];
+bool e[210];
+int sc[410][4],w[410];
+bool cmp(int x,int y)
+{
+    return bi1[x][3]<bi1[y][3]?1:0;
+}
+int main( )
+{
+     cin >> n >> m >> cg >> cs;
+    for(i=1;i<=m;i++)
+        for(j=1;j<=4;j++) cin >> bi1[i][j];
+    for(i=1;i<=m;i++) hm[i]=i;
+    sort(hm,hm+m+1,cmp);
+    for(i=1;i<=m;i++)
+        for(j=1;j<=4;j++) bi[i][j]=bi1[hm[i]][j];
+    ans=-1;
+    for(i=1;i<=m;i++)
+    {
+        for(j=1;j<=tot;j++)
+        {
+            for(k=1;k<=2;k++) sc[j+tot][k]=sc[j][3-k];
+            sc[j+tot][3]=sc[j][3];
+        }
+        memset(a,0,sizeof(a));
+        for(j=1;j<=tot*2;j++)
+        {
+            b[j]=a[sc[j][1]];
+            a[sc[j][1]]=j;
+        }
+        x=1;y=1;
+        w[1]=bi[i][1];
+        memset(e,true,sizeof(e));
+        memset(f,0,sizeof(f));
+        e[w[1]]=false;
+        while(x<=y)
+        {
+            j=a[w[x]];
+            while(j>0)
+            {
+                if(e[sc[j][2]])
+                {
+                    e[sc[j][2]]=false;
+                    w[++y]=sc[j][2];
+                    f[w[y]]=f[w[x]];
+                    if(sc[j][3]>sc[f[w[y]]][3]) f[w[y]]=j;
+                }
+                j=b[j];
+            }
+            x++;
+        }
+        if(e[bi[i][2]])
+        {
+            sc[++tot][1]=bi[i][1];
+            sc[tot][2]=bi[i][2];
+            sc[tot][3]=bi[i][4];
+        }
+        else 
+        {
+            j=f[bi[i][2]];
+            if(j>tot) j-=tot;
+            if(sc[j][3]>bi[i][4])
+            {
+                sc[j][1]=bi[i][1];
+                sc[j][2]=bi[i][2];
+                sc[j][3]=bi[i][4];
+            }
+        }
+        if(tot==n-1)
+        {
+            int tmp=0;
+            for(j=1;j<=tot;j++) tmp=tmp>sc[j][3]?tmp:sc[j][3];
+            long long ss=0;
+            ss=cg*bi[i][3]+cs*tmp;
+            if((ss<ans)||(ans==-1)) ans=ss;
+        }
+    }
+    cout << ans << endl;
+    return 0;
+}
+

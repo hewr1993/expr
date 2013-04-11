@@ -1,0 +1,91 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+const int maxn = 105, qsize = maxn * maxn * 10;
+const int dx[] = {0, 1, 0, -1};
+const int dy[] = {1, 0, -1, 0};
+
+int qx[qsize], qy[qsize], e[maxn][maxn], d[maxn][maxn], h[maxn][maxn];
+int x[maxn], y[maxn], xx[maxn], yy[maxn], r[maxn], g[maxn];
+bool u[maxn], v[maxn][maxn];
+int x0, y0, k, t;
+
+bool find(int i, int p)
+{
+    for (int j = 1; j <= r[t]; ++j)
+        if (e[i][j] <= p && !u[j]) {
+            u[j] = true;
+            if (!g[j] || find(g[j], p)) {
+                g[j] = i; return true;
+            }
+        }
+    return false;
+}
+
+bool ck(int p)
+{
+    memset(g, 0, sizeof(g));
+    int ret = p;
+    for (int i = 1; i <= 2 * k; ++i) {
+        memset(u, 0, sizeof(u));
+        if (find(i, p)) ++ret;
+        if (ret >= 2 * k) return true;
+    }
+    return false;
+}
+
+int main()
+{
+
+    cin >> x0 >> y0 >> k >> t;
+    for (int i = 1; i <= 2 * k + 1; ++i)
+        cin >> x[i] >> y[i];
+    for (int i = 1; i <= t; ++i) {
+        cin >> xx[i] >> yy[i] >> r[i];
+        r[i] += r[i - 1];
+    }
+    for (int i = 1; i <= x0; ++i)
+        for (int j = 1; j <= y0; ++j)
+            cin >> h[i][j];
+    for (int i = 1; i <= 2 * k; ++i) {
+        int ff = 0, rr = 1;
+        memset(d, 1, sizeof(d));
+        qx[1] = x[i]; qy[1] = y[i];
+        d[x[i]][y[i]] = (i <= k);
+        v[x[i]][y[i]] = true;
+        while (ff < rr) {
+            int x1 = qx[++ff], y1 = qy[ff];
+            for (int j = 0; j < 4; ++j) {
+                int x2 = x1 + dx[j], y2 = y1 + dy[j];
+                if (!x2 || x2 > x0) continue;
+                if (!y2 || y2 > y0) continue;
+                int tmp = d[x1][y1];
+                if ((d[x1][y1] & 1) && h[x1][y1] > h[x2][y2]) ++tmp;
+                if (!(d[x1][y1] & 1) && h[x1][y1] < h[x2][y2]) ++tmp;
+                if (tmp < d[x2][y2]) {
+                    d[x2][y2] = tmp;
+                    if (!v[x2][y2]) {
+                        qx[++rr] = x2; qy[rr] = y2;
+                        v[x2][y2] = true;
+                    }
+                }
+            }
+            v[x1][y1] = false;
+        }
+        for (int j = 1; j <= t; ++j)
+            for (int l = r[j - 1] + 1; l <= r[j]; ++l)
+                e[i][l] = d[xx[j]][yy[j]] - (i <= k);
+    }
+    int lef = 0, rig = 1;
+    while (!ck(rig)) rig *= 2;
+    while (lef < rig) {
+        int mid = (lef + rig) / 2;
+        if (ck(mid)) rig = mid;
+        else lef = mid + 1;
+    }
+    cout << lef << endl;
+    
+    return 0;
+}
+

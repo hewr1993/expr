@@ -1,0 +1,78 @@
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+struct person
+{
+	int f,a,n,h;
+	//n记录编号，h记录是否已经买了iphone 
+	void in(int i)
+	{
+		scanf("%d%d",&f,&a);
+		n=i+1;
+		h=0;
+	}
+	bool operator < (const person &b) const
+	{
+		if (a!=b.a) return b.a<a;
+		if (f!=b.f) return b.f<f;
+		return n<b.n;
+	}
+	void next()
+	{
+		f+=a;
+	}
+}p[10010];
+int m;
+int main()
+{
+
+	int t,cas=0;
+	scanf("%d",&t);
+	while(t--)
+	{
+		int ip=0;//ip用来记录已售出多少iphone 
+		printf("Case #%d:
+",++cas);
+		scanf("%d",&m);
+		for(int i=0;i<m;i++)
+			p[i].in(i);
+		sort(p,p+m);
+		for(int i=0;i<m && i<510;i++)
+		{
+			int maxi=0,maxf;
+			while(maxi<m && p[maxi].h==1) maxi++;
+			maxf=p[maxi].f;
+			p[maxi].next();
+			
+			for(int j=maxi+1;j<m;j++)
+				if(p[j].h==0)
+				{
+					if(p[j].f == maxf && p[j].n < p[maxi].n || p[j].f > maxf)
+					{
+						maxf=p[j].f;
+						maxi=j;
+					}
+					p[j].next();
+				}
+			printf(ip==0?"%d":" %d",p[maxi].n);ip++;
+			p[maxi].h=1;
+		}
+		for(int i=0;i<m;i++)
+		{
+			if (p[i].h==0)
+			{
+				printf(ip==0?"%d":" %d",p[i].n);
+				ip++;
+			}	
+		}
+		puts("");
+	}
+	return 0;
+}
+/*
+容易想到n^2的贪心做法，每次卖给一个下一分钟产生愤怒值最高的人。
+但是会超时。
+法一考虑Fi最大只有500，所以找500次之后只有Ai对卖出顺序有影响，排序即可。
+法二是一直找到F 和A 数组呈递减的时候。
+*/

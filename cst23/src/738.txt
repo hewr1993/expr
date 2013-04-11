@@ -1,0 +1,82 @@
+//program 2119
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+const int Seed=19961021;
+
+long long A[50000],Hash[50000],Pow[50000];
+
+long long ST(int L,int R)
+{
+  return Hash[R]-Hash[L-1]*Pow[R-L+1];
+}
+
+int Calc(int L0,int R0,int L1,int R1)
+{
+  int Max=min(R0-L0,R1-L1),Ans=0;
+  for(int i=0;i<=Max;i++)
+    if(ST(R0-i,R0)==ST(L1,L1+i))Ans++;
+  return Ans;
+}
+
+int Prefix(int X,int Y,int L)
+{
+  int Left=L,Right=X;
+  while(Left<Right)
+    {
+      int Mid=(Left+Right)/2;
+      if(ST(Mid,X)==ST(Mid-X+Y,Y))Right=Mid;else Left=Mid+1;
+    }
+  return X-Left+1;
+}
+
+int Suffix(int X,int Y,int R)
+{
+  int Left=Y,Right=R;
+  while(Left<Right)
+    {
+      int Mid=(Left+Right+1)/2;
+      if(ST(Y,Mid)==ST(X,Mid+X-Y))Left=Mid;else Right=Mid-1;
+    }
+  return Left-Y+1;
+}
+
+int Solve(int L,int R,int M)
+{
+  if(R-L<=M)return 0;
+  int Mid=(L+R)/2,Ans=Solve(L,Mid,M)+Solve(Mid+1,R,M);
+  for(int i=Mid-M;i<=Mid;i++)
+    Ans+=Calc(L,i,i+M+1,R);
+  for(int i=Mid+M+3;i<=R;i++)
+    if(A[i]==A[Mid+1]&&A[i-1]==A[Mid])
+      {
+        int P=Prefix(Mid,i-1,L),Q=Suffix(Mid+1,i,R),S=i-1-Mid-M;
+        int LB=max(1,S-Q),UB=min(P,S-1);if(LB<=UB)Ans+=UB-LB+1;
+      }
+  for(int i=L;i<=Mid-M-2;i++)
+    if(A[i]==A[Mid]&&A[i+1]==A[Mid+1])
+      {
+        int P=Prefix(i,Mid,L),Q=Suffix(i+1,Mid+1,R),S=Mid-M-i;
+        int LB=max(1,S-Q),UB=min(P,S-1);if(LB<=UB)Ans+=UB-LB+1;
+      }
+  return Ans;
+}
+
+int main()
+{
+  int N,M;scanf("%d%d",&N,&M);
+  for(int i=0;i<N;i++)scanf("%lld",&A[i]);
+  for(int i=--N;i;i--)A[i]-=A[i-1];
+  Hash[0]=0;for(int i=1;i<=N;i++)Hash[i]=Hash[i-1]*Seed+A[i];
+  Pow[0]=1;for(int i=1;i<=N;i++)Pow[i]=Pow[i-1]*Seed;
+  printf("%d
+",Solve(1,N,M));
+  return 0;
+}
+

@@ -1,0 +1,31 @@
+#include <stdio.h>
+int main ()
+{
+    int i, x, y, z, n, ans[10] = {0};
+    
+    scanf ("%d", &n);
+    x = 1;
+    while (x * 10 <= n) x *= 10;
+    y = n / x % 10;
+    for (i = 1; i < y; i++)
+        ans[i] += x;
+    ans[y] += n % x + 1;
+    x /= 10;
+    while (x)
+    {
+        z = n / (x * 10);
+        for (i = 0; i < 10; i++)
+            ans[i] += x * z;
+        ans[0] -= x;
+        y = n / x % 10;
+        for (i = 0; i < y; i++)
+            ans[i] += x;
+        ans[y] += n % x + 1;
+        x /= 10;
+    }
+    for (i = 0; i < 10; i++)
+        printf ("%d
+", ans[i]);
+    return 0;
+}
+

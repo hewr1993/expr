@@ -1,0 +1,48 @@
+#include <iostream>
+using namespace std;
+
+float score_a[37],score_b[37],a[4],b[4];
+
+int main (){
+ 	int Q[3];
+ 	
+ 	for (int i = 0; i < 4; i ++)
+ 		cin >> a[i];
+	for (int i = 0; i < 4; i ++)
+ 		cin >> b[i];
+	for (int i = 1; i <= 3; i ++)
+		cin >> Q[i];
+	
+	for (int a0 = 0; a0 < 4; a0 ++)
+		for (int a1 = 0; a1 < 4; a1 ++)
+			for (int a2 = 0; a2 < 4; a2 ++)
+				for (int a3 = 0; a3 < 4; a3 ++)
+					for (int a4 = 0; a4 < 4; a4 ++)
+						for (int a5 = 0; a5 < 4; a5 ++)
+							for (int a6 = 0; a6 < 4; a6 ++)
+								for (int a7 = 0; a7 < 4; a7 ++)
+									for (int a8 = 0; a8 < 4; a8 ++)
+										for (int a9 = 0; a9 < 4; a9 ++)
+           									for (int a10 = 0; a10 < 4; a10 ++)
+           										for (int a11 = 0; a11 < 4; a11 ++){
+													score_a[a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11]
+													+= a[a0] * a[a1] * a[a2] * a[a3] * a[a4] * a[a5] * a[a6] * a[a7] * a[a8] * a[a9] * a[a10] * a[a11];
+													score_b[a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11]
+													+= b[a0] * b[a1] * b[a2] * b[a3] * b[a4] * b[a5] * b[a6] * b[a7] * b[a8] * b[a9] * b[a10] * b[a11];
+         										}
+	for (int i = 1; i <= 3; i ++){
+		float ans = 0.0;
+		if (Q[i] < 0)
+     		for (int j = 0; j <= 36 + Q[i]; j ++)
+     			ans += score_a[j] * score_b[j - Q[i]];
+ 		else
+ 			for (int j = Q[i]; j <= 36; j ++)
+     			ans += score_a[j] * score_b[j - Q[i]];
+		cout << int (ans * 100 + 0.5) << "%" << endl;
+	}
+
+
+
+	//system ("pause");
+	return 0;
+}

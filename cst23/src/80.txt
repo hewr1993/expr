@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+void Matrix_multi(int &N,int (&C)[30][30],int (&A)[30][30],int (&B)[30][30],int (&D)[30][30]) //C=AB
+{
+	for(int i=0;i<N;i++)
+	{
+		for(int j=0;j<N;j++)
+		{
+			int t=0;
+			for(int k=0;k<N;k++)
+			{
+				t=t+A[i][k]*B[k][j];
+			}
+			D[i][j]=t;
+		}
+	}
+	for(int i=0;i<N;i++)
+	{
+		for(int j=0;j<N;j++)
+		{
+			C[i][j]=D[i][j];
+		}
+	}
+}
+int main()
+{
+	int N,M;
+	int A[30][30],C[30][30],D[30][30];
+	cin>>N>>M;
+	for(int i=0;i<N;i++)
+	{
+		for(int j=0;j<N;j++)
+		{
+			cin>>A[i][j];
+		}
+	}
+	if(M==0)
+	{
+		for(int i=0;i<N;i++)
+		{
+			for(int j=0;j<N;j++)
+			{
+				if(i==j)
+				cout<<1<<" ";
+				else
+				cout<<0<<" ";
+			}
+			cout<<endl;
+		}
+		return 0;
+	}
+	if(M==1)
+	{
+		for(int i=0;i<N;i++)
+		{
+			for(int j=0;j<N;j++)
+			{
+			cout<<A[i][j]<<" ";
+			}
+			cout<<endl;
+		}
+		return 0;
+	}
+	Matrix_multi(N,C,A,A,D);
+	for(int i=2;i<M;i++)
+	{
+		Matrix_multi(N,C,A,C,D);
+	}
+	for(int i=0;i<N;i++)
+	{
+		for(int j=0;j<N;j++)
+		{
+			cout<<C[i][j]<<" ";
+		}
+		cout<<endl;
+	}
+	return 0;
+}
+

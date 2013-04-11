@@ -1,0 +1,22 @@
+#include<iostream>
+using namespace std;
+int main()
+{ int s,n,total=0;
+cin>>n;
+s=n;
+for(int j=1; j<n; j++)
+{
+s=n;
+for(int i=j; i<n; i++)
+{s=s-i;
+if(s==0)
+{cout<<j<<" "<<i<<endl;
+break;
+}
+}
+
+}
+   
+    return 0;
+    }
+

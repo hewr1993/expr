@@ -1,0 +1,28 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <iostream>
+using namespace std;
+int n;
+int a[55];
+int s;
+int main()
+{
+    int i,j;
+    int step=0;
+    cin>>n;
+    for(i=0;i<n;i++)
+        cin>>a[i];
+    cin>>s;
+    for(i=0;i<n;i++)
+    {
+        step+=a[i]/s;
+        if(a[i]%s) step++;
+    }
+    step=step+(n-1)*2;
+    cout<<step<<endl;
+
+    return 0;
+}
+

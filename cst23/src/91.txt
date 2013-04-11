@@ -1,0 +1,48 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+char a[15][150],ans[150];
+int num[4],m[150];
+
+char solve (int k){
+	switch (k){
+		case 0: return 'A';
+		case 1: return 'C';
+		case 2: return 'G';
+		case 3: return 'T';
+ 	}
+}
+
+int main (){
+	int N;
+	
+	cin >> N;
+	
+	for (int i = 0; i < N; i ++)
+		cin >> a[i];
+
+	int len = strlen (a[0]);
+	
+	for (int i = 0; i < len; i ++){
+      	for (int j = 0; j < 4; j ++)
+      		num[j] = 0;
+		for (int j = 0; j < N; j ++)
+   			switch (a[j][i]){
+          		case 'A' : num[0] ++; break;
+				case 'C' : num[1] ++; break;
+				case 'G' : num[2] ++; break;
+				case 'T' : num[3] ++; break;
+			}
+		for (int k = 3; k >= 0; k --)
+			if (num[k] > m[i])
+				m[i] = num[k];
+		for (int k = 3; k >= 0; k --)
+			if (num[k] == m[i])
+				ans[i] = solve(k);
+		
+	}
+	for (int i = 0; i < len; i ++)
+		cout << ans[i];
+	return 0;
+}

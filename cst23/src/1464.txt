@@ -1,0 +1,97 @@
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+const int maxn = 100001,maxm = 1000001;
+int a[maxm],b[maxm],c[maxm],cnt,n,m,ans;
+struct point;struct edge;
+struct point{
+	point() { first = 0;}
+	edge *first;int maxx,minn,price,cnt;bool inq;
+	void clean(){	first = 0;}
+}points[maxn];
+struct edge{
+	point *to;edge *next;
+}edges[maxm];
+void Addedge(int _x,int _y){
+	point *x = points+_x,*y=points+_y;
+	edge *e = edges+(++cnt);
+	e->to = y;e->next = x->first;x->first = e;
+}point *myque[maxm];
+void SPFA(int command){
+	if(command==1){
+		int qhead=0,qtail=-1;
+		for(int i=1;i<=n;i++){
+			points[i].minn=points[i].price;
+			points[i].inq = false;
+			points[i].cnt = 0;
+		}myque[++qtail] = points+1;points[1].inq = true,points[1].cnt++;
+		while(qhead<=qtail){
+			point *now = myque[qhead++];now->inq = false;
+			for(edge *e = now->first;e;e=e->next)
+				if(e->to->minn>now->minn){
+					e->to->cnt++;
+					e->to->minn=now->minn;
+					if(!e->to->inq){
+						myque[++qtail]=e->to;e->to->inq=true;
+					}
+				}else if(e->to->cnt==0)
+					e->to->cnt++,myque[++qtail] = e->to,e->to->inq = true;
+		}
+	}
+	if(command==2){
+		int qhead=0,qtail=-1;
+		for(int i=n;i>=1;i--){
+			points[i].maxx=points[i].price;
+			points[i].inq = false;
+			points[i].cnt=0;
+		}myque[++qtail] = points+n;points[n].inq = true,points[n].cnt++;
+		while(qhead<=qtail){
+			point *now = myque[qhead++];now->inq = false;
+			for(edge *e = now->first;e;e=e->next){
+				if(e->to->maxx<now->maxx){
+					e->to->cnt++;
+					e->to->maxx=now->maxx;
+					if(!e->to->inq){
+						myque[++qtail]=e->to;e->to->inq=true;
+					}
+				}else if(e->to->cnt==0)
+					e->to->cnt++,myque[++qtail] = e->to,e->to->inq = true;
+			}
+		}
+	}
+}
+int main( ){
+	//freopen("trade.in","r",stdin);
+	//freopen("trade.out","w",stdout);
+		scanf("%d%d",&n,&m);
+	for(int i=1;i<=n;i++)
+		scanf("%d",&points[i].price);
+	for(int i=1;i<=m;i++)
+		scanf("%d%d%d",&a[i],&b[i],&c[i]);
+	cnt =-1;
+	for(int i=1;i<=n;i++)
+		points[i].clean();
+	for(int i=1;i<=m;i++){
+		if(c[i]==1)	Addedge(a[i],b[i]);
+		if(c[i]==2)	Addedge(a[i],b[i]),Addedge(b[i],a[i]);
+	}
+	SPFA(1);
+	for(int i=1;i<=n;i++) if(points[i].cnt==0) points[i].minn = 0x3fffffff;
+	cnt =-1;
+	for(int i=1;i<=n;i++)
+		points[i].clean();
+	for(int i=1;i<=m;i++){
+		if(c[i]==1)	Addedge(b[i],a[i]);
+		if(c[i]==2)	Addedge(a[i],b[i]),Addedge(b[i],a[i]);
+	}	
+	SPFA(2);
+	for(int i=1;i<=n;i++) if(points[i].cnt==0) points[i].maxx = -0x3fffffff;
+	ans = points[1].maxx-points[1].minn;
+	for(int i=2;i<=n;i++)
+	ans = max(ans,points[i].maxx-points[i].minn);
+	printf("%d",ans);
+	//fclose(stdin);
+	//fclose(stdout);
+	return 0;
+}
+

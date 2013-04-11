@@ -1,0 +1,32 @@
+#include <stdio.h>
+int main()
+{
+    char *pro1,*pro2,*pro3,*pro4,*pro5;
+    double a1,a2,a3,a4,a5;
+    double pop1,pop2,pop3,pop4,pop5;
+    double g1,g2,g3,g4,g5;
+    pro1="China";       a1=960.00; pop1=129500.00;  g1=1080.00;
+    pro2="Iceland";     a2=10.30;      pop2=27.57;  g2=8.20;
+    pro3="India";      a3=297.47;   pop3=97000.00;  g3=264.80;
+    pro4="Madagascar";      a4=62.70;    pop4=1635.00;  g4=3.60;
+    pro5="Maldive";        a5=0.0298;      pop5=27.80;   g5=0.23;
+    printf("---------------------------------------------------
+");
+    printf("COUNTRY     AREA(10K km2)  POP.(10K)  GDP(Billion$)
+");
+    printf("---------------------------------------------------
+");
+    printf("%-12.12s%13.2lf%11.2lf  %-13.2lf
+",pro1,a1,pop1,g1);
+    printf("%-12.12s%13.2lf%11.2lf  %-13.2lf
+",pro2,a2,pop2,g2);
+    printf("%-12.12s%13.2lf%11.2lf  %-13.2lf
+",pro3,a3,pop3,g3);
+    printf("%-12.12s%13.2lf%11.2lf  %-13.2lf
+",pro4,a4,pop4,g4);
+    printf("%-12.12s%13.4lf%11.2lf  %-13.2lf
+",pro5,a5,pop5,g5);
+    printf("---------------------------------------------------
+");
+    return 0;
+}

@@ -1,0 +1,14 @@
+#include<cstdio>
+const int oo=1000000007;
+int N,i,j;
+long long f[1000005];
+int main()
+{
+	scanf("%d",&N);
+	f[1]=1,f[2]=2;
+	for(i=3;i<=N;++i) f[i]=(f[i-1]*2+f[i-2])%oo;
+	printf("%d
+",f[N]);
+	return 0;
+}
+

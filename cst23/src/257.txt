@@ -1,0 +1,50 @@
+//tihao:800
+//yangmeng
+#include<iostream>
+#include<memory>
+using namespace std;
+void quicksort(int*,int,int);
+int main()
+{
+	int i,x,n=10,f[50];
+	for (i=1;i<=n;i++)
+		cin>>f[i];
+	quicksort(f,1,n);
+	x=f[1];
+	cout<<x<<"
+";
+	for (i=2;i<=n;i++)
+		if (f[i]!=x)
+		{
+			x=f[i];
+			cout<<x<<"
+";
+		}
+	return 0;
+}
+void quicksort(int*p,int i,int j)
+{
+	int x,l,r;
+	l=i;r=j;x=p[i];
+	do 
+	{
+		while ((p[r]>=x)&&(l<r))
+			r--;
+		if (l<r)
+			p[l]=p[r];
+		while ((p[l]<=x)&&(l<r))
+			l++;
+		if (l<r)
+			p[r]=p[l];
+	}
+	while (l<r);
+	p[l]=x;l++;r--;
+	if (l<j)
+		quicksort(p,l,j);
+	if (i<r)
+		quicksort(p,i,r);
+	return;
+}
+
+
+

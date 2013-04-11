@@ -1,0 +1,32 @@
+//
+//  main.cpp
+//  temp
+//
+//  Created by 阿丸弘 on 12-3-24.
+//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//
+
+#include <iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cmath>
+
+
+using namespace std;
+
+double a,b,a1;
+int m;
+
+int main(int argc, const char * argv[])
+{
+    scanf("%lf",&a);
+    scanf("%lf",&b);
+    m=int(a);
+    a1=a-m;
+    if(a1>=b) m++;
+    printf("%d
+",m);
+    return 0;
+}
+
+

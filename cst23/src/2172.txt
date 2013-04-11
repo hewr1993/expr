@@ -1,0 +1,78 @@
+//Codeforces 10E Greedy Change
+#include<fstream>
+#include<iostream>
+#include<cstdlib>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+
+const int MAXN=405;
+int a[MAXN],v[MAXN];
+int n;
+
+void work(int x)
+{
+	memset(v,0,sizeof(v));
+	for(int i=1;x!=0;i++)
+	{
+		v[i]=x/a[i];
+		x%=a[i];
+	}
+}
+
+int work2(int x)
+{
+	int res=0;
+	for(int i=1;x!=0;i++)
+	{
+		res+=x/a[i];
+		x%=a[i];
+	}
+	return res;
+}
+
+int main()
+{
+	scanf("%d",&n);
+	for(int i=1;i<=n;i++) scanf("%d",&a[i]);
+	int ans=-1;
+	for(int i=1;i<n;i++)
+	{
+		work(a[i]-1);
+		for(int j=i+1;j<=n;j++)
+		{
+			int s=0,m=0;
+			for(int k=i;k<j;k++)
+			{
+				s+=v[k]*a[k];
+				m+=v[k];
+			}
+			s+=(v[j]+1)*a[j];
+			m+=(v[j]+1);
+			if(work2(s)>m)
+			{
+				if(ans==-1||s<ans)
+				ans=s;
+			}
+		}
+	}
+	printf("%d
+",ans);
+	
+	return 0;
+}
+/*
+Sample Input1:
+5
+25 10 5 2 1
+Sample Output1:
+-1
+
+Sample Input2:
+3
+4 3 1
+Sample Output2:
+6
+*/
+

@@ -1,0 +1,21 @@
+int Guess(int x);
+int Play()
+{
+    	int l = -10000, r = 10000, m;
+	while(r >= l)
+	{
+		m = (l + r) / 2;
+		switch(Guess(m))
+		{
+			case 1:
+				r = m - 1;
+				break;
+			case -1:
+				l = m + 1;
+				break;
+			case 0:
+				return m;
+		}
+	}
+}
+

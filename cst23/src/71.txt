@@ -1,0 +1,30 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+int main()
+{
+	char str[100];
+	cin>>str;
+	int long1=strlen(str);
+	char ceshi;
+	int count=0;
+	for(int i=97;i<=122;i++)
+	{
+		ceshi=i;
+		
+		
+		for(int j=0;j<long1;j++)
+		{
+			if(ceshi==str[j])
+			count++;
+		
+	    }
+		if(count!=0)
+		{
+			cout<<ceshi<<" "<<count<<endl;
+	    }
+		count=0;
+    }
+	 	return 0;
+}
+

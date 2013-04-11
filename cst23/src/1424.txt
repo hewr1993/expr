@@ -1,0 +1,70 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+
+int coin[1001][1001];  //coin[i][j]表示i时间，j道路上的金币数 
+int cost[1001];        //cost[i]表示第i个工厂机器人的价格 
+int f[1001][1001];     //f[i][j]表示在i时刻，在j点（还没有走第j条路）所得到了最多金币数 
+int step[1001][1001];  //step[i,j]代表在i时刻，在j点时，机器人已经走的步数 
+int past[1001];        // past[j]为j之前机器人所在的点。即past[i]=i-1(2<=i<=n) past[1]=n。
+int i,j,k;
+int n,m,p; //机器人数量 时间限制 机器人可走的步数 
+int pastmax=0,nowmax;   //本阶段最优值，上一阶段最优值 
+int main()
+{
+    //输入数据 
+     scanf("%d%d%d",&n,&m,&p);
+     for(i=1;i<=n;i++)
+         for(j=1;j<=m;j++)
+             scanf("%d",&coin[j][i]);
+     for(i=1;i<=n;i++)
+        scanf("%d",&cost[i]);
+      
+     memset(f,0,sizeof(f));
+     memset(step,0xfffff,sizeof(step));
+     
+     for(i=2;i<=n;i++)
+        past[i]=i-1;
+     past[1]=n;
+     //当时间为1时 
+     nowmax=-0xfffff;
+     for(j=1;j<=n;j++)
+     {
+         step[1][j]=1;
+         f[1][j]=pastmax-cost[past[j]]+coin[1][past[j]];
+         if(f[1][j]>nowmax)nowmax=f[1][j];
+     }
+     pastmax=nowmax;
+     for(i=2;i<=m;i++)
+     {
+         nowmax=-0xfffff;
+         for(j=1;j<=n;j++)
+         {
+             if(step[i-1][past[j]]<p)   //当前机器人还可以走 
+             {
+                 if(pastmax-cost[past[j]]>f[i-1][past[j]])
+                 {
+                     step[i][j]=1;
+                     f[i][j]=pastmax-cost[past[j]]+coin[i][past[j]];
+                 }
+                 else
+                 {
+                     step[i][j]=step[i-1][past[j]]+1;
+                     f[i][j]=f[i-1][past[j]]+coin[i][past[j]];
+                 }
+             }
+             else  //当前机器人必须换了 
+             {
+                 step[i][j]=1;
+                 f[i][j]=pastmax-cost[past[j]]+coin[i][past[j]];
+             }
+             if(f[i][j]>nowmax)nowmax=f[i][j];
+         }
+         pastmax=nowmax;
+     }
+     printf("%d
+",nowmax);
+     return 0;
+}
+

@@ -1,0 +1,52 @@
+/* 
+ * File:   NOIP1998PJ03.cpp
+ * Author: Georgejia
+ *
+ * Created on 2009年10月28日, 下午6:48
+ */
+#include <iostream>
+#include <memory>
+#include <fstream>
+using namespace std;
+int n,p;
+/*
+ * 
+ */
+void bin(int k)
+{
+    
+    int b[100];
+    int i,c=0;
+    memset(b,0,sizeof(b));
+    if (k==0) cout<<"0";
+    p=-1;
+    while (k!=0)
+    {
+        p++;
+        b[p]=k%2;
+        k=k/2;
+    }
+    for (i=p; i>=0; i--)
+    {
+        if (b[i]==1)
+        {
+            if (c==0) c=1;
+            else cout<<"+";
+            if (i==1) cout<<"2";
+            else
+            {
+                cout<<"2(";
+                bin(i);
+                cout<<")";
+            }
+        }
+    }
+}
+int main(int argc, char** argv) {
+    
+    
+    cin>>n;
+    bin(n);
+    return 0;
+}
+

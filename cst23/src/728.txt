@@ -1,0 +1,75 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+typedef long long Val;
+const int kMaxN = 600, kMaxM = 600, kMaxP = 3000;
+int pa, pb, pc, a[kMaxP], b[kMaxP], c[kMaxP], n, m, p, q;
+int v[kMaxN + 1][kMaxM + 1];
+Val s[kMaxN + 1][kMaxM + 1], t[kMaxN + 1][kMaxM + 2];
+Val col[kMaxN + 1][kMaxM + 1], f1[kMaxN + 1][kMaxM + 2], f2[kMaxN + 1][kMaxM + 2];
+
+inline int Gen(int i, int j, int mod) {
+#define UPT(x, y, m) { \
+	(x) += (y); \
+	if ((x) >= (m)) (x) -= (m); \
+}
+	int res = 0;
+	UPT(res, a[i % pa + 1] % mod, mod);
+	UPT(res, b[i % pb + 1] % mod, mod);
+	UPT(res, c[i % pc + 1] % mod, mod);
+	UPT(res, a[j % pa + 1] % mod, mod);
+	UPT(res, b[j % pb + 1] % mod, mod);
+	UPT(res, c[j % pc + 1] % mod, mod);
+	return res;
+#undef UPT
+}
+
+int main() {
+	scanf("%d", &pa);
+	for (int i = 1; i <= pa; ++ i) scanf("%d", &a[i]);
+	scanf("%d", &pb);
+	for (int i = 1; i <= pb; ++ i) scanf("%d", &b[i]);
+	scanf("%d", &pc);
+	for (int i = 1; i <= pc; ++ i) scanf("%d", &c[i]);
+	scanf("%d%d%d%d", &n, &m, &p, &q);
+	for (int i = 1; i <= n; ++ i)
+		for (int j = 1; j <= m; ++ j) v[i][j] = Gen(i, j, p) + 1;
+	Val ans = 0;
+	for (int i = 1; i <= n; ++ i)
+		for (int j = 1; j <= m; ++ j) {
+			s[i][j] = s[i][j - 1] + v[i][j];
+			t[i][j + 1] = t[i][j] + s[i][j];
+		}
+	for (int i = 1; i <= n; ++ i)
+		for (int j = 1; j <= m; ++ j) col[i][j] = col[i - 1][j] - 2 * t[i][j];
+	for (int j = 0; j <= m + 1; ++ j) f1[1][j] = f2[1][j] = t[1][j];
+	for (int i = 2; i <= n; ++ i)
+		for (int j = 0; j <= m + 1; ++ j) {
+			f1[i][j] = f2[i][j] = t[i][j];
+			if (j < m + 1) f1[i][j] += f1[i - 1][j + 1];
+			if (j > 0) f2[i][j] += f2[i - 1][j - 1];
+		}
+	for (int i = 1, x, y, k; i <= q; ++ i) {
+		x = Gen(i, 1, n) + 1, y = Gen(i, 2, m) + 1, k = Gen(i, 3, min(x, min(y, min(n - x + 1, m - y + 1)))) + 1;
+		Val res = col[x + k - 1][y] - col[x - k][y];
+		res += t[x][y - k] + t[x][y + k];
+		res += f1[x - 1][y - k + 1] - f1[x - k][y];
+		res += f2[x - 1][y + k - 1] - f2[x - k][y];
+		res += f1[x + k - 1][y + 1] - f1[x][y + k];
+		res += f2[x + k - 1][y - 1] - f2[x][y - k];
+		ans ^= res;
+	}
+#ifndef unix
+	printf("%I64d
+", ans);
+#else
+	printf("%lld
+", ans);
+#endif
+	return 0;
+}
+

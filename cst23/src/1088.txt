@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+main(){
+       double a,b,m,n;
+       scanf("%lf%lf",&a,&b);
+       if(b<0)n=-b;
+       else n=b;
+       m=1;
+       for(int i=1;i<=n;i++){
+               m=m*a;
+               }
+       if(b<0)printf("%.8lf",1/m);
+       else printf("%.0lf",m);
+       return 0;
+       }
+

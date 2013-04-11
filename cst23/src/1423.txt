@@ -1,0 +1,62 @@
+//功能描述：2010NOIP-3  
+#include <iostream>
+#include <fstream>
+#define fin cin
+#define fout cout
+using namespace std;
+//ifstream fin("missile.in");
+//ofstream fout("missile.out");
+
+struct dian
+{
+    int x,y;
+    int r1,r2;
+};
+dian p[100500]={0};
+//按r1从小到大排序 
+void qsort(dian *a,int low,int high)
+{
+    int i=low,j=high;
+    dian k=a[i];
+    if(low>high)return ;
+    while(i!=j)
+    {
+        while(i<j&& a[j].r1>=k.r1) j--;
+        a[i]=a[j];
+        while(i<j&& a[i].r1<=k.r1) i++;
+        a[j]=a[i];
+    }
+    a[i]=k;
+    qsort(a,low,i-1);
+    qsort(a,i+1,high);
+}
+int main()
+{
+    int x1,y1,x2,y2,n;
+    int tx,ty,tr;
+    int r;
+    int i;
+    fin>>x1>>y1>>x2>>y2;
+    fin>>n;
+    for(i=0;i<n;i++)
+    {
+        fin>>tx>>ty;
+        p[i].x=tx;p[i].y=ty;
+        p[i].r1=(tx-x1)*(tx-x1)+(ty-y1)*(ty-y1);
+        p[i].r2=(tx-x2)*(tx-x2)+(ty-y2)*(ty-y2);
+    }
+    
+    qsort(p,0,n-1);
+    
+    r=p[n-1].r1;
+    tr=0;
+    for(i=n-1;i>0;i--)
+    {
+        if(p[i].r2>tr) tr=p[i].r2;        
+        if(p[i-1].r1+tr<r) r=p[i-1].r1+tr; 
+    }
+    fout<<r<<endl;
+    
+    return 0;
+}
+

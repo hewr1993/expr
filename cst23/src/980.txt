@@ -1,0 +1,46 @@
+var
+  a:array[0..30000] of longint;
+  i,j,n,m,ans:longint;
+procedure quicksort(x,y:longint);
+var
+  l,r,t:longint;
+begin
+    l:=x;
+    r:=y;
+    t:=a[(l+r) div 2];
+    repeat
+      while a[x]<t do inc(x);
+      while a[y]>t do dec(y);
+      if x<=y then
+      begin
+        a[0]:=a[x];
+        a[x]:=a[y];
+        a[y]:=a[0];
+        inc(x);
+        dec(y);
+      end;
+    until x>y;
+    if l<y then quicksort(l,y);
+    if r>x then quicksort(x,r);
+end;
+begin
+  //assign(input,'group.in');reset(input);
+  //assign(output,'group.out');rewrite(output);
+  readln(n);
+  readln(m);
+  for i:=1 to m do read(a[i]);
+  quicksort(1,m);
+  i:=1;
+  j:=m;
+  repeat
+    if a[i]+a[j]<=n then
+    begin
+      inc(i);
+      dec(j);
+    end
+    else dec(j);
+    inc(ans);
+  until i>j;
+  writeln(ans);
+  //close(input);close(output);
+end.

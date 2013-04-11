@@ -1,0 +1,80 @@
+#include <cstdlib>
+#include <iostream>
+#include <math.h>
+#include <vector>
+
+using namespace std;
+
+int a[63][64]={{0}};
+
+int power(int c)
+{
+   int i,sum=1;
+   for(i=0;i<c;i++)
+   {
+      sum*=2;
+   }
+   return sum;
+}
+
+void print(int n)
+{
+   if(n==0)
+   {
+      cout<<0;
+   }
+   if(n==1)
+   {
+      cout<<"2(0)";
+   }
+   if(n==2)
+   {
+      cout<<2;
+   }
+   if(n>=3)
+   {
+   int i,cnt=0;
+   vector<int> index;
+   while(1)
+   {
+      if(n==0)
+      {
+         break;
+      }
+      for(i=0;i<18;i++)
+      {
+         if(power(i)>n)
+         {
+            break;
+         }
+      }
+      index.push_back(i-1);
+      cnt++;
+      n-=power(i-1);
+   }
+   for(i=0;i<cnt;i++)
+   {
+      cout<<2;
+      if(index[i]!=1)
+      {
+         cout<<"(";
+         print(index[i]);
+         cout<<")";
+      }
+      if(i!=cnt-1)
+      {
+         cout<<"+";
+      }
+   }
+   }
+}
+
+int main()
+{
+   int n;
+   cin>>n;
+   print(n);
+   system("PAUSE");
+   return 0;
+}
+

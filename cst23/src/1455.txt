@@ -1,0 +1,70 @@
+#include<cstdio>
+#include<cstring>
+int A,N,i,j;
+long long P,Ans,y,C[505],c[505],D[505],g[505],f[505],h[505],e[505];
+long long Mul(long long a,long long b)
+{
+	long long s=1;
+	for(;b;)
+	{
+		if(b&1) s=s*a%P;
+		a=a*a%P,b/=2;
+	}
+	return s;
+}
+void Merge(long long a[],long long b[])
+{
+	int i,j;
+	long long p=a[0],k;
+	if(a[0]==0)
+	{
+		for(i=0;i<=N;++i) a[i]=b[i];
+		return;
+	}
+	memset(h,0,sizeof(h));
+	for(i=1;i<=N&&i<=b[0];++i)
+	{
+		k=1;
+		for(j=i;j;--j)
+		{
+			h[i]=(h[i]+b[j]*k%P*C[i]%P*c[j]%P*D[i-j]%P)%P;
+			k=k*p%P;
+		}
+		h[i]=(h[i]+k*C[i]%P*D[i]%P)%P;
+	}
+	memset(e,0,sizeof(e));
+	for(i=1;i<=N;++i) e[i]=(e[i]+a[i])%P;
+	for(i=1;i<=N;++i) e[i]=(e[i]+h[i])%P;
+	e[0]=a[0]+b[0];
+	for(i=1;i<=N;++i)
+		for(j=1;j<=N-i;++j)
+			e[i+j]=(e[i+j]+a[i]*h[j])%P;
+	for(i=0;i<=N;++i) a[i]=e[i];
+}
+int main()
+{
+	scanf("%d%d%d",&A,&N,&P);
+	D[0]=1;
+	for(i=1;i<=N;++i) D[i]=(D[i-1]*i)%P;
+	for(i=0;i<=N;++i) D[i]=Mul(D[i],P-2);
+	g[1]=1,g[0]=1;
+	for(;A;)
+	{
+		C[0]=1;
+		y=g[0];
+		for(i=1;i<=N&&i<=g[0];++i)
+		{
+			C[i]=C[i-1]*y%P;
+			y=(y+P-1)%P;
+		}
+		for(i=0;i<=N&&i<=g[0];++i) c[i]=Mul(C[i],P-2);
+		if(A&1) Merge(f,g);
+		Merge(g,g),A/=2;
+	}
+	Ans=f[N];
+	for(i=1;i<=N;++i) Ans=Ans*i%P;
+	printf("%d
+",Ans);
+	return 0;
+}
+

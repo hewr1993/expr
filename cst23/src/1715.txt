@@ -1,0 +1,185 @@
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <algorithm>
+
+using namespace std;
+
+const int maxn = 1000010, mo = 3000017;;
+int n, m, a, b, cnt, tot, cur, ne, pcnt, edge, all;
+int head[maxn], next[maxn * 2], px[maxn * 2], d[maxn];
+int phead[maxn], pnext[maxn * 2], ppx[maxn * 2];
+int v[maxn], q[maxn], st, en, tag[maxn][2], nq[maxn], bg[maxn], D[maxn * 2], list[maxn];
+long long H[mo];
+bool visit[maxn];
+
+inline bool cmp (int a, int b){return d[a] < d[b];}
+
+int hash(int x, int y, bool flag){
+	long long p; int k;
+	if (x > y) k = x, x = y, y = k;
+	p = (long long)x * n + y - 1; k = p % mo;
+	while (H[k] && H[k] != p) k = (k == mo - 1) ? 0 : k + 1;
+	if (flag) H[k] = p;
+	return k;
+}
+
+bool check(){
+	for (int i = 0; i < cur; i++){
+		D[tag[v[i]][0]]++, D[tag[v[i]][1]]++;
+		if (tag[v[i]][0] == tag[v[i]][1]) return false;
+	}
+	long long tmp = 0;
+	for (int i = 0; i < cur; i++){
+		tmp += D[tag[v[i]][0]] * (D[tag[v[i]][0]] - 1) / 2;
+		tmp += D[tag[v[i]][1]] * (D[tag[v[i]][1]] - 1) / 2;
+		D[tag[v[i]][0]] = D[tag[v[i]][1]] = 0;
+	}
+	edge = 0;
+	for (int i = 0; i < cur; i++)
+		for (int ptr = head[v[i]]; ptr; ptr = next[ptr]) edge++;
+	edge >>= 1;
+	if (tmp != edge) return false;
+	for (int i = 0; i < cur; i++)
+		for (int ptr = head[v[i]]; ptr; ptr = next[ptr])
+			if (H[hash(v[i], px[ptr], false)]){
+				int k = (tag[v[i]][0] == tag[px[ptr]][0])
+					+ (tag[v[i]][0] == tag[px[ptr]][1])
+					+ (tag[v[i]][1] == tag[px[ptr]][0])
+					+ (tag[v[i]][1] == tag[px[ptr]][1]);
+				if (k != 1) return false;
+			}else return false;
+	return true;
+}
+
+bool bfs(){
+	while (st <= en){
+		int y = tag[q[st]][1];
+		if (!y) tag[q[st]][1] = y = cnt++;
+		for (int ptr = head[q[st]]; ptr; ptr = next[ptr])
+			if (!tag[px[ptr]][0]) tag[px[ptr]][0] = y, q[++en] = px[ptr];
+			else if (tag[px[ptr]][0] && !tag[px[ptr]][1] &&
+				tag[px[ptr]][0] != tag[q[st]][0] && tag[px[ptr]][0] != y) tag[px[ptr]][1] = y;
+		st++;
+	}
+	if (check()){ return true;
+	}else return false;
+}
+
+void determine(int x){
+	nq[0] = x; ne = 1; pcnt = edge = 0;
+	for (int ptr = head[x]; ptr; ptr = next[ptr]) nq[ne++] = px[ptr], phead[px[ptr]] = 0;
+	for (int i = 0; i < ne; i++)
+		for (int j = i + 1; j < ne; j++)
+			if (!H[hash(nq[i], nq[j], false)]){
+				ppx[++pcnt] = nq[j]; pnext[pcnt] = phead[nq[i]]; phead[nq[i]] = pcnt;
+				ppx[++pcnt] = nq[i]; pnext[pcnt] = phead[nq[j]]; phead[nq[j]] = pcnt;
+			}
+
+	int ca, cb, A = cnt++, B = cnt++, bst = 1, ben = 1, last = 1; bg[1] = nq[1]; st = 1; en = 0;
+	tag[x][0] = A; tag[x][1] = B;
+	if (ne == 1) return;
+	while (true){
+		ca = 1; cb = 0; tag[bg[bst]][0] = A; q[++en] = bg[bst];
+		while (bst <= ben){
+			int opp;
+			if (tag[bg[bst]][0] == A) opp = B; else opp = A;
+			for (int ptr = phead[bg[bst]]; ptr; ptr = pnext[ptr])
+				if (!tag[ppx[ptr]][0]){
+					tag[ppx[ptr]][0] = opp, bg[++ben] = ppx[ptr], q[++en] = ppx[ptr];
+					if (opp == A) ca++; else cb++;
+				}else if (tag[ppx[ptr]][0] != opp){
+					printf("-1
+");
+					exit(0);
+				}
+			bst++;
+		}
+		if (ca == 1 && cb == 0){
+			for (last++; last < ne; last++){
+				if (!tag[nq[last]][0]){
+					bg[++ben] = nq[last]; q[++en] = nq[last];
+					break;
+				}
+			}
+			if (last >= ne){
+				if (ne == 3){
+					int C = cnt++;
+					tag[nq[1]][0] = A; tag[nq[1]][1] = C;
+					tag[nq[2]][0] = B; tag[nq[2]][1] = C;
+					en = 0;
+					for (int ptr = head[nq[1]]; ptr; ptr = next[ptr])
+						if (!tag[px[ptr]][0]) tag[px[ptr]][0] = C, q[++en] = px[ptr];
+					st = 1;
+				}else{
+					for (int i = 0; i < ne; i++) tag[nq[i]][1] = cnt++;
+				}
+				if (!bfs()){
+					for (int i = 0; i < cur; i++) tag[v[i]][0] = tag[v[i]][1] = 0;
+					tag[nq[0]][0] = A; tag[nq[0]][1] = B;
+					tag[nq[1]][0] = A; tag[nq[2]][0] = A;
+					st = 1; en = 2; q[1] = nq[1]; q[2] = nq[2];
+					bfs();
+				}
+				break;
+			}
+		}else{
+			if (ca == 1 && cb == 1){
+				int X = 0, Y = 0;
+				for (int i = 0; i < ne; i++) if (!tag[nq[i]][0]){
+					if (X == 0) X = nq[i];
+					else if (Y == 0) Y = nq[i];
+					else{
+						printf("-1
+");
+						exit(0);
+					}
+				}
+				tag[X][0] = A; tag[Y][0] = B;
+				if (X) q[++en] = X;
+				if (Y) q[++en] = Y;
+				if (!bfs()){
+					for (int i = 0; i < cur; i++) tag[v[i]][0] = tag[v[i]][1] = 0;
+					tag[x][0] = A; tag[x][1] = B;
+					tag[X][0] = B; tag[Y][0] = A;
+					en = 4 - (!X) - (!Y);
+					bfs();
+				}
+			}else if (ca == 1 && cb > 1){
+				for (int i = 0; i < ne; i++) if (!tag[nq[i]][0]) tag[nq[i]][0] = B;
+				bfs();
+			}else if (ca > 1 && cb == 1){
+				for (int i = 0; i < ne; i++) if (!tag[nq[i]][0]) tag[nq[i]][0] = A;
+				bfs();
+			}else{
+				bfs();
+			}
+			break;
+		}
+	}
+}
+
+void work(int curv){
+	for (v[st = 0] = curv, visit[curv] = true, en = 1; st < en;)
+		for (int ptr = head[v[st++]]; ptr; ptr = next[ptr])
+			if (!visit[px[ptr]]) v[en++] = px[ptr], visit[px[ptr]] = true;
+	nth_element(v, v, v + en, cmp); cur = en;
+	
+	int now = v[0];
+	determine(now);
+}
+
+int main(){
+	scanf("%d%d", &n, &m);
+	for (int i = 0; i < m; i++){
+		scanf("%d%d", &a, &b);
+		hash(a, b, true);
+		px[++cnt] = b; next[cnt] = head[a]; head[a] = cnt;
+		px[++cnt] = a; next[cnt] = head[b]; head[b] = cnt;
+		d[a]++; d[b]++;
+	}
+	for (int i = cnt = 1; i <= n; i++) if (!visit[i]) work(i);
+	for (int i = 1; i <= n; i++) printf("%d %d
+", tag[i][0], tag[i][1]);
+}
+

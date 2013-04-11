@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <memory.h>
+//该函数实现从文件data.in中读数据，编码后写到文件data.out，文件格式见题目描述
+void lzw_code()			
+{
+	FILE *in = NULL, *out = NULL;
+	in = fopen("data.in","r");
+	out = fopen("data.out","wb");
+	int i , j, p, l = 0, dicnum = 0;//i,j,p循环计数，l为字符串长度，dicnum为字典中词条数
+	short code;
+	char x, str[1100] = {0}, s[110] = {0}, dict[300][110] = {0};
+	fscanf(in, "%s", str);
+	fscanf(in, "%d", &dicnum);
+	for(i = 0; i < dicnum; i++)
+		fscanf(in, "%s%d", dict[i], &j);
+	l = strlen(str);
+	x = str[0];
+	i = 0;
+	do
+	{
+		s[0] = x;
+		j = 0;
+		do
+		{
+			i++;
+			j++;
+			s[j] = str[i];
+			s[j + 1] = 0;
+			for(p = 0; p < dicnum;p++ )
+			{
+				if(strcmp(s, dict[p]) == 0)
+					break;			
+			}
+		}
+		while(p < dicnum && i < l);
+		if(dicnum < 256)
+		{
+			strcpy(dict[dicnum++], s);
+		}
+		x = s[j];
+		s[j] = 0;
+		for(p = 0; p <= dicnum;p++ )
+		{
+			if(strcmp(s, dict[p]) == 0)
+			{
+				code = (short)p;
+				break;		
+			}
+		}
+		fwrite(&code, sizeof(short), 1, out);
+	}
+	while(i < l);
+	fclose(in);
+	fclose(out);
+
+}
+

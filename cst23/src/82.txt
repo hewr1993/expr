@@ -1,0 +1,90 @@
+//
+//  main.cpp
+//  A1043. 完美的代价
+//
+//  Created by  on 12-11-7.
+//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+
+int find(char *s,int size)
+{
+    char *p=s+size-1;
+    char *begin=s;
+    char *end=p;
+    char *i=begin,*j=end;
+    int len=0;
+    char c='a';
+    for (int k=0; k<26; k++) {
+        while (*s!=c&&s<p) {
+            s++;
+        }
+        while (*p!=c&&p>s) {
+            p--;
+        }
+        if ((p-s)>len) {
+            len=p-s;
+            i=s;
+            j=p;
+        }
+        c++;
+        s=begin;
+        p=end;
+    }
+    while (i!=(j-1)) {
+        *i=*(i+1);
+        i++;
+    }
+    while (i!=(end-1)) {
+        *i=*(i+2);
+        i++;
+    }
+    while (i<=end) {
+        *i=0;
+        i++;
+    }
+    //cout<<size<<" "<<len<<endl;
+    return size-len-1;
+}
+
+int main()
+{
+    int a[26];
+    for (int i=0; i<26; i++) {
+        a[i]=0;
+    }
+    int size;
+    cin>>size;
+    char s[size];
+    cin>>s;
+    for (int i=0; i<size; i++) {
+        int j=s[i]-97;
+        a[j]++;
+    }
+    int t=0;
+    for (int i=0; i<26; i++) {
+      //  cout<<a[i]<<endl;
+        if (a[i]%2!=0) {
+            t++;
+        }
+    }
+    if (t>1) {
+        cout<<"Impossible"<<endl;
+        return 0;
+    }
+ //   cout<<s;
+    
+    int length=0;
+    while (size>1) {
+        length+=find(s,size);
+        size=size-2;
+    }
+    cout<<length;
+   
+}
+

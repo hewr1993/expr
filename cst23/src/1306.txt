@@ -1,0 +1,33 @@
+#include<iostream>
+#include<cstdio>
+using namespace std;
+int a[501]={0};
+void quicksort(int low,int high)
+{
+     int mid=a[(low+high)/2],i=low,j=high,t;
+     while(i<=j)
+     {
+       while(a[i]<mid)i++;
+       while(a[j]>mid)j--;
+       if(i<=j){t=a[i];a[i]=a[j];a[j]=t;i++;j--;}
+     }
+     if(low<j)quicksort(low,j);
+     if(high>i)quicksort(i,high);
+} 
+int main()
+{
+    int n,r,i,j=0,t,x,s=0,b[76]={0};
+    scanf("%d%d",&n,&r);
+    x=n%r;
+    for(i=1;i<=n;i++)scanf("%d",&a[i]);
+    quicksort(1,n);
+    for(i=1;i<=n;i++)
+       {j++;
+        if(j>r)j=1;
+        b[j]+=a[i];
+        s+=b[j];}
+    printf("%d",s);
+    //system("pause");
+     return 0;
+}
+

@@ -1,0 +1,52 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+int a[1000],b[1000],c[1000];
+int sum[1000000];
+int size;
+int answer;
+
+int cmp(const void* a, const void* b)
+{
+	return *((int*)a) - *((int*)b);
+}
+
+int main()
+{
+	int A,B,C,T;
+	cin >> A >> B >> C >> T;
+	for(int i=0;i<A;i++)
+		cin >> a[i];
+	for(int i=0;i<B;i++)
+		cin >> b[i];
+	for(int i=0;i<C;i++)
+		cin >> c[i];
+	size = 0;
+	qsort(a,A,sizeof(int),cmp);
+	qsort(b,B,sizeof(int),cmp);
+	qsort(c,C,sizeof(int),cmp);
+	for(int i=0;i<A;i++)
+	{
+		if(a[i]>T) break;
+		for(int j=0;j<B;j++)
+		{
+			if(a[i]+b[j]<=T)
+				sum[size++] = a[i]+b[j];
+			else break;
+		}
+	}
+	qsort(sum,size,sizeof(int),cmp);
+	answer = 0;
+	for(int i=0;i<size;i++)
+	{
+		for(int j=0;j<C;j++)
+		{
+			if(sum[i]+c[j]<=T) answer++;
+			else break;
+		}
+	}
+	cout << answer << endl;
+	//system("pause");
+}
+

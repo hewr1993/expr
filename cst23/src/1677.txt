@@ -1,0 +1,94 @@
+#include <cstdio>
+#include <cmath>
+#define maxn 100 + 10
+
+int n;
+struct Point
+{
+    double x,y;
+}p[maxn],q;
+
+struct Line
+{
+    double A,B,C;
+};
+
+inline Point operator - ( Point a, Point b )
+{
+    Point c;
+    c.x = a.x-b.x;
+    c.y = a.y-b.y;
+    return c;
+}
+
+inline double operator * ( Point a, Point b )
+{
+    return a.x*b.y - a.y*b.x;
+}
+
+inline int zero( double x )
+{
+    if( fabs(x) < 1e-9 )
+        return 0;
+    return x > 0 ? 1 : -1;
+}
+
+Line getline( Point a, Point b )
+{
+    Line c;
+    c.A = a.y-b.y;
+    c.B = b.x-a.x;
+    c.C = a*b;
+    return c;
+}
+
+void calc( Line a, Line b )
+{
+    if( !zero(b.B*a.A - a.B*b.A) )
+        return;
+    q.x = (a.B*b.C - b.B*a.C) / (b.B*a.A - a.B*b.A);
+    q.y = (a.A*b.C - b.A*a.C) / (b.A*a.B - a.A*b.B);
+}
+
+int main()
+{
+    int T,i,j;
+
+    for( T = 1 ; ; ++T )
+        {
+            scanf("%d",&n);
+            if( !n )
+                break;
+            for( i = 1 ; i <= n ; ++i )
+                scanf("%lf%lf",&p[i].x,&p[i].y);
+            p[n+1] = p[1];
+            
+            q = p[1];
+            for( i = 1 ; i <= n ; ++i )
+                if( zero((p[i+1]-p[i])*(q-p[i])) > 0 )
+                    {
+                        q = p[i];
+                        for( j = 1 ; j < i ; ++j )
+                            if( zero((p[j+1]-p[j])*(q-p[j])) > 0 )
+                                calc(getline(p[i],p[i+1]),getline(p[j],p[j+1]));
+                    }
+            
+            for( i = 1 ; i <= n ; ++i )
+                if( zero((p[i+1]-p[i])*(q-p[i])) > 0 )
+                    break;
+            
+            if( T > 1 )
+                printf("
+");
+            printf("Room #%d:
+",T);
+            if( i > n )
+                printf("Surveillance is possible.
+");
+            else printf("Surveillance is impossible.
+");        
+        }
+        
+    return 0;
+}
+

@@ -1,0 +1,41 @@
+
+#include <stdio.h>
+
+//数组a有n个元素，把它向右循环移动m个位置 
+void circleMove(int *a,int n,int m)
+{
+  int k;
+     for(k=n-1;k>=0;k=k-1)
+     {
+          a[k+m] = a[k];                   
+     }
+     //for(k=0;k<n+m;k++)
+     //   printf("%d ",a[k]);
+     
+     for(k=n;k<=n+m-1;k++)
+     {
+          a[k-n] = a[k];                      
+     }
+     //for(k=0;k<n+m;k++)
+    //    printf("%d ",a[k]);
+     //system("pause");
+}
+
+int main()
+{
+    int arr[200]={0};
+    int n,m;
+    int i;
+    scanf("%d %d",&n,&m);
+    for(i=0;i<n;i++)
+        scanf("%d",&arr[i]);
+    
+    circleMove(arr,n,m);
+    
+    for(i=0;i<n;i++)
+        printf("%d ",arr[i]);
+    printf("
+");
+    return 0;
+}
+

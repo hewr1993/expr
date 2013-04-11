@@ -1,0 +1,66 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cmath>
+
+using namespace std;
+
+int n;
+int a[15][15]={};
+int s=0;
+
+bool checkok(int b[],int k)
+{
+    int c[15]={};
+    for(int i=0;i<k;i++)
+    {
+        c[b[i]]++;
+    }
+    for(int i=0;i<k;i++) if(c[i]>1) return false;
+    for(int i=0;i<k;i++)
+    {
+        for(int j=i+1;j<k;j++)
+        {
+            if(abs(j-i)==abs(b[i]-b[j])) return false;
+        }
+    }
+    return true;
+}
+
+void dfs(int k,int b[])
+{
+    if(k>=n)
+    {
+        if(checkok(b,n)) 
+        {
+            s++;
+            //for(int i=0;i<n;i++) printf("%d ",b[i]);
+            //printf("
+");
+        }
+        return;
+    }
+    for(int i=0;i<n;i++)
+    {
+        if(a[k][i]!=1)
+        {
+            b[k]=i;
+            if(checkok(b,k+1)) dfs(k+1,b);
+        }
+    }
+}
+
+int main()
+{
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+        for(int j=0;j<n;j++)
+            scanf("%d",&a[i][j]);
+    int b[15]={};
+    dfs(0,b);
+    printf("%d
+",s);
+    
+    return 0;
+}
+

@@ -1,0 +1,63 @@
+#include<iostream>
+#include<cmath>
+#include<cstring>
+using namespace std;
+
+int k,n,m,an;
+int a[111][111]={0},dx[4]={1,0,-1,0},dy[4]={0,1,0,-1};
+
+void read1(int x,int y,int s,int d)
+{
+ a[x][y]=s;
+ int i;
+ for(i=d;i<=3;i++)
+  if(((x+dx[i])>=1)&&((x+dx[i])<=n)&&((y+dy[i])>=1)&&((y+dy[i])<=m)&&(a[x+dx[i]][y+dy[i]]==0))
+  {
+   read1(x+dx[i],y+dy[i],s+1,i);
+   break;
+  };
+ for(i=0;i<d;i++)
+  if(((x+dx[i])>=1)&&((x+dx[i])<=n)&&((y+dy[i])>=1)&&((y+dy[i])<=m)&&(a[x+dx[i]][y+dy[i]]==0))
+  {
+   read1(x+dx[i],y+dy[i],s+1,i);
+   break;
+  };
+};
+
+void read2(int x,int y)
+{
+ for(int i=0;i<=1;i++)
+  if(((x+dx[i])>=1)&&((x+dx[i])<=n)&&((y+dy[i])>=1)&&((y+dy[i])<=m))
+  {
+   an+=abs(a[x][y]-a[x+dx[i]][y+dy[i]]);
+   read2(x+dx[i],y+dy[i]);
+  };
+};
+int main()
+{
+ cin>>k;
+ int ans=0,ni;
+ for(n=1;n<=sqrt(k);n++)
+  if(k%n==0)
+  {
+   m=k/n;an=0;
+   memset(a,0,sizeof(a));
+   read1(1,1,1,0);
+   read2(1,1);
+   if(an>ans) 
+   {
+    ni=n;
+	ans=an;
+   };
+  };
+ n=ni;m=k/n;
+ int b[111][111]={0};
+ read1(1,1,1,0);
+ for(int i1=1;i1<=n;i1++)
+ {
+  for(int j1=1;j1<m;j1++) cout<<a[i1][j1]<<' ';
+  cout<<a[i1][m]<<endl;
+ };
+ return 0;
+}
+

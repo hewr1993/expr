@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+int main()
+{
+    char a[300] , b[300];
+    cin >> a >> b;
+    int i , j ;
+    for (i = 0 ; a[i] != '.' && i < strlen(a); i ++);
+    for (j = 0 ; b[j] != '.' && j < strlen(b); j ++);
+    bool na = false;
+    bool nb = false;
+    if (i == strlen(a))
+    {
+       a[i] = '.';
+       a[i + 1] = '0';
+       a[i + 2] = 0;
+       na = true;
+    }
+    if (j == strlen(b))
+    {
+       b[j] = '.';
+       b[j + 1] = '0';
+       b[j + 2] = 0;
+       nb = true;      
+    }
+    int i1 = strlen(a) - 1 - i;
+    int j1 = strlen(b) - 1 - j;
+    int c1 = max( i , j ) + max(i1 , j1) + 1;
+    char* c = new char[c1];
+    int min0 = min(i,j);
+    int max0 = max(i,j);
+    int min1 = min(i1,j1);
+    int max1 = max(i1,j1);
+    int plus = 0;
+    if (i1 > j1)
+       for (int k =  i1  ; k > j1 ; k --)
+       {
+           c[max0 + k] = a[i + k];    
+       }
+    else
+       for (int k =  j1  ; k > i1 ; k --)
+       {
+           c[max0 + k] = b[j + k];    
+       }
+    for (int k = min1   ; k > 0  ; k --)
+    {
+        c[max0 + k] = (a[i + k] + b[j + k] + plus - '0' * 2) % 10 + '0';
+        plus =  (a[i + k] + b[j + k] + plus - '0' * 2) / 10;
+    }    
+    c[max0] = '.';
+    for (int k =  - 1 ; k >= -min0  ; k --)
+    {
+        c[max0 + k] = (a[i + k] + b[j + k] + plus - '0' * 2) % 10 + '0';
+        plus = (a[i + k] + b[j + k] + plus - '0' * 2) / 10;   
+    }
+    if (i > j)
+       for (int k = -j - 1 ; k >= - i ; k --)
+       {
+           c[i + k] = (a[i + k] + plus - '0' ) % 10 + '0';
+           plus = (a[i + k] + plus - '0' ) / 10;   
+       }
+    else
+       for (int k =  -i - 1 ; k >= -j ; k --)
+       {
+           c[j + k] = (b[j + k] + plus - '0' ) % 10 + '0';
+           plus = (b[j + k] + plus -'0') / 10;    
+       }
+    if (plus == 1)
+       cout << 1;
+    int length;
+    if (na == true && nb == true)
+       length = max0;
+    else
+        length = max0 + max1 + 1;
+    for (int i = 0 ; i < length; i ++)
+    {
+        cout << c[i];
+    }
+}

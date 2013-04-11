@@ -1,0 +1,118 @@
+#include<cmath>
+#include<cstdio>
+#include<cstdlib>
+#include<iostream>
+
+#define MAXN 100005
+using namespace std;
+
+int n;
+
+struct point
+{
+       int index;
+       double x , y;
+       double operator *(point u)
+       {
+              return x * u.y - y * u.x;
+       }
+       point operator -(point u)
+       {
+             point ret;
+             ret.x = x - u.x;
+             ret.y = y - u.y;
+             return ret;
+       }
+}A[MAXN] , STK[MAXN];
+
+int head;
+
+int cmp(const void *a , const void *b)
+{
+    point X = *(point*)a - A[1];
+    point Y = *(point*)b - A[1];
+    if(X*Y > 0)
+           return -1;
+    if(X*Y < 0)
+           return 1;
+    if(abs(X.x) > abs(Y.x))
+                return 1;
+    return -1;
+}
+
+void get_convex_hull()
+{
+     for(int i = 1 ; i <= n ; i++)
+             if(A[i].y < A[1].y || (A[i].y == A[1].y && A[i].x < A[1].x))
+                       swap(A[i] , A[1]);
+     qsort(A + 2 , n - 1 , sizeof(A[0]) , cmp);
+     STK[1] = A[1];
+     STK[2] = A[2];
+     head = 2;
+     for(int i = 3 ; i <= n ; i++)
+     {
+             while((STK[head] - STK[head-1]) * (A[i] - STK[head]) < 0)
+                           head --;
+             STK[++head] = A[i];
+     }
+     for(int i = 1 ; i <= head ; i++)
+             A[i] = STK[i];
+     n = head;
+     return ;
+}
+
+void solve_1()
+{
+     double val = 1e-10;
+     int a , b , t = 1 , p;
+     for(int i = 1 ; i <= n ; i++)
+             A[i+n] = A[i];
+     for(int i = 2 ; i <= n ; i++)
+             if(A[t] * A[i] < 0)
+                     t = i;
+     for(int i = t + 1 ; i <= t + n ; i++)
+             if(A[t] * A[i] > val)
+                     val = A[t] * A[i] , a = t , b = i , p = i;
+     for(int i = t ; i <= t + n ; i++)
+     {
+             while(A[i] * A[p+1] > A[i] * A[p])
+                        p++;
+             if(A[i] * A[p] > val)
+                     val = A[i] * A[p] , a = i , b = p;
+     }
+     printf("%d %d
+" , A[a].index , A[b].index);
+}
+
+void solve_2()
+{
+     printf("%d
+" , n);
+     for(int i = 1 ; i <= n ; i++)
+     {
+             printf("%d" , A[i].index);
+             if(i < n)
+                  printf(" ");
+             else
+                  printf("
+");
+     }
+}
+
+int main()
+{
+    while(scanf("%d" , &n) == 1)
+    {
+                 for(int i = 1 ; i <= n ; i++)
+                 {
+                         double m , c;
+                         scanf("%lf %lf" , &m , &c);
+                         A[i].x = m * c , A[i].y = m , A[i].index = i;
+                 }
+                 get_convex_hull();
+                 solve_1();
+                 solve_2();
+    }
+    return 0;
+}
+

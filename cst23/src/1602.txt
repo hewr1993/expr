@@ -1,0 +1,61 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+const int MAXS = 100;
+const double INF = 100000000;
+int x[MAXS * 4], y[MAXS * 4], T[MAXS];
+double f[MAXS * 4][MAXS * 4];
+void get_square(int x1, int y1, int x2, int y2, int x3, int y3, int &x4, int &y4)
+{
+    if ((x2 - x1) * (x3 - x1) + (y2 - y1) * (y3 - y1) != 0)
+    {
+        swap(x1, x2);
+        swap(y1, y2);
+    }
+    if ((x2 - x1) * (x3 - x1) + (y2 - y1) * (y3 - y1) != 0)
+    {
+        swap(x1, x3);
+        swap(y1, y3);
+    }
+    x4 = x2 + x3 - x1;
+    y4 = y2 + y3 - y1;
+}
+double get_length(int x1, int y1, int x2, int y2)
+{
+    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+}
+void solve()
+{
+    int s, A, B, i, j, k, p, t;
+    double result = INF;
+    cin >> s >> t >> A >> B;
+    for (i = 0, p = 0; i < s; i++, p += 4)
+    {
+        for (j = 1; j <= 3; j++)
+            cin >> x[p + j] >> y[p + j];
+        get_square(x[p + 1], y[p + 1], x[p + 2], y[p + 2], x[p + 3], y[p + 3], x[p], y[p]);
+        cin >> T[i];
+    }
+    p = 4 * s;
+    for (i = 0; i < p; i++)
+        for (j = 0; j < p; j++)
+            f[i][j] = get_length(x[i], y[i], x[j], y[j]) * ((i / 4 == j / 4) ? T[i / 4] : t);
+    for (k = 0; k < p; k++)
+        for (i = 0; i < p; i++)
+            for (j = 0; j < p; j++)
+                if (f[i][k] + f[k][j] < f[i][j])
+                    f[i][j] = f[i][k] + f[k][j];
+    for (i = (A - 1) * 4; i < A * 4; i++)
+        for (j = (B - 1) * 4; j < B * 4; j++)
+            if (f[i][j] < result)
+                result = f[i][j];
+    cout << setprecision(1) << setiosflags(ios::fixed);
+    cout << result << endl;
+}
+int main()
+{
+    solve();
+    return 0;
+}
+

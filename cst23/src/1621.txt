@@ -1,0 +1,34 @@
+#include<cstdlib>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<cmath>
+#define P 200010
+using namespace std;
+int n,k,p;
+long long ans;
+int b[60][P],f[P][20];
+int main()
+{
+    int i,j,o,m,l;
+  //  freopen("hotel.in","r",stdin);
+ //   freopen("hotel.out","w",stdout);
+    scanf("%d%d%d",&n,&k,&p);
+    for(i=1;i<=n;i++) {scanf("%d%d",&o,&f[i][0]);++o;++b[o][0];b[o][b[o][0]]=i;}
+    for(j=1;j<=19;j++)
+      for(i=1;i+(1<<j)-1<=n;i++)
+        f[i][j]=min(f[i][j-1],f[i+(1<<j)-(1<<(j-1))][j-1]);
+    for(i=1;i<=k;i++)
+      for(j=1;j<=b[i][0]-1;j++)
+        for(m=j+1;m<=b[i][0];m++)
+        {
+          l=log2(b[i][m]-b[i][j]+1);
+          if(min(f[b[i][j]][l],f[b[i][m]+1-(1<<l)][l])<=p) {ans=ans+b[i][0]+1-m;break;}
+        }
+    printf("%lld
+",ans);
+    fclose(stdin);
+    fclose(stdout);
+    return 0;
+}
+

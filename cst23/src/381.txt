@@ -1,0 +1,38 @@
+//1996noip 普及组第4题 
+//作者：彭昊若
+//时间：2009年10月15日 
+#include<iostream>
+#include<cmath>
+using namespace std;
+int main()
+{
+ int n;
+ int a[65][65],b[65];
+ int i,j,k,m;
+ cin>>n;
+ m=1;
+ for (i=1;i<=n;i++) m=m*2;
+ memset(a,0,sizeof(a));
+ for (i=1;i<=m-1;i++)
+ {
+  cout<<"<"<<i<<">";
+  memset(b,0,sizeof(b));
+  for (j=1;j<=m;j++)
+  {
+   if (b[j]==0)
+    for (k=j+1;k<=m;k++)
+     if ((a[j][k]==0)&&(b[j]==0)&&(b[k]==0))
+     { 
+      cout<<j<<"-"<<k<<" ";
+      a[j][k]=1;
+      a[k][j]=1;
+      b[j]=1;
+      b[k]=1;
+      break;
+     }    
+  }
+  cout<<endl;  
+ } 
+return 0;
+}
+

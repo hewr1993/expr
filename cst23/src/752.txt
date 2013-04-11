@@ -1,0 +1,21 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+
+#include<cstring>
+using namespace std;
+
+void revcp(char *inp, char *oup)
+{
+char word[1000000]; 
+  ifstream fin(inp);
+  fin>>word;
+  
+  ofstream fout(oup);
+  int length=strlen(word);
+  for(int i=length-1;i>=0;i--)
+  fout<<word[i];
+  
+}
+

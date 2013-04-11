@@ -1,0 +1,39 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+using namespace std;
+
+char *f[10010][10010];
+char a[11];
+int ans=0;
+
+void ask(int i,int v,char* s)
+{
+    if(f[i][v]&&strcmp(s,f[i][v])==0)ans++;
+    return;
+}
+
+int main()
+{
+    int n,u,v,m;
+    
+    cin>>n;
+    for(int i=1;i<n;i++)
+    {
+        cin>>u>>v;
+        f[u][v]=new char [11];
+        cin>>f[u][v];
+        f[v][u]=new char [11];
+        strcpy(f[v][u],f[u][v]);
+    }
+    for(int q=1;q<=n;q++)
+    {
+        cin>>m>>a;
+        ask(q,m,a);
+    }
+    //cout<<f[1][2]<<endl<<f[2][3]<<endl;
+    cout<<ans;
+    return 0;
+}
+

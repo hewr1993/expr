@@ -1,0 +1,44 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
+#include <cmath>
+
+using namespace std;
+
+char s[101];
+char a[101];
+
+int main()
+{
+    cin >> s;
+    int cnt = 0;
+    while(cin >> a){
+                    int i = 0, j = 0, ts = strlen(s), ta = strlen(a);
+                    for(int p = 0; p <= ts - ta; p++){
+                            i = p;
+                            j = 0;
+                            while(i < ts && j < ta){
+                                    if(s[i] == a[j]){
+                                            i++;
+                                            j++;
+                                    }
+                                    else if(s[i] == s[i - 1]){
+                                                 i++;
+                                    }
+                                    else{
+                                         break;
+                                    }
+                            }
+                            if(j == ta){
+                                 cout << cnt << " ";
+                                 break;
+                            }
+                    }
+                    cnt++;
+                    memset(a, 0, sizeof(a));
+    }
+    return 0;
+}
+

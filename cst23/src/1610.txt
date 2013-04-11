@@ -1,0 +1,179 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<iostream>
+#include<vector>
+#include<stack>
+#define x first
+#define y second
+#define chaji(x1,y1,x2,y2) (x1)*(y2)-(x2)*(y1)
+using namespace std;
+
+typedef long long LL;
+const int MAX=100002;
+const int NUM=300;
+
+int a[MAX],begin[MAX],end[MAX],pos[MAX],totnum,n,Q,size;
+LL s[MAX];
+
+LL gcd(LL a,LL b)
+{
+	return b?gcd(b,a%b):a;
+}
+
+struct point
+{
+	int l,r;
+	point(){l=r=0;}
+	point(int a,int b){l=a;r=b;}
+	void print()
+	{
+		printf("%d %d
+",l,r);
+	}
+}f[MAX][NUM];
+
+int operator < (const point& a,const point& b)
+{
+	if(!a.l || !a.r)return 1;
+	if(!b.l || !b.r)return 0;
+	return chaji(s[a.r]-s[a.l-1],a.r-a.l,s[b.r]-s[b.l-1],b.r-b.l)<0;
+}
+
+int st[MAX],top;
+
+point calc1(int x)
+{
+	int left=1,right=top-1,mid;
+	while(left<right)
+	{
+		mid=(left+right)/2;
+		if( chaji( st[mid]-x,s[st[mid]-1]-s[x],st[mid+1]-x,s[st[mid+1]-1]-s[x] )>0 )
+			left=mid+1;
+		else right=mid;
+	}
+	return max(point(st[left],x),point(st[top],x));
+}
+
+point calc2(int x)
+{
+	int left=1,right=top-1,mid;
+	while(left<right)
+	{
+		mid=(left+right)/2;
+		if( chaji( st[mid]-x, s[st[mid]]-s[x-1] ,st[mid+1]-x,s[st[mid+1]]-s[x-1] )>0 )
+			left=mid+1;
+		else right=mid;
+	}
+	return max(point(x,st[left]),point(x,st[top]));
+}
+
+int main()
+{
+	cin>>n>>Q;
+	int i,j;
+	for(i=1;i<=n;++i)
+	{
+		scanf("%d ",&a[i]);
+		s[i]=s[i-1]+a[i];
+	}
+	size=0;
+	while(size*size<Q)
+		++size;
+	size=n/size+1;
+	for(i=1;i<=n;++i)
+	{
+		if((i-1)%size==0)
+			begin[++totnum]=i;
+		pos[i]=totnum;
+	}
+	for(i=1;i<=n;++i)end[pos[i]]=i;
+	for(i=1;i<=totnum;++i)
+	{
+		top=0;
+		for(j=begin[i];j<=end[i];++j)
+		{
+			while(top>=2 && chaji(st[top]-st[top-1],s[st[top]-1]-s[st[top-1]-1],j-st[top-1],s[j-1]-s[st[top-1]-1])<0)
+				--top;
+			st[++top]=j;
+			if(j!=end[i])
+				f[j+1][i-1]=calc1(j+1);
+		}
+		for(j=end[i]+1;j<=n;++j)
+			f[j][i-1]=calc1(j);
+	}
+	for(i=1;i<=totnum;++i)
+	{
+		top=0;
+		for(j=end[i];j>=begin[i];--j)
+		{
+			while(top>=2 && chaji(st[top]-st[top-1],s[st[top]]-s[st[top-1]],j-st[top-1],s[j]-s[st[top-1]])<0)
+				--top;
+			st[++top]=j;
+			if(j!=begin[i])
+				f[j-1][i]=calc2(j-1);
+		}
+		for(j=begin[i]-1;j>=1;--j)
+			f[j][i]=calc2(j);
+	}
+	for(i=1;i<=n;++i)
+		for(j=pos[i]-1;j>=0;--j)
+		{
+			if(j+1!=pos[i])
+				f[i][j]=max(f[i][j],f[i][j+1]);
+			if(i-1>=begin[j+1])
+				f[i][j]=max(f[i][j],f[i-1][j]);
+		}
+	for(i=n;i>=1;--i)
+		for(j=pos[i];j<=totnum;++j)
+		{
+			if(j!=pos[i])
+				f[i][j]=max(f[i][j],f[i][j-1]);
+			if(i+1<=end[j])
+				f[i][j]=max(f[i][j],f[i+1][j]);
+		}
+	while(Q--)
+	{
+		int l,r;
+		scanf("%d %d",&l,&r);
+		point ans(0,0);
+		if(pos[l]==pos[r])
+		{
+			top=0;
+			for(i=l;i<=r;++i)
+			{
+				while(top>=2 && chaji(st[top]-st[top-1],s[st[top]-1]-s[st[top-1]-1],i-st[top-1],s[i-1]-s[st[top-1]-1])<0)
+					--top;
+				st[++top]=i;
+				if(i!=r)
+					ans=max(ans,calc1(i+1));
+			}
+		}
+		else
+		{
+			int a=pos[l],b=pos[r];
+			ans=max(f[l][b-1],ans);
+			ans=max(f[r][a+1-1],ans);
+			top=0;
+			for(i=l;i<=end[a];++i)
+			{
+				while(top>=2 && chaji(st[top]-st[top-1],s[st[top]-1]-s[st[top-1]-1],i-st[top-1],s[i-1]-s[st[top-1]-1])<0)
+					--top;
+				st[++top]=i;
+			}
+			for(i=begin[b];i<=r;++i)
+				ans=max(ans,calc1(i));
+		}
+		int flag=1;
+		LL x=s[ans.r]-s[ans.l-1],y=ans.r-ans.l;
+		if(x<0)flag*=-1,x=-x;
+		if(y<0)flag*=-1,y=-y;
+		LL g=gcd(x,y);
+		x*=flag;
+		printf("%I64d/%I64d
+",x/g,y/g);
+	}
+	return 0;
+}
+

@@ -1,0 +1,144 @@
+#include <iostream>
+using namespace std;
+struct polynode
+{
+    int coef;                   
+    int exp;                    
+    struct polynode *next;      
+};
+polynode *inprint(polynode *Phead,int n)
+{
+    int i=0;
+    polynode*p=NULL;
+    polynode*q=NULL;
+    for (i=0;i<n;i++)
+    {
+        p=new polynode;
+        cin>>p->coef>> p->exp;
+        if (Phead==NULL)
+            Phead=p;
+        else
+            q->next=p;
+        q=p;
+    }
+    q->next=NULL;
+    return(Phead);
+};
+void rank(polynode *&Phead)
+{
+    polynode *p = NULL;
+    polynode *q = NULL;
+    int temp_1, temp_2;
+    for (p=Phead; p->next != NULL; p=p->next)
+    {
+        for (q=Phead; q->next!=NULL; q=q->next)
+        {
+            if (q->exp<q->next->exp)
+            {
+                temp_1=q->coef,temp_2=q->exp;
+                q->coef = q->next->coef, q->exp = q->next->exp;
+                q->next->coef = temp_1, q->next->exp = temp_2;
+            }
+        }
+    }
+};
+polynode *sum(polynode *head_1, polynode *head_2)
+{
+    polynode *p=head_1;
+    polynode *q=head_2;
+    polynode *r=NULL;
+    polynode *temp=NULL;
+    if (head_1->exp<head_2->exp)
+    {
+        temp=head_1;
+        head_1=head_2;
+        head_2=temp;
+    }
+    for (q=head_2;q!=NULL;q=q->next)
+    {
+        for (p=head_1;p!=NULL;p=p->next)
+        {
+            if (p->exp==q->exp)
+            {
+                p->coef+=q->coef;
+                break;
+            }
+            if (q->exp<p->exp&&(p->next==NULL||q->exp>p->next->exp))
+            {
+                r=new polynode;
+                r->coef=q->coef, r->exp = q->exp;
+                r->next=p->next;
+                p->next=r;
+                break;
+            }
+        }
+    }
+    return(head_1);
+};
+void print(polynode *Phead)
+{
+    polynode *p=NULL;
+    polynode *q=NULL;
+    for (p=Phead;p->next!=NULL;p=p->next)
+    {
+        int g=0, k=0;
+        if (p->coef!=0)
+        {
+            if (p->exp==0)
+                cout<<p->coef;
+            if (p->coef!=1&&p->exp==1)
+                cout<<p->coef<<"X";
+            if (p->coef==1&&p->exp==1)
+                cout<<"X";
+            if (p->coef!=1&&p->exp!=0&&p->exp!=1)
+                cout<<p->coef<<"X^"<<p->exp;
+            if (p->coef==1&&p->exp!=0&&p->exp!=1)
+                cout<<"X^"<<p->exp;
+        }
+        for (q=Phead;q!=p->next;q=q->next,k ++)
+            if(q->coef==0)
+                g++;
+        if (g<k&&p->next->coef!=0)
+            cout<<"+";
+    }
+    if (p->coef!=0)
+    {
+        if (p->exp==0)
+            cout<<p->coef;
+        if (p->coef!=1&&p->exp==1)
+            cout<<p->coef<<"X";
+        if (p->coef==1&&p->exp==1)
+            cout<<"X";
+        if (p->coef!=1&&p->exp!=0&&p->exp!=1)
+            cout<<p->coef<<"X^"<<p->exp;
+        if (p->coef==1&&p->exp!=0&&p->exp!= 1)
+            cout<<"X^"<<p->exp;
+    }
+    cout<<endl;
+};
+void free(polynode *Phead)
+{
+    polynode *temp=Phead->next;
+    while (temp!=NULL)
+    {
+        Phead->next=temp->next;
+        delete temp;
+        temp=Phead->next;
+    }
+    delete Phead;
+};
+int main()
+{
+    int m, n;
+    polynode *head_1=NULL;
+    polynode *head_2=NULL;
+    cin>>m>>n;
+    head_1=inprint(head_1, m);
+    head_2=inprint(head_2, n);
+    rank(head_1);
+    rank(head_2);
+    print(sum(head_1,head_2));
+    free(head_1);
+    free(head_2);
+    return 0;
+}

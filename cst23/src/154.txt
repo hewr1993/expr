@@ -1,0 +1,57 @@
+//**********************************************
+//*程序名：分数线                              *
+//*作者：山月                                  *
+//*编制时间：2012.11.8                         *
+//*功能：分数线划定                            * 
+//**********************************************
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+int main()
+{
+    int n,m,m1;
+    int i,j,k,temp,minscore,num=1;
+    int a[5006][3],b[5006][3];
+    cin >> n >> m;
+    for (i = 1; i <= n; i++) 
+    {
+        cin >> a[i][1] >> a[i][2];
+    }
+    for (i = 1; i <= n - 1; i++)
+    {
+        for (j = 1; j <= n - i; j++)
+        {
+            if(a[j][2]<a[j+1][2] || (a[j][2]==a[j+1][2] && a[j][1]>a[j+1][1]))
+            {
+                temp = a[j][2];
+                a[j][2] = a[j+1][2];
+                a[j+1][2] = temp;
+                
+                temp = a[j][1];
+                a[j][1] = a[j+1][1];
+                a[j+1][1] = temp;
+            }
+        }
+    }
+    m1 = int((double)m*1.5);
+    minscore = a[m1][2];
+    for (i = 1; i <= n; i++)
+    {
+        if (a[i][2] >= minscore)
+        {
+            b[num][1] = a[i][1];
+            b[num][2] = a[i][2];
+            num++;
+        }
+        if(a[i][2]< minscore) break;
+    }
+    num--; 
+   
+    cout << minscore << ' ' << num << endl;
+    for (i = 1; i <= num; i++) cout << b[i][1] << ' ' << b[i][2] << endl;
+    system("pause");
+    return 0;
+}    
+            
+    
+                    

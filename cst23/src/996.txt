@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+using namespace std;
+int main()
+{
+    int a , b;
+    scanf("%d",&a);
+    b = 1;
+    /*do 
+    {
+          if (a % 2 == 1)
+          {
+           a = 3 * a + 1;
+           b = b + 1;
+          }
+          else
+          {
+           a = a / 2;
+           b = b + 1;
+          }
+    }
+    while (a != 1);*/
+    while (a != 1)
+    {
+          if (a % 2 == 1)
+          {
+                a = 3 * a + 1;
+                b = b + 1;
+          }
+          else
+          {
+              a = a / 2;
+              b = b + 1;
+          }
+    }
+    printf("%d",b);
+    system ("pause"); 
+    return 0;
+}

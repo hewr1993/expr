@@ -1,0 +1,22 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+      float a[100][3];
+      int i=1;
+      cin>>a[1][1];
+      cin>>a[1][2];
+      while(a[i][2]!=0)
+      {i++;cin>>a[i][1];cin>>a[i][2];}
+      i--;
+      int j;
+      double r=3600/3.1415926525897;
+      for(j=1;j<=i;j++)
+      {
+                       cout<<"case"<<' '<<j<<": ";
+                       if(a[j][1]*a[j][1]+a[j][2]*a[j][2]>r)
+                       {cout<<"Yes"<<endl;}
+                       else {cout<<"No"<<endl;}
+      }
+      return 0;
+}

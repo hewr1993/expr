@@ -1,0 +1,37 @@
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+int down(int h)
+{
+    int sum = 0;
+    if(h > 3)
+    {
+        sum = sum + down(h - 1) + down(h - 2) + down(h - 3);
+    }
+    if(h == 3)
+    {
+        sum = sum + 4;
+    }
+    if(h == 2)
+    {
+        sum = sum + 2;
+    }            
+    if(h == 1)
+    {
+        sum = sum + 1;
+    }
+    return sum;
+}        
+
+
+int main()
+{
+    int h;
+    cin >> h;
+    if(h >= 4 && h <= 20) 
+    cout << down(h);
+    else cout << 0;
+    return 0;
+}     

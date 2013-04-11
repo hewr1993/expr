@@ -1,0 +1,19 @@
+#include<iostream>
+using namespace std;
+int maxn,ans,f[30][5]={0},i,t,h;
+int main()
+{
+    cin>>h>>t;t++;
+    f[1][h]=1;
+    for(i=2;i<=t;i++)
+    {f[i][1]=f[i-1][3]+f[i-1][4];
+     f[i][2]=f[i-1][1]+f[i-1][3];
+     f[i][3]=f[i-1][2]+f[i-1][4];
+     f[i][4]=f[i-1][1];
+     }
+    maxn=1;ans=f[t][1];
+    for(i=2;i<=4;i++){ans+=f[t][i];if(f[t][i]>f[t][maxn])maxn=i;}
+    cout<<maxn<<' '<<ans;
+     return 0;
+}
+

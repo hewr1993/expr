@@ -1,0 +1,201 @@
+#include<cstdio>
+#include<cmath>
+#include<iostream>
+
+using namespace std;
+
+int n;
+double x[20010],y[20010];
+
+struct matrix
+{
+	double v[3][3];
+	void init()
+	{
+		for (int i=0;i<3;++i)
+			for (int j=0;j<3;++j)
+				v[i][j]=0;
+	}
+	void mul(const matrix &);
+	void operator *= (const matrix &);
+}I,t,ans;
+
+inline void matrix::mul(const matrix &p)
+{
+	for (int i=0;i<3;++i)
+		for (int j=0;j<3;++j)
+			t.v[i][j]=v[i][j];
+	init();
+	for (int i=0;i<3;++i)
+		for (int j=0;j<3;++j)
+			for (int k=0;k<3;++k)
+				v[i][j]+=p.v[i][k]*t.v[k][j];
+}
+
+inline void matrix::operator *= (const matrix &p)
+{
+	for (int i=0;i<3;++i)
+		for (int j=0;j<3;++j)
+			t.v[i][j]=v[i][j];
+	init();
+	for (int i=0;i<3;++i)
+		for (int j=0;j<3;++j)
+			for (int k=0;k<3;++k)
+				v[i][j]+=t.v[i][k]*p.v[k][j];
+}
+
+int tot;
+struct node
+{
+	node *Lc,*Rc;
+	int L,R,mid;
+	matrix v;
+}tree[2000100],*root[50010];
+
+node *build(int L,int R)
+{
+	node *it=&tree[++tot];
+	it->L=L;
+	it->R=R;
+	it->v=I;
+	if (L<R)
+	{
+		it->mid=(L+R)>>1;
+		it->Lc=build(L,it->mid);
+		it->Rc=build(it->mid+1,R);
+	}
+	return it;
+}
+
+inline node *rebuild(node *it,int L,int R,const matrix &p,matrix s)
+{
+	node *now=&tree[++tot];
+	*now=*it;
+	s*=it->v;
+	if (it->L==L&&it->R==R)
+	{
+		now->v=s;
+		now->v.mul(p);
+		return now;
+	}
+	now->v=I;
+	if (R<=it->mid)
+	{
+		now->Lc=rebuild(it->Lc,L,R,p,s);
+		now->Rc=&tree[++tot];
+		*now->Rc=*it->Rc;
+		now->Rc->v.mul(s);
+	}
+	else if (L>it->mid)
+	{
+		now->Lc=&tree[++tot];
+		*now->Lc=*it->Lc;
+		now->Lc->v.mul(s);
+		now->Rc=rebuild(it->Rc,L,R,p,s);
+	}
+	else
+	{
+		now->Lc=rebuild(it->Lc,L,it->mid,p,s);
+		now->Rc=rebuild(it->Rc,it->mid+1,R,p,s);
+	}
+	return now;
+}
+
+inline void get(node *it,int x)
+{
+	if (it->L==it->R)
+	{
+		ans=it->v;
+		return;
+	}
+	if (x<=it->mid)
+		get(it->Lc,x);
+	else if (x>it->mid)
+		get(it->Rc,x);
+	ans.mul(it->v);
+}
+
+void init()
+{
+	for (int i=0;i<3;++i)
+		I.v[i][i]=1;
+	cin>>n;
+	for (int i=1;i<=n;++i)
+		scanf("%lf%lf",&x[i],&y[i]);
+	root[0]=build(1,n);
+}
+
+void work()
+{
+	int T;
+	cin>>T;
+	int top=0;
+	while (T--)
+	{
+		char s[8];
+		scanf("%s",s);
+		if (s[0]=='M')
+		{
+			int x,y;
+			double a,b;
+			scanf("%d%d%lf%lf",&x,&y,&a,&b);
+			matrix p=I;
+			p.v[0][2]=a;
+			p.v[1][2]=b;
+			++top;
+			root[top]=rebuild(root[top-1],x,y,p,I);
+		}
+		else if (s[0]=='P')
+		{
+			int x,y;
+			double alpha;
+			scanf("%d%d%lf",&x,&y,&alpha);
+			matrix p=I;
+			p.v[0][0]=cos(alpha);
+			p.v[0][1]=-sin(alpha);
+			p.v[1][0]=sin(alpha);
+			p.v[1][1]=cos(alpha);
+			++top;
+			root[top]=rebuild(root[top-1],x,y,p,I);
+		}
+		else if (s[0]=='L')
+		{
+			int x,y;
+			scanf("%d%d",&x,&y);
+			matrix p;
+			p.init();
+			p.v[2][2]=1;
+			++top;
+			root[top]=rebuild(root[top-1],x,y,p,I);
+		}
+		else if (s[0]=='C')
+		{
+			int x;
+			scanf("%d",&x);
+			top-=x;
+		}
+		else if (s[0]=='R')
+		{
+			int x;
+			scanf("%d",&x);
+			top+=x;
+		}
+		else if (s[0]=='A')
+		{
+			int k;
+			scanf("%d",&k);
+			ans=I;
+			get(root[top],k);
+			printf("%.6lf %.6lf
+",ans.v[0][0]*x[k]+ans.v[0][1]*y[k]+ans.v[0][2],ans.v[1][0]*x[k]+ans.v[1][1]*y[k]+ans.v[1][2]);
+		}
+	}
+}
+
+int main()
+{
+	init();
+	work();
+	return 0;
+}
+

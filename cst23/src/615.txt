@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int asume(int num, int * data, int * sum, int * mean)
+{
+    int i, s;
+    if (num<1) return -1;
+    s=0;
+    for (i=0;i<num;i++)
+    {
+        s+=data[i];
+    }
+    *sum=s;
+    *mean=s/num;
+    return 0;
+}
+
+int main()
+{
+    int num, i, *data;
+    int sum, mean;
+    scanf("%d",&num);
+    if (num<1) return -1;
+    data=(int *)malloc(sizeof(int)*num);
+    for (i=0;i<num;i++)
+    {
+        scanf("%d", &data[i]);
+    }
+    asume(num, data, &sum, &mean);
+    printf("%d  %d", sum, mean);
+    return 0;
+}
+

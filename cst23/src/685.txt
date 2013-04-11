@@ -1,0 +1,77 @@
+#include <cstdlib>
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+const int maxn=10005,maxm=100005,oo=~0U>>2;
+
+int i,j,k,n,m,k1,k2,k3,ans,o,s[maxm],t[maxm],c[maxm],f[maxm],
+	x1[maxn],x2[maxn],a[maxn];
+	
+void sst(int ll,int rr)
+{
+	int i,j;
+	i=ll;j=rr;k=(i+j)/2;k1=s[k],k2=t[k];
+	while (i<=j)
+	{
+		while (s[i]<k1||(s[i]==k1&&t[i]<k2)) i++;
+		while (s[j]>k1||(s[j]==k1&&t[j]>k2)) j--;
+		if (i<=j)
+		{
+			swap(s[i],s[j]); swap(t[i],t[j]); swap(c[i],c[j]);
+			i++,j--;
+		}
+	}
+	if (j>ll) sst(ll,j);
+	if (i<rr) sst(i,rr);
+}
+
+void updata(int &a,int b)
+{
+	if (b<a) a=b;
+}
+
+int main()
+{
+	scanf("%d%d",&n,&m);
+	for (int i=1;i<=n;i++)
+		scanf("%d",&a[i]),o+=a[i];
+	for (int i=1;i<=m;i++)
+		scanf("%d%d%d",&s[i],&t[i],&c[i]);
+	sst(1,m);
+	for (int i=1;i<=maxm;i++) f[i]=oo;
+	for (int i=1;i<=maxn;i++) x1[i]=x2[i]=oo;
+	f[1]=c[1];x1[s[1]]=a[s[1]];x2[t[1]]=a[t[1]];
+	for (int i=2;i<=m;i++)
+	{
+		j=i-1;k1=a[s[i]];k2=c[i];k3=a[t[i]];
+		if (s[i]==s[j])
+		{
+			updata(f[i],f[j]+k2);
+			updata(f[i],x2[t[j]]+k2);
+			updata(x2[t[i]],f[j]+k3);
+			updata(x2[t[i]],x2[t[j]]+k3);
+			updata(x1[s[i]],x2[t[j]]+k1);
+		}
+		else if (t[i]==t[j])
+		{
+			updata(f[i],f[j]+k2);
+			updata(f[i],x1[s[j]]+k2);
+			updata(x1[s[i]],f[j]+k1);
+			updata(x1[s[i]],x1[s[j]]+k1);
+			updata(x2[t[i]],x1[s[j]]+k3);
+		}else
+		{
+			k=f[j];updata(k,x1[s[j]]);updata(k,x2[t[j]]);
+			updata(x1[s[i]],k+k1);
+			updata(f[i],k+k2);
+			updata(x2[t[i]],k+k3);
+		}
+	}
+	ans=f[m];updata(ans,x1[s[m]]);updata(ans,x2[t[m]]);
+	printf("%d
+",o-ans);
+	return 0;
+}
+

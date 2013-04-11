@@ -1,0 +1,85 @@
+#include<stdio.h>
+int times=0,ai=0;
+void sort(int arry[],int d,int b,int c)
+{
+	if(ai==1) return;
+	else
+	{
+		int i;
+		if(((b+d)%2)!=0)
+		{ 
+			i=(b+d-1)/2;
+		}
+		else
+		{ 
+			i=(b+d)/2;
+		}
+		
+		times++;
+		if(arry[i]==c)
+		{
+			printf("%d
+%d
+",i,times);
+		}
+		if(arry[i]>c)
+		{
+			
+			if(i==d)
+			{
+				printf("-1
+%d
+",times);
+				ai=1;
+				
+			}
+			else 
+			{
+				i--;
+				sort(arry,d,i,c);
+			}
+		}
+		if(arry[i]<c)
+		{
+			
+			if(i==b)
+			{
+				printf("-1
+%d
+",times);
+				ai=1;
+			}
+			else
+			{
+				i++;
+				sort(arry,i,b,c);
+			}
+		}
+	}
+}
+int main()
+{
+	int a[1000];
+	int b,c,i,j,temp;
+	scanf("%d%d",&b,&c);
+	for(i=0;i<b;i++)
+	{
+		scanf("%d",&a[i]);
+	}
+	for(i=0;i<b;i++)
+	{	
+		for(j=(i+1);j<b;j++)
+		{
+			if(a[i]>a[j])
+			{
+				temp=a[i];
+				a[i]=a[j];
+				a[j]=temp;
+			}
+		}
+	}
+	
+	sort(a,0,(b-1),c);
+	return 0;
+}
+

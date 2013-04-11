@@ -1,0 +1,13 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+int main()
+{
+    int a;
+    double b;
+    scanf("%d",&a);
+    b=a*9.0/5.0+32;
+    printf("%.2lf",b);
+    system("pause");
+    return 0;
+}

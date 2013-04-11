@@ -1,0 +1,34 @@
+var
+  s,t:string;
+  i,j,ans,tt:longint;
+begin
+  //assign(input,'isbn.in');reset(input);
+  //assign(output,'isbn.out');rewrite(output);
+  readln(s);
+  for i:=1 to 11 do
+  if (s[i]>='0') and (s[i]<='9') then
+  begin
+    inc(j);
+    val(s[i],tt);
+    inc(ans,tt*j);
+  end;
+  ans:=ans mod 11;
+  str(ans,t);
+  if t='10' then t:='X';
+  if t=s[13] then writeln('Right')
+  else
+  begin
+    if t='X' then
+    begin
+      for i:=1 to 12 do  write(s[i]);
+      writeln('X')
+    end
+    else
+    begin
+      for i:=1 to 12 do write(s[i]);
+      writeln(ans);
+    end;
+  end;
+  //close(input);close(output);
+end.
+

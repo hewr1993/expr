@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <string.h>
+int main( )
+{
+	char a[100],b[100],c[100],d[100],e[100];
+	int s[5],i,n=0;
+	scanf("%s %s %s %s %s",a,b,c,d,e);
+	s[0]=strlen(a);
+	s[1]=strlen(b);
+	s[2]=strlen(c);
+	s[3]=strlen(d);
+	s[4]=strlen(e);
+	for(i=0;i<5;i++)
+	if(s[i]>s[n])
+	n=i;
+	if(n==0)
+	printf("%s
+",a);
+	else if(n==1)
+	printf("%s
+",b);
+	else if (n==2)
+	printf("%s
+",c);
+	else if(n==3)
+	printf("%s
+",d);
+	else if(n==4)
+	printf("%s
+",e);
+	return 0;
+}

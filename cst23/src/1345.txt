@@ -1,0 +1,69 @@
+#include<iostream>
+
+using namespace std;
+
+struct monkey
+{
+	int num;
+	monkey *next;
+};
+
+monkey *head,*tail;
+
+void create(int nn)
+{
+	int i;
+	monkey *p,*q;
+	p=new monkey;
+	p->num=1;
+	p->next=NULL;
+	head=p;
+	q=p;
+	for (i=2;i<=nn;i=i+1)
+	{
+		p=new monkey;
+		p->num=i;
+		q->next=p;
+		q=p;
+		p->next=NULL;
+	}
+	tail=q;
+	tail->next=head;
+}
+
+void select(int mm)
+{
+	int x=0;
+	monkey *p,*q;
+	q=tail;
+	do
+	{
+		p=q->next;
+		x=x+1;
+		if (x%mm==0)
+		{
+			q->next=p->next;
+			delete p;
+			p=NULL;
+		}
+		else q=p;
+	}while (q!=q->next->next);
+	head=q;
+}
+
+int main()
+{
+	int n;
+	head=NULL;
+	cin>>n;
+	create(2*n);
+	select(7);
+	if (head->num%2==0)
+		cout<<head->num<<" G"<<endl;
+	else cout<<head->num<<" B"<<endl;
+	head=head->next;
+	if (head->num%2==0)
+		cout<<head->num<<" G"<<endl;
+	else cout<<head->num<<" B"<<endl;
+	return 0;
+}

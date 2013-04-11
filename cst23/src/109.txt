@@ -1,0 +1,51 @@
+#include <iostream>
+using namespace std;
+int rank[8];
+int unused(int i)
+{
+	int g=1;
+	for(int k=1;k<=i-1;k++)
+	{
+		if(rank[i]==rank[k])
+		{
+			g=0;
+			break;
+		}
+	}
+	return g;
+}
+int main()
+{
+	for(rank[1]=1;rank[1]<=5;rank[1]++)
+		for(rank[2]=1;rank[2]<=5;rank[2]++)
+			for(rank[3]=1;rank[3]<=5;rank[3]++)
+				for(rank[4]=1;rank[4]<=5;rank[4]++)
+					for(rank[5]=1;rank[5]<=5;rank[5]++)
+					{
+						if(unused(2)&&unused(3)&&unused(4)&&unused(5)&&rank[5]!=2&&rank[5]!=3)
+						{
+							int word[8];
+							word[1]=(rank[5]==1);
+							word[2]=(rank[2]==2);
+							word[3]=(rank[1]==5);
+							word[4]=(rank[3]!=1);
+							word[5]=(rank[4]==1);
+							int sum=0;
+							for(int i=1;i<=5;i++)
+								sum+=word[i];
+							int per_1=0,per_2=0;
+							for(int i=1;i<=5;i++)
+							{
+								if(rank[i]==1) per_1=i;
+								if(rank[i]==2) per_2=i;
+							}
+							if(sum==2&&word[per_1]&&word[per_2])
+							{
+								for(int i=1;i<=5;i++)
+									cout<<rank[i]<<" ";
+								return 0;
+							}
+						}
+					}
+	return 0;
+}

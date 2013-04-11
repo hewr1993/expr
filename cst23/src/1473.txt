@@ -1,0 +1,69 @@
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+const int M=20001;
+int n,m,f[M],e[M]={};
+struct node 
+{  int x,y,data;};
+node a[100001];
+bool t;
+void qsort(int l,int r)
+{   int i,j,mid;
+    i=l;j=r;mid=a[(l+r)/2].data;
+    while(i<=j)
+     {  while(a[i].data>mid)
+         i++;
+        while(a[j].data<mid)
+         j--;
+        if(i<=j)
+        {  swap(a[i].x,a[j].x);
+           swap(a[i].y,a[j].y);
+           swap(a[i].data,a[j].data);
+           i++;j--;}}
+     if(l<j) qsort(l,j);
+     if(i<r) qsort(i,r);
+}
+int getfather(int x)
+{   if(f[x]==x)
+     return x;
+    else 
+      f[x]=getfather(f[x]);
+    return f[x];
+}
+void unions(int u,int v)
+{   if(getfather(u)!=getfather(v))
+     f[getfather(u)]=getfather(v);
+}
+int main()
+{   scanf("%d%d",&n,&m);
+   for(int i=1;i<=n;i++)
+    f[i]=i;
+    for(int i=1;i<=m;i++)
+     scanf("%d%d%d",&a[i].x,&a[i].y,&a[i].data);
+    t=0;
+    qsort(1,m);
+   for(int i=1;i<=m;i++)
+   {  if(getfather(a[i].x)==getfather(a[i].y))
+       { printf("%d",a[i].data);
+          t=1;
+          break;}
+      if(e[a[i].x]==0&&e[a[i].y]==0)
+       { e[a[i].x]=a[i].y;
+         e[a[i].y]=a[i].x;
+         continue;}
+      if(e[a[i].x]!=0&&e[a[i].y]!=0)
+      { unions(e[a[i].x],a[i].y);
+        unions(e[a[i].y],a[i].x);
+        continue;}
+      if(e[a[i].x]==0&&e[a[i].y]!=0)
+      { e[a[i].x]=a[i].y;
+        unions(a[i].x,e[a[i].y]);
+        continue;}
+      if(e[a[i].y]==0&&e[a[i].x]!=0)
+      { e[a[i].y]=a[i].x;
+        unions(a[i].y,e[a[i].x]);
+        continue;}}
+   if(t==0) printf("0");
+      return 0;
+      }
+

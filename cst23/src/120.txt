@@ -1,0 +1,34 @@
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int main()
+{
+	int 	n, b;
+	int 	a[110];
+	int 	ans[110];
+	int 	p = 0;
+	cin >> n >> b;
+	
+	for (int i = 0; i < n; i++)
+		cin >> a[i];
+	for (int i = 0; i < n; i++)
+		if (a[i] % b != 0)
+		{
+			ans[p] = a[i];
+			p++;
+		}
+	sort(ans, ans + p);
+	
+	for (int i = 0; i < p; i++)
+	{
+		if ((65 <= ans[i]) && (ans[i] <= 90))
+			cout << char(ans[i]) << ' ';
+		else
+			cout << ans[i] << ' ';
+	}
+
+	return 0;
+}
+

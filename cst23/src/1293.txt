@@ -1,0 +1,79 @@
+Const   num:array[0..9] of integer=(6,2,5,5,4,5,6,3,7,5);
+
+var
+        find:boolean;
+        n,aim,ans,number,total:int64;
+
+procedure init;
+var
+        ch:char;
+        i:integer;
+begin
+        aim:=0; number:=0; total:=1;
+        readln(n);
+        for i:=1 to n do
+        begin
+                read(ch); total:=total*10;
+                aim:=aim+num[ord(ch)-48];
+                number:=number*10+ord(ch)-48;
+        end;
+end;
+
+procedure dfs(dep,tot:integer; t:int64);
+var
+        i:integer;
+begin
+        if dep>n then
+        begin
+                if (tot<>aim)  then exit;
+
+                if t<=number then
+                begin
+                        if total-number+t<=ans then
+                                ans:=total-number+t;
+                end else
+                begin
+                        if t-number<ans then
+                        begin
+                                ans:=t-number;
+                                Find:=true;
+                        end;
+                end;
+                exit;
+        end;
+
+        if tot+(n-dep+1)*2>aim then exit;
+        if tot+(n-dep+1)*7<aim then exit;
+        for i:=0 to 9 do
+                dfs(dep+1,tot+num[i],t*10+i);
+end;
+
+procedure main;
+var
+        st:string;
+        tmp,tot,t:int64;
+        i,j:longint;
+begin
+        find:=false;
+        str(number,st);
+        for i:=1 to n-length(st) do st:='0'+st;
+        ans:=total;
+        for i:=length(st) downto 1 do
+        begin
+                tmp:=0;
+                for j:=1 to i-1 do tmp:=tmp+num[ord(st[j])-48];
+                aim:=aim; t:=0;
+                for j:=1 to i-1 do t:=t*10+ord(st[j])-48;
+                dfs(i,tmp,t);
+                if find then break;
+        end;
+        writeln(ans);
+end;
+
+begin
+    
+        init;
+        main;
+   
+end.
+

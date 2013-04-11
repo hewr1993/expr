@@ -1,0 +1,93 @@
+
+// Program  :  CTSC 2010 optimize
+
+#include <cstring>
+#include <cstdio>
+
+using namespace std;
+
+const int prime[4] = {2, 3, 5, 7};
+
+int a[500000], b[500000], c[500000], tmp[500000], root[500000], d[20];
+
+int Cal_Power(int a, int p, int Q)
+  {
+    if (p == 0) return 1;
+    long long res = Cal_Power(a, p / 2, Q);
+    res *= res, res %= Q;
+    if (p % 2 == 1) res *= a, res %= Q;
+    return int(res);
+  }
+
+int Get_Primitive_Root(int n)
+  {
+    int i, j, k, now, val;
+    for (i = 2; ; i ++)
+      {
+        for (j = 0; j < 4; j ++)
+          if ((n - 1) % prime[j] == 0)
+            {
+              now = (n - 1) / prime[j];
+              if (Cal_Power(i, now, n) == 1) break;
+            }
+        if (j >= 4) return i;
+      }
+  }
+
+void FFT(int a[], int n, int tot, int G, bool chk)
+  {
+    int len, i, j, k, t, step, cnt, now, loc1, loc2;
+    if (chk) G = Cal_Power(G, n - 1, n + 1);
+    for (root[0] = 1, i = 1; i < n; i ++)
+      root[i] = int((long long)(root[i-1]) * G % (n + 1));
+    for (len = 1; tot; tot --)
+      {
+        len *= d[tot-1], step = n / len;
+        memset(tmp, 0, sizeof(tmp));
+        for (i = 0; i < step; i ++)
+          for (cnt = 0, j = i; j * d[tot-1] < n; cnt ++, j += step)
+            for (k = 0; k < d[tot-1]; k ++)
+              {
+                now = j + k * n / d[tot-1];
+                for (t = 0; t < d[tot-1]; t ++)
+                  {
+                    loc1 = i + (j - i) * d[tot-1] + t * step;
+                    loc2 = t * (n / len * cnt + n / d[tot-1] * k) % n;
+                    tmp[now] += int((long long)(a[loc1]) * root[loc2] % (n + 1));
+                    tmp[now] %= n + 1;
+                  }
+              }
+        for (i = 0; i < n; i ++) a[i] = tmp[i];
+      }
+    if (chk)
+      {
+        now = Cal_Power(n, n - 1, n + 1);
+        for (i = 0; i < n; i ++)
+          a[i] = int((long long)(a[i]) * now % (n + 1));
+      }
+  }
+
+int main()
+  {
+    int n, C, i, tmp, tot = 0, G;
+    
+    scanf("%d%d", &n, &C), C = C % n;
+    for (i = 0; i < n; i ++) scanf("%d", &a[i]);
+    for (i = 0; i < n; i ++) scanf("%d", &b[i]);
+    
+    for (tmp = n, i = 0; i < 4; i ++)
+      for ( ; tmp % prime[i] == 0; tmp /= prime[i])
+        d[tot ++] = prime[i];
+    
+    G = Get_Primitive_Root(n + 1);
+    FFT(a, n, tot, G, false), FFT(b, n, tot, G, false);
+    for (i = 0; i < n; i ++)
+      c[i] = (b[i] == 0) ? 0 : int((long long)(a[i]) * Cal_Power(b[i], C, n + 1) % (n + 1));
+    FFT(c, n, tot, G, true);
+    
+    for (i = 0; i < n; i ++) printf("%d
+", c[i]);
+    
+    return 0;
+  }
+

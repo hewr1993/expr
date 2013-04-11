@@ -1,0 +1,14 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+
+using namespace std;
+
+void cp(char *inp, char *oup)
+{
+ifstream fin(inp);
+ofstream fout(oup);
+int t; fin>>t; fout<<t;
+}
+

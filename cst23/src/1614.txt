@@ -1,0 +1,28 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+int Count=0;
+void Number(int n)
+{
+        
+        for(int t=1;t<=n/2;t++)
+        {
+                if(t==1)
+                {
+                        Count++;
+                }
+                else
+                {
+                        Count++;
+                        Number(t);
+                }
+        }
+}                                
+int main()
+{ 
+        int n;
+        cin>>n;
+        Number(n);
+        cout<<Count+1 <<endl;             
+        return 0;
+} 

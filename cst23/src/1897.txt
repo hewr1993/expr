@@ -1,0 +1,67 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#define M 51
+
+using namespace std;
+
+int L[M],R[M],H[M],a[M][M][M],s[M][M][M],b[M][M];
+int n,m,p,ans;
+
+int main(){
+    scanf("%d%d%d",&n,&m,&p);
+    for (int i = 1;i <= n;++ i)
+        for (int j = 1;j <= m;++ j)
+            for (int k = 1;k <= p;++ k)
+                scanf("%d",&a[i][j][k]);
+    
+    memset(s,0,sizeof(s));
+    
+    for (int i = 1;i <= n;++ i)
+        for (int j = 1;j <= m;++ j)
+            for (int k = 1;k <= p;++ k)
+                s[i][j][k] = s[i - 1][j][k] + a[i][j][k];
+    
+    ans = 0;
+    
+    for (int sj = 1;sj <= n;++ sj)
+        for (int xj = sj;xj <= n;++ xj){
+            for (int i = 1;i <= m;++ i)
+                for (int j = 1;j <= p;++ j)
+                    if (s[xj][i][j] == s[sj - 1][i][j]) b[i][j] = 0;
+                    else b[i][j] = 1;
+            memset(H,0,sizeof(H));
+            memset(L,0,sizeof(L));
+            memset(R,0,sizeof(R));
+            for (int i = 1;i <= m;++ i){
+                int l = 1,r = 0;
+                while (l <= p){
+                      while ((l <= p) && (b[i][l] == 1)) {
+                            H[l] = 0;
+                            l ++;
+                            }
+                      if (l > p) break;
+                      r = l;
+                      while ((r < p) && (b[i][r + 1] == 0)) r ++;
+                      for (int j = l;j <= r;++ j){
+                          H[j] ++;
+                          if (H[j] > 1) L[j] = max(L[j],l);
+                          else L[j] = l;
+                          if (H[j] > 1) R[j] = min(R[j],r);
+                          else R[j] = r;
+                          int tps = (R[j] - L[j] + 1) * H[j] * (xj - sj + 1);
+                          if (tps > ans) {
+                                  ans = tps;
+                                  }
+                          }
+                      l = r + 1;
+                      }
+                }
+            }
+    
+    cout << ans << endl;
+                    
+    return 0;   
+}
+

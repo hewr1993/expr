@@ -1,0 +1,65 @@
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+using namespace std;
+
+typedef long long LL;
+const int MAXN=50010;
+const int MAXQ=50010;
+const int MAXBlock=200;
+
+struct Query { int l, r, ind; } q[MAXQ];
+LL ansx[MAXQ], ansy[MAXQ];
+bool cmp_l(const Query &a, const Query &b) {
+	return a.l<b.l;
+}
+bool cmp_r(const Query &a, const Query &b) {
+	return a.r<b.r;
+}
+int c[MAXN], cnt[MAXN];
+LL tot;
+int n, qs;
+
+void add(int color, int val) {
+	tot-=(LL)cnt[color]*(LL)(cnt[color]-1)/2;
+	cnt[color]+=val;
+	tot+=(LL)cnt[color]*(LL)(cnt[color]-1)/2;
+}
+
+LL gcd(LL a, LL b) {
+	return b==0 ? a : gcd(b,a%b);
+}
+
+int main() {
+	scanf("%d%d", &n,&qs);
+	for(int i=1; i<=n; ++i) scanf("%d", c+i);
+	for(int i=1; i<=qs; ++i) scanf("%d%d", &q[i].l,&q[i].r), q[i].ind=i;
+
+//*
+	sort(q+1, q+qs+1, cmp_r);
+	for(int i=1; i<=qs; i+=MAXBlock) {
+		int l=i, r=min(qs, i+MAXBlock-1);
+		sort(q+l, q+r+1, cmp_l);
+	}
+//*/
+	memset(cnt, 0, sizeof(cnt)); tot=0;
+	int l=1, r=0;
+	for(int i=1; i<=qs; ++i) {
+		int st=q[i].l, en=q[i].r;
+		LL sum=(LL)(en-st+1)*(LL)(en-st)/2;
+		while(r<en) add(c[++r], 1);
+		while(r>en) add(c[r--], -1);
+		while(l>st) add(c[--l], 1);
+		while(l<st) add(c[l++], -1);
+		LL a=tot, b=sum, c=gcd(a,b);
+		a/=c, b/=c;
+		ansx[q[i].ind]=a, ansy[q[i].ind]=b;
+	}
+	for(int i=1; i<=qs; ++i)
+		printf("%I64d/%I64d
+", ansx[i],ansy[i]);
+
+	return 0;
+}
+

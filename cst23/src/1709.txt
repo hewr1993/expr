@@ -1,0 +1,228 @@
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
+#include <cstring>
+using namespace std;
+
+const int maxn=110;
+
+
+vector<pair<int,int> > edge[maxn];
+
+int n,m,a1,b1,a2,b2;
+int ans[maxn][maxn],total[maxn][maxn],inputdata[maxn][maxn];
+bool calced[maxn];
+
+int s[maxn];
+
+void init(){
+	int i,j;
+	for (i=1;i<=(n+1)/2;i++)
+		for (j=1;j<=(m+1)/2;j++) {
+			scanf("%d",&inputdata[i][j]);
+			ans[i*2-1][j*2-1]=inputdata[i][j];
+		}
+}
+
+int gcd(int a, int b){
+	return b==0?a:gcd(b,a%b);
+}
+
+void swap(int &a, int &b){
+	int t=a;a=b;b=t;
+}
+
+bool calcs(int *s){
+	int count=0;
+	bool over;
+	int from[maxn],to[maxn];
+	memset(to,0x80,sizeof(to));
+	to[0]=0;
+	while (count++<m+1) {
+		over=true;
+		int i;
+		for (i=0;i<=m;i++) {
+			vector<pair<int,int> >::iterator it;
+			for (it=edge[i].begin();it!=edge[i].end();it++) {
+				int t=it->first,temp;
+				if (to[i]!=0x80808080&&(temp=to[i]+it->second)>to[t]) {
+					to[t]=temp;
+					over=false;
+				}
+			}
+		}
+		if (over) break;
+	}
+	if (!over) return false;
+	int i;
+	for (i=0;i<=m;i++) 
+		if (to[i]==0x80808080) 
+			edge[i].push_back(pair<int,int>(0,0));
+		else
+			edge[i].push_back(pair<int,int>(0,-to[i]));
+	memset(from,0x80,sizeof(from));
+	from[0]=0;
+	count=0;
+	while (count++<m+1){ 
+		over=true;
+		int i;
+		for (i=0;i<=m;i++) {
+			vector<pair<int,int> >::iterator it;
+			for (it=edge[i].begin();it!=edge[i].end();it++) {
+				int t=it->first,temp;
+				if (from[t]!=0x80808080&&(temp=from[t]+it->second)>from[i]) {
+					from[i]=temp;
+					over=false;
+				}
+			}
+		}
+		if (over) break;
+	}
+	if (!over) return false;
+	for (i=0;i<=m;i++) 
+		s[i]=from[i];
+	return true;
+}
+
+bool calcans(){
+	int i,j,s[maxn];
+	memset(calced,0,sizeof(calced));
+	memset(total,0,sizeof(total));
+	for (i=1;i<=n;i++) if (i%2==1) {
+		for (j=0;j<=m;j++) edge[j].clear();
+		if (a1==1) 
+			for (j=0;j<=m-b1+1;j++)
+				edge[j+b1].push_back(pair<int,int>(j,1));
+		if (a2==1)
+			for (j=0;j<=m-b2+1;j++)
+				edge[j].push_back(pair<int,int>(j+b2,1));
+		for (j=1;j<=m;j++) if (j%2==1) {
+			edge[j].push_back(pair<int,int>(j-1,ans[i][j]));
+			edge[j-1].push_back(pair<int,int>(j,-ans[i][j]));
+		}
+		if (!calcs(s)) return false;
+		for (j=1;j<=m;j++)
+			ans[i][j]=s[j]-s[j-1];
+		calced[i]=true;
+		for (j=1;j<=m;j++) total[i][j]=total[i][j-1]+ans[i][j];
+	}
+	int tn=2;
+	while (tn<=n) {
+		for (i=1;i<=n;i++) if (!calced[i]&&i%(tn*2)!=0) {
+			for (j=0;j<=m;j++) edge[j].clear();
+			for (j=0;j<=m-b1;j++) {
+				int top,bot;
+				for (top=i-1;top>0&&top>i-a1&&calced[top];top--);
+				top++;
+				for (bot=i+1;bot<=n&&bot<i+a1&&calced[bot];bot++);
+				bot--;
+				if (bot-top+1>=a1) {
+					int k,temp=0,mi=0x7f7f7f7f;
+					for (k=top;k<top+a1;k++) 
+						temp+=total[k][j+b1]-total[k][j];
+					for (k=top;k<=bot+1-a1;k++) {
+						if (temp<mi) mi=temp;
+						temp+=total[k+a1][j+b1]-total[k+a1][j];
+						temp-=total[k][j+b1]-total[k][j];
+					}
+					edge[j+b1].push_back(pair<int,int>(j,1-mi));
+				}
+			}
+			for (j=0;j<=m-b2;j++) {
+				int top,bot;
+				for (top=i-1;top>0&&top>i-a2&&calced[top];top--);
+				top++;
+				for (bot=i+1;bot<=n&&bot<i+a2&&calced[bot];bot++);
+				bot--;
+				if (bot-top+1>=a2) {
+					int k,temp=0,ma=0x80808080;
+					for (k=top;k<top+a2;k++) 
+						temp+=total[k][j+b2]-total[k][j];
+					for (k=top;k<=bot+1-a2;k++) {
+						if (temp>ma) ma=temp;
+						temp+=total[k+a2][j+b2]-total[k+a2][j];
+						temp-=total[k][j+b2]-total[k][j];
+					}
+					edge[j].push_back(pair<int,int>(j+b2,1+ma));
+				}
+			}
+			calcs(s);
+			for (j=1;j<=m;j++) ans[i][j]=s[j]-s[j-1];
+			calced[i]=true;
+			for (j=1;j<=m;j++) total[i][j]=total[i][j-1]+ans[i][j];
+		}
+		tn*=2;
+	}
+	return true;
+}
+
+void noans(){
+	printf("No
+");
+}
+
+bool checkans(){
+	int i,j;
+	for (i=1;i<=n;i++) if (i%2==1)
+		for (j=1;j<=m;j++) if (j%2==1) 
+			if (ans[i][j]!=inputdata[(i+1)/2][(j+1)/2]) return false;
+	memset(total,0,sizeof(total));
+	for (i=1;i<=n;i++)
+		for (j=1;j<=m;j++) 
+			total[i][j]=total[i-1][j]+total[i][j-1]-total[i-1][j-1]+ans[i][j];
+	for (i=0;i<=n-a1;i++)
+		for (j=0;j<=m-b1;j++)
+			if (total[i+a1][j+b1]+total[i][j]-total[i+a1][j]-total[i][j+b1]<=0) return false;
+	for (i=0;i<=n-a2;i++)
+		for (j=0;j<=m-b2;j++)
+			if (total[i+a2][j+b2]+total[i][j]-total[i+a2][j]-total[i][j+b2]>=0) return false;
+	return true;
+}
+
+void printans(){
+	if (!checkans()) {printf("wrong
+");return;}
+	printf("Yes
+");
+	int i,j;
+	for (i=1;i<=n;i++){
+		for (j=1;j<=m;j++)
+			printf("%d ",ans[i][j]);
+		printf("
+");
+	}
+}
+
+void work(){
+	int ga=gcd(a1,a2),gb=gcd(b1,b2);
+	if (n>=a1+a2-ga&&m>=b1+b2-gb) {noans();return;}
+	if (m<b1+b2-gb) {
+		if (calcans()) printans(); else noans();
+	}
+	else {
+		int i,j;
+		int t=n>m?n:m;
+		for (i=1;i<=t;i++)
+			for (j=1;j<=t;j++) 
+				if (i<j) swap(ans[i][j],ans[j][i]);
+		swap(n,m);
+		swap(a1,b1);
+		swap(a2,b2);
+		if (!calcans()) {noans();return;}
+		for (i=1;i<=t;i++)
+			for (j=1;j<=t;j++) if (i<j) 
+				swap(ans[i][j],ans[j][i]);
+		swap(n,m);
+		swap(a1,b1);
+		swap(a2,b2);
+		printans();
+	}
+}
+
+int main(){
+
+	scanf("%d%d%d%d%d%d",&n,&m,&a1,&b1,&a2,&b2);
+	init();
+	work();
+	return 0;
+}

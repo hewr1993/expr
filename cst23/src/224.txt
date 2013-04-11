@@ -1,0 +1,17 @@
+#include<iostream>
+#include<cmath> 
+using namespace std;
+int main()
+{
+    int n,i=0,a,b;
+    cin>>n;
+    while(i*i<n)
+    {i++;}
+    a=(i-1)*(i-1);
+    b=i*i;
+    if((a+b)>2*n) 
+    cout<<a;
+    else
+    cout<<b;
+    return 0;
+}

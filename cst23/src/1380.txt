@@ -1,0 +1,47 @@
+#include <iostream>
+using namespace std;
+/*
+	状态压缩动态规划
+	f[i][??..??{i位二进制}]表示前i个女人与这些位为1的学生配对产生的最大匹配值
+	f[5][11111] = max(f[4][01111]
+					  f[4][10111]
+					  f[4][11011]
+					  f[4][11101]
+					  f[3][11110])
+	f[4][11011] = max(f[3][01011]
+					  f[3][10011]
+					  f[3][11001]
+					  f[3][11010]
+	依次类推...
+	初始化:
+	f[1][00001] = like[1][1]
+	f[1][00010] = like[1][2]
+	...
+	时间复杂度 O(n^2 * 2^n)
+*/
+int pow2[14] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
+int F[14][8192];
+int like[13][13];
+int n;
+int f(int i, int j)
+{
+	if(F[i][j] > 0)
+		return F[i][j];
+	int k, m = 0, t;
+	for(k = 0; k < n; k++)
+		if((j & pow2[k]) > 0 && (t = f(i - 1, j - pow2[k]) + like[i - 1][k]) > m)
+			m = t;
+	return F[i][j] = m;
+}
+int main()
+{
+	int i, j;
+	cin >> n;
+	for(i = 0; i < n; i++)
+		for(j = 0; j < n; j++)
+			cin >> like[i][j];
+	for(i = 0; i < n; i++)
+		F[1][pow2[i]] = like[0][i];
+	cout << f(n, pow2[n] - 1) << endl;
+	return 0;
+}

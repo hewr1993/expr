@@ -1,0 +1,103 @@
+/*
+ * 2011-05-10  Martin  <Martin@Martin-desktop>
+
+ * 
+ */
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+#define MaxiN 100005
+#define MaxiM 100005
+#define MaxiK 100005
+#define Mod 1000000000
+
+int N, M, K, EdgeNum, Block, Ans;
+int X[MaxiK], Y[MaxiK], C[MaxiK];
+int Head[(MaxiN + MaxiM) * 2], Color[(MaxiN + MaxiM) * 2];
+int Next[MaxiK * 4], Ending[MaxiK * 4];
+bool Kill[(MaxiN + MaxiM) * 2], Fail[(MaxiN + MaxiM) * 2], View[(MaxiN + MaxiM) * 2];
+
+inline int Get(int x, int y, int z)
+{
+	if (x == 1)
+		return y * 2 - z;
+	return (M + x - 1) * 2 - z;
+}
+
+inline void InsEdge(int U, int V)
+{
+	Next[++ EdgeNum] = Head[U];
+	Head[U] = EdgeNum;
+	Ending[EdgeNum] = V;
+	Next[++ EdgeNum] = Head[V];
+	Head[V] = EdgeNum;
+	Ending[EdgeNum] = U;
+}
+
+void DFS(int Cur)
+{
+	Color[Cur] = Block;
+	for (int i = Head[Cur]; i; i = Next[i])
+		if (Color[Ending[i]] == 0)
+			DFS(Ending[i]);
+}
+
+inline int GetAns(int a)
+{
+	EdgeNum = 0;
+	memset(Head, 0, sizeof(Head));
+	memset(Kill, 0, sizeof(Kill));
+	Kill[Get(1, 1, a ^ 1)] = 1;
+	for (int i = 1; i <= K; ++ i)
+	{
+		if (X[i] == 1 || Y[i] == 1)
+			Kill[Get(X[i], Y[i], C[i] ^ 1)] = 1;
+		else
+		{
+			for (int t = 0; t <= 1; ++ t)
+				InsEdge(Get(X[i], 1, t), Get(1, Y[i], ((X[i] - 1) % 2 * (Y[i] - 1) % 2) ^ a ^ C[i] ^ t));
+		}
+	}
+	Block = 0;
+	memset(Color, 0, sizeof(Color));
+	for (int i = 1; i <= (N + M - 1) * 2; ++ i)
+		if (Color[i] == 0)
+		{
+			++ Block;
+			DFS(i);
+		}
+	memset(Fail, 0, sizeof(Fail));
+	memset(View, 0, sizeof(View));
+	for (int i = 1; i <= (N + M - 1) * 2; ++ i)
+		Fail[Color[i]] |= Kill[i];
+	int Result = 1;
+	for (int i = 1; i <= N + M - 1; ++ i)
+	{
+		if (Color[i * 2 - 1] == Color[i * 2])
+			return 0;
+		if (Fail[Color[i * 2 - 1]] && Fail[Color[i * 2]])
+			return 0;
+		if (!View[Color[i * 2]] && !Fail[Color[i * 2 - 1]] && !Fail[Color[i * 2]])
+		{
+			View[Color[i * 2 - 1]] = View[Color[i * 2]] = 1;
+			Result = Result * 2 % Mod;
+		}
+	}
+	return Result;
+}
+
+int main()
+{
+	scanf("%d%d%d", &N, &M, &K);
+	for (int i = 1; i <= K; ++ i)
+		scanf("%d%d%d", X + i, Y + i, C + i);
+	for (int i = 0; i <= 1; ++ i)
+		Ans += GetAns(i);
+	printf("%d
+", Ans % Mod);
+	return 0;
+}
+

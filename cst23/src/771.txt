@@ -1,0 +1,59 @@
+#include<iostream>
+#include<iomanip>
+#include<Algorithm> 
+#include<cstring>
+#include<fstream> 
+#include<cmath>
+using namespace std;
+int size;
+int num=0;
+int pan[10][10];
+int c[10];
+int l[20];
+int r[20];
+void shi(int i)
+{
+	for(int j=0;j<size;j++)
+	{
+		if((c[j]==0)&&(l[i-j+size]==0)&&(r[i+j]==0)&&(pan[i][j]==0))
+		{
+			c[j]=1;
+			l[i-j+size]=1;
+			r[i+j]=1;	
+			if(i==(size-1))
+			{
+				num++;
+			}
+			else
+			{
+				shi(i+1);
+			}
+			c[j]=0;
+			l[i-j+size]=0;
+			r[i+j]=0;
+		}
+	}
+}
+int main()
+{
+	for(int h=0;h<10;h++)
+	{
+		c[h]=0;
+	}
+	for(int h=0;h<20;h++)
+	{
+		l[h]=r[h]=0;
+	}
+	cin>>size;
+	for(int h=0;h<size;h++)
+	{
+		for(int l=0;l<size;l++)
+		{
+			cin>>pan[h][l];
+		}
+	}
+	shi(0);
+	cout<<num;
+    return 0;
+}
+

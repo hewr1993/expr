@@ -1,0 +1,142 @@
+#include<cstdio>
+#include<set>
+#include<vector>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+#define pb push_back
+#define lb lower_bound
+#define INF 1000000007
+#define N 100010
+struct P
+{
+	int x,y;
+	P(int _x=0,int _y=0):x(_x),y(_y){}
+	void get(){scanf("%d%d",&x,&y);}
+	P rot(int p=1)
+	{
+		if(p==0)return *this;
+		if(p==1)return P(-y,x);
+		return rot(p-1).rot();
+	}
+};
+struct T
+{
+	P x,y;
+	void get(){x.get(),y.get(),nor();}
+	void nor(){if(x.y>y.y)swap(x,y);}
+	void rot(int p=1){x=x.rot(p),y=y.rot(p),nor();}
+	P getP(int p){return p?x:y;}
+}a[N];
+bool cmp2(P x,P y)
+{
+	P px=a[x.x].getP(x.y),py=a[y.x].getP(y.y);
+	return px.y>py.y||px.y==py.y&&x.y>y.y||px.y==py.y&&x.y==y.y&&px.x<py.x;
+}
+ll det(const P&a,const P&b,const P&c){return (ll)(b.x-a.x)*(c.y-a.y)-(ll)(b.y-a.y)*(c.x-a.x);}
+class cmp
+{
+public:
+	bool operator () (int x,int y) const 
+	{
+		if(a[y].x.y<=a[x].x.y&&a[x].x.y<=a[y].y.y)return det(a[y].x,a[y].y,a[x].x)>0;
+		if(a[y].x.y<=a[x].y.y&&a[x].y.y<=a[y].y.y)return det(a[y].x,a[y].y,a[x].y)>0;
+		if(a[x].x.y<=a[y].x.y&&a[y].x.y<=a[x].y.y)return det(a[x].x,a[x].y,a[y].x)<0;
+		if(a[x].x.y<=a[y].y.y&&a[y].y.y<=a[x].y.y)return det(a[x].x,a[x].y,a[y].y)<0;
+		return 0;
+	}
+};
+typedef set<int,cmp>::iterator sic;
+int n;set<int,cmp> A;P B[N*2];int BL;vector<int> A0[N],A1[N];int w0[N],w1[N],d[N],q[N],p[N],f[4][N*4],g[4][N*4],px[N],py[N],p0[N],L0,p1[N],L1;
+void getA(vector<int>*C)
+{
+	BL=0;for(int i=0;i<n;i++)B[BL++]=P(i,0),B[BL++]=P(i,1);
+	sort(B,B+BL,cmp2);
+	for(int i=0;i<BL;i++)
+	{
+		P p=a[B[i].x].getP(B[i].y);
+		if(!B[i].y)
+		{
+			sic w=A.lb(B[i].x);
+			if(w!=A.end())C[B[i].x].pb(*w);
+			if(w!=A.begin()){sic r=w;--r;C[*r].pb(B[i].x);}
+			A.insert(B[i].x);
+		}else
+		if(B[i].y)
+		{
+			A.erase(B[i].x);
+			sic w=A.lb(B[i].x);
+			if(w!=A.end()&&w!=A.begin()){sic r=w;--r;C[*r].pb(*w);}
+		}
+	}
+}
+void getw(vector<int>*A,int*w)
+{
+	int le=0,ri=0;
+	for(int i=0;i<n;i++)
+		for(vector<int>::iterator j=A[i].begin();j!=A[i].end();j++)d[*j]++;
+	for(int i=0;i<n;i++)if(!d[i])q[ri++]=i;
+	while(le<ri)
+	{
+		int x=q[le++];
+		for(vector<int>::iterator i=A[x].begin();i!=A[x].end();i++)
+			if(!--d[*i])q[ri++]=*i;
+	}
+	for(int i=0;i<n;i++)w[q[i]]=i;
+}
+void upd(int&f,int&g,int p){f=max(f,p),g=max(g,p);}
+int ask(int*f,int*g,int p,int l,int r,int L,int R)
+{
+	if(L<=l&&r<=R)return f[p];
+	int mid=(l+r)/2,S=-INF;
+	if(g[p]!=-INF)upd(f[p*2+1],g[p*2+1],g[p]),upd(f[p*2+2],g[p*2+2],g[p]),g[p]=-INF;
+	if(L<mid)S=max(S,ask(f,g,p*2+1,l,mid,L,R));
+	if(mid<R)S=max(S,ask(f,g,p*2+2,mid,r,L,R));
+	return S;
+}
+void upd(int*f,int*g,int p,int l,int r,int L,int R,int w)
+{
+	if(L<=l&&r<=R){upd(f[p],g[p],w);return;}
+	if(g[p]!=-INF)upd(f[p*2+1],g[p*2+1],g[p]),upd(f[p*2+2],g[p*2+2],g[p]),g[p]=-INF;
+	int mid=(l+r)/2;
+	if(L<mid)upd(f,g,p*2+1,l,mid,L,R,w);
+	if(mid<R)upd(f,g,p*2+2,mid,r,L,R,w);
+	f[p]=max(f[p*2+1],f[p*2+2]);
+}
+int main()
+{
+	scanf("%d",&n);
+	for(int i=0;i<n;i++)a[i].get();
+	getA(A0);
+	for(int i=0;i<n;i++)a[i].rot();
+	getA(A1);
+	for(int i=0;i<n;i++)a[i].rot(3);
+	getw(A0,w0),getw(A1,w1);
+	for(int i=0;i<4;i++)
+		for(int j=0;j<n*4;j++)f[i][j]=g[i][j]=-INF;
+	for(int i=0;i<n;i++)p0[L0++]=min(a[i].x.y,a[i].y.y),p1[L1++]=min(a[i].x.x,a[i].y.x);
+	sort(p0,p0+L0),L0=unique(p0,p0+L0)-p0,
+	sort(p1,p1+L1),L1=unique(p1,p1+L1)-p1;
+	for(int i=0;i<n;i++)scanf("%d %d",px+i,py+i),px[i]--;
+	int S=INF;
+	for(int i=n-1;i>=0;i--)
+	{
+		int x=px[i],y=py[i];
+		int l0=lb(p0,p0+L0,a[x].x.y)-p0,r0=lb(p0,p0+L0,a[x].y.y)-p0,l1=lb(p1,p1+L1,a[x].x.x)-p1,r1=lb(p1,p1+L1,a[x].y.x)-p1;
+		if(l0>r0)swap(l0,r0);if(l1>r1)swap(l1,r1);
+		if(y==0){if(ask(f[0],g[0],0,0,L0,l0,r0)>-w0[x])S=min(S,i);}else
+		if(y==1){if(ask(f[1],g[1],0,0,L1,l1,r1)>-w1[x])S=min(S,i);}else
+		if(y==2){if(ask(f[2],g[2],0,0,L0,l0,r0)>w0[x])S=min(S,i);}else
+		if(y==3){if(ask(f[3],g[3],0,0,L1,l1,r1)>w1[x])S=min(S,i);}
+		upd(f[0],g[0],0,0,L0,l0,r0,-w0[x]),
+		upd(f[1],g[1],0,0,L1,l1,r1,-w1[x]),
+		upd(f[2],g[2],0,0,L0,l0,r0,w0[x]),
+		upd(f[3],g[3],0,0,L1,l1,r1,w1[x]);
+	}
+	printf("%d
+",S+1);
+	for(int i=0;i<n;i++)q[w0[i]]=i;
+	for(int i=0;i<n;i++)printf("%d 0
+",q[i]+1);
+	return 0;
+}

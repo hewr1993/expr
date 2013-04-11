@@ -1,0 +1,106 @@
+#include <cstdio>
+#include <algorithm>
+#include <math.h>
+#define NMax 20000
+using namespace std;
+int N;
+double R;
+double X[NMax],Y[NMax],Z[NMax];
+struct point{
+	double x,y;
+	point(){}
+	point(double _x,double _y){x=_x;y=_y;}
+	double dist(){return sqrt(x*x+y*y);}
+};
+point operator-(const point &a,const point &b){
+	return point(a.x-b.x,a.y-b.y);
+}
+double operator^(const point &a,const point &b){
+	return a.x*b.y-a.y*b.x;
+}
+double operator*(const point &a,const point &b){
+	return a.x*b.x+a.y*b.y;
+}
+point A[NMax],B[NMax];
+const double eps=0.00000001;
+int pc,ac,bc;
+void ConvexHull(){
+	ac=2;
+	for (int i=2;i<pc;i++){
+		while (ac>=2 && ((A[ac-1]-A[ac-2])^(A[i]-A[ac-1]))>=0)ac--;
+		A[ac++]=A[i];
+	}
+	bc=2;
+	for (int i=2;i<pc;i++){
+		while (bc>=2 && ((B[bc-1]-B[bc-2])^(B[i]-B[bc-1]))<=0)bc--;
+		B[bc++]=B[i];
+	}
+}
+int XTest(){
+	for (int i=0,j=0;i<ac;i++){
+		while (j<bc-1 && B[j+1].x<A[i].x)j++;
+		if (((A[i]-B[j])^(B[j+1]-B[j]))<-eps)return 1;
+	}
+	for (int i=0,j=0;i<bc;i++){
+		while (j<ac-1 && A[j+1].x<B[i].x)j++;
+		if (((B[i]-A[j])^(A[j+1]-A[j]))>eps)return 1;
+	}
+	return 0;
+}
+double Abs(double a){return a>=0?a:-a;}
+int ShortestDist(){
+	for (int i=0,j=1;i<ac;i++){
+		while (j+1<bc && ((A[i]-B[j])*(B[j+1]-B[j]))>=0 &&
+			((A[i]-B[j])^(B[j+1]-B[j]))>=0)j++;
+		if ((A[i]-B[j]).dist()+eps<R+R)return 1;
+		if ((A[i]-B[j-1]).dist()+eps<R+R)return 1;
+		if ((A[i]-B[j])*(B[j-1]-B[j])>=0 &&
+			Abs((A[i]-B[j-1])^(B[j]-B[j-1]))/((B[j]-B[j-1]).dist())+eps<R+R)return 1;
+	}
+	for (int i=0,j=1;i<bc;i++){
+		while (j+1<ac && ((B[i]-A[j])*(A[j+1]-A[j]))>=0 &&
+			((B[i]-A[j])^(A[j+1]-A[j]))<=0)j++;
+		if ((B[i]-A[j]).dist()+eps<R+R)return 1;
+		if ((B[i]-A[j-1]).dist()+eps<R+R)return 1;
+		if ((B[i]-A[j])*(A[j-1]-A[j])>=0 &&
+			Abs((B[i]-A[j-1])^(A[j]-A[j-1]))/((A[j]-A[j-1]).dist())+eps<R+R)return 1;
+	}
+	return 0;
+}
+int testOK(double l){
+	for (int _=0;_<2;_++){
+		for (pc=0;pc<N && X[pc]<=l;pc++)
+			A[pc]=point(X[pc],Y[pc]),
+			B[pc]=point(X[pc],Y[pc]+1);
+		if (pc<N && pc && X[pc-1]<l){
+			double d1=l-X[pc-1],d2=X[pc]-l,d=d1+d2;
+			A[pc]=point((X[pc-1]*d2+X[pc]*d1)/d,
+				(Y[pc-1]*d2+Y[pc]*d1)/d);
+			B[pc]=point(A[pc].x,A[pc].y+1);
+			pc++;
+		}
+		ConvexHull();
+		if (XTest() || ShortestDist())return 0;
+		for (int i=0;i<N;i++)swap(Y[i],Z[i]);
+	}
+	return 1;
+}
+int main()
+{
+	scanf("%d%lf",&N,&R);
+	for (int i=0;i<N;i++){
+		scanf("%lf%lf%lf",X+i,Y+i,Z+i);
+		swap(X[i],Y[i]);
+	}
+	double l=X[0],r=X[0];
+	for (int i=1;i<N;i++)l=min(l,X[i]),r=max(r,X[i]);
+	while (r-l>0.0001){
+		double m=(l+r)*0.5;
+		if (testOK(m))l=m;
+		else r=m;
+	}
+	printf("%.3f
+",(l+r)*0.5);
+	return 0;
+}
+

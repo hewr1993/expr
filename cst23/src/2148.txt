@@ -1,0 +1,84 @@
+
+#include <cstdio>
+#include <cmath>
+
+using namespace std;
+
+double dist(double x1, double y1, double x2, double y2) {
+	return hypot(x1 - x2, y1 - y2);
+}
+
+int sign(double x) {
+	if (fabs(x) < 1e-10) return 0;
+	return x < 0 ? -1 : 1;
+}
+
+bool isInside(double x1, double y1, double r1, double x, double y) {
+	return sign(dist(x1, y1, x, y) - r1) <= 0;
+}
+
+bool isContained(double x1, double y1, double r1, double x2, double y2, double r2) {
+	return sign(dist(x1, y1, x2, y2) - abs(r1 - r2)) <= 0;
+}
+
+bool isIntersected(double x1, double y1, double r1, double x2, double y2, double r2) {
+	return sign(dist(x1, y1, x2, y2) - (r1 + r2)) <= 0;
+}
+
+bool isIntersected(double x1, double y1, double r1, double x2, double y2, double r2, double x3, double y3, double r3) {
+	if (! isIntersected(x1, y1, r1, x2, y2, r2)) return false;
+	if (isContained(x1, y1, r1, x2, y2, r2)) {
+		if (sign(r1 - r2) <= 0) {
+			return isIntersected(x1, y1, r1, x3, y3, r3);
+		} else {
+			return isIntersected(x2, y2, r2, x3, y3, r3);
+		}
+	}
+	double theta = atan2(y2 - y1, x2 - x1);
+	double tmp = (r1 * r1 - r2 * r2 + (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) / (2 * r1 * dist(x1, y1, x2, y2));
+	if (tmp > 1.0) tmp = 1.0;
+	if (tmp < -1.0) tmp = -1.0;
+	double delta = acos(tmp);
+	double x4 = x1 + cos(theta - delta) * r1;
+	double y4 = y1 + sin(theta - delta) * r1;
+	double x5 = x1 + cos(theta + delta) * r1;
+	double y5 = y1 + sin(theta + delta) * r1;
+	return isInside(x3, y3, r3, x4, y4) || isInside(x3, y3, r3, x5, y5);
+}
+
+bool check(double x1, double y1, double x2, double y2, double x3, double y3, double T1, double T2, double x) {
+	if (sign(x - T1) > 0) return false;
+	if (sign(x + dist(x3, y3, x2, y2) - T2) > 0) return false;
+	double r1 = x;
+	double r2 = T1 - x;
+	double r3 = T2 - x - dist(x3, y3, x2, y2);
+	if (isIntersected(x1, y1, r1, x2, y2, r2, x3, y3, r3)) return true;
+	if (isIntersected(x1, y1, r1, x3, y3, r3, x2, y2, r2)) return true;
+	if (isIntersected(x2, y2, r2, x3, y3, r3, x1, y1, r1)) return true;
+	return false;
+}
+
+int main() {
+	double t1, t2;
+	scanf("%lf%lf", &t1, &t2);
+	double x1, y1, x2, y2, x3, y3;
+	scanf("%lf%lf%lf%lf%lf%lf", &x1, &y1, &x2, &y2, &x3, &y3);
+	
+	double T1 = dist(x1, y1, x2, y2) + t2;
+	double T2 = dist(x1, y1, x3, y3) + dist(x3, y3, x2, y2) + t1;
+	if (sign(T2 - t1 - T1) <= 0) {
+		printf("%.10lf
+", T1 < T2 ? T1 : T2);
+		return 0;
+	}
+	double head = 0, tail = 1e5;
+	for (int i = 0; i < 100; i ++) {
+		double mid = (head + tail) / 2;
+		if (check(x1, y1, x2, y2, x3, y3, T1, T2, mid)) head = mid; else tail = mid;
+	}
+	printf("%.10lf
+", head);
+	
+	return 0;
+}
+

@@ -1,0 +1,61 @@
+//program 2150
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+
+using namespace std;
+
+vector<int> G[2500];
+int Pair[2500];
+bool Flag[2500];
+
+bool Find(int V)
+{
+  if(V==-1)return true;
+  if(Flag[V])return false;
+  Flag[V]=true;
+  for(int i=0;i<G[V].size();i++)
+    if(Find(Pair[G[V][i]]))
+      {
+        Pair[G[V][i]]=V;
+        return true;
+      }
+  return false;
+}
+
+int main()
+{
+  int M,N,R,C,Ans=0;
+  scanf("%d%d%d%d",&M,&N,&R,&C);
+  static bool Map[50][50];
+  for(int i=0;i<M;i++)
+    for(int j=0;j<N;j++)
+      {
+        char c;while(c=getchar(),c!='.'&&c!='x');
+        Ans+=(Map[i][j]=(c=='.'));
+      }
+  static int V[4][2]={{R,-C},{R,C},{C,-R},{C,R}};
+  for(int i=0;i<M;i++)
+    for(int j=0;j<N;j++)
+      for(int D=0;D<4;D++)
+        {
+          int ii=i+V[D][0],jj=j+V[D][1];
+          if(ii<M&&jj>=0&&jj<N)
+            if(Map[i][j]&&Map[ii][jj])
+              G[i*N+j].push_back(ii*N+jj);
+        }
+  for(int i=0;i<M*N;i++)Pair[i]=-1;
+  for(int i=0;i<M*N;i++)
+    {
+      memset(Flag,0,sizeof(Flag));
+      Ans-=Find(i);
+    }
+  printf("%d
+",Ans);
+  return 0;
+}
+

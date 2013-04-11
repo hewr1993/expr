@@ -1,0 +1,39 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<cmath>
+using namespace std;
+int x[20000],y[20000];
+int n;
+int cmp(const void *x,const void *y)
+{
+	int *px=(int *)x;
+	int *py=(int *)y;
+	return (*px)-(*py);
+}
+
+int calc(int *a)
+{
+	int r=0;
+	for(int i=0;i<n;i++)
+		r+=abs(a[i]-a[n/2]);
+	return r;
+}
+
+int main()
+{
+	int ans=0;
+	cin>>n;
+	for(int i=0;i<n;i++)
+		cin>>x[i]>>y[i];
+	qsort(x,n,sizeof(x[0]),cmp);
+	for(int i=0;i<n;i++)	
+		x[i]=x[i]-i;
+	qsort(x,n,sizeof(x[0]),cmp);
+	qsort(y,n,sizeof(y[0]),cmp);
+
+	ans+=calc(x)+calc(y);
+	cout<<ans<<endl;
+	return 0;
+}

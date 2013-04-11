@@ -1,0 +1,44 @@
+#include<iostream>
+#include<string.h>
+#define maxn 107
+using namespace std;
+long s,t,w,counter=0;
+char r[maxn],ans[maxn];
+bool first,used[maxn];
+
+void dfs(long depth)
+{
+    if(counter>=5) return;
+    if(depth>=w)
+    {
+        if(first)
+        {
+            first=false;
+            return;
+        }
+        cout<<ans<<endl;
+        counter++;
+        return;
+    }
+    for(long i=(first?r[depth]-'a'+1:ans[depth-1]-'a'+2);i<=t;i++)
+        if(!used[i])
+        {
+            used[i]=true;
+            ans[depth]=i+'a'-1;
+            dfs(depth+1);
+            used[i]=false;
+        }
+}
+
+int main()
+{
+    cin>>s>>t>>w>>r;
+    //  Input
+    memset(ans,0,sizeof(ans));
+    memset(used,false,sizeof(used));
+    counter=0;
+    first=true;
+    dfs(0);
+return 0;
+}
+

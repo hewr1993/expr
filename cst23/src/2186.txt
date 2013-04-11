@@ -1,0 +1,121 @@
+var v,n,x,y,i,j,l,o,t1,t2,t3,ans:longint;
+    a,b,c,f,left:array[1..2000]of longint;
+    d,g,h,q,z:array[1..4001]of longint;
+    h2:array[1..2000,1..4001]of longint;
+    e,w:array[1..2000]of longint;
+    r:array[1..6001]of longint;
+    p:array[1..2000]of boolean;
+procedure kp(l,r:longint);
+var i,j,m,m2,t:longint;
+begin
+  i:=l;j:=r;m:=a[(i+j)div 2];m2:=a[(i+j)div 2]-b[(i+j)div 2];
+  repeat
+    while (a[i]<m)or(a[i]=m)and(a[i]-b[i]<m2) do inc(i);
+    while (a[j]>m)or(a[j]=m)and(a[j]-b[j]>m2) do dec(j);
+    if i<=j then
+    begin
+      t:=a[i];a[i]:=a[j];a[j]:=t;
+      t:=b[i];b[i]:=b[j];b[j]:=t;
+      t:=c[i];c[i]:=c[j];c[j]:=t;
+      inc(i);dec(j);
+    end;
+  until(i>j);
+  if i<r then kp(i,r);if l<j then kp(l,j);
+end;
+procedure kp2(l,r:longint);
+var i,j,m,t:longint;
+begin
+  i:=l;j:=r;m:=d[(i+j)div 2];
+  repeat
+    while d[i]<m do inc(i);
+    while d[j]>m do dec(j);
+    if i<=j then
+    begin
+      t:=d[i];d[i]:=d[j];d[j]:=t;
+      inc(i);dec(j);
+    end;
+  until(i>j);
+  if i<r then kp2(i,r);if l<j then kp2(l,j);
+end;
+procedure gc2(t:longint);
+var v,i:longint;
+begin
+  i:=b[t];p[c[t]]:=true;
+  while i>0 do
+  begin
+    if h2[t,i]=0 then break;
+    if h2[t,i]=h2[t,i+1] then inc(i) else
+    begin
+      v:=r[n+i];
+      while v<>0 do
+      begin
+        if v<t then if h2[t,i]-w[v]=h2[t,e[v]] then
+        begin
+          gc2(v);i:=e[v];break;
+        end;
+        v:=r[v];
+      end;
+    end;
+  end;
+end;
+procedure gc(t:longint);
+begin
+  p[c[t]]:=true;if left[t]>0 then gc(left[t]);gc2(t);
+end;
+begin
+  read(n);
+  for i:=1 to n do
+  begin
+    read(x,y);a[i]:=x+y;b[i]:=x-y;c[i]:=i;
+    inc(l);d[l]:=a[i];inc(l);d[l]:=b[i];
+  end;
+  kp(1,n);kp2(1,l);j:=1;
+  for i:=2 to l do if d[i]>d[i-1] then
+  begin
+    inc(j);d[j]:=d[i];
+  end;
+  l:=j;
+  for i:=1 to n do
+  begin
+    t1:=1;t2:=l;
+    while t1<t2 do
+    begin
+      t3:=(t1+t2)div 2;
+      if d[t3]<a[i] then t1:=t3+1 else t2:=t3;
+    end;
+    a[i]:=t1;
+    t1:=1;t2:=l;
+    while t1<t2 do
+    begin
+      t3:=(t1+t2)div 2;
+      if d[t3]<b[i] then t1:=t3+1 else t2:=t3;
+    end;
+    b[i]:=t1;
+  end;
+  for i:=1 to l do q[i]:=n+i;
+  for i:=1 to n do
+  begin
+    f[i]:=g[b[i]]+h[b[i]]+1;left[i]:=z[b[i]];
+    for j:=1 to l do h2[i,j]:=h[j];
+    e[i]:=a[i];w[i]:=h[b[i]]+1;r[q[b[i]]]:=i;q[b[i]]:=i;
+    if f[i]>ans then
+    begin
+      ans:=f[i];o:=i;
+    end;
+    for j:=a[i] to l do if f[i]>g[j] then
+    begin
+      g[j]:=f[i];z[j]:=i;
+    end;
+    for j:=b[i] downto 1 do
+    begin
+      if h[j+1]>h[j] then h[j]:=h[j+1];
+      v:=r[n+j];
+      while v<>0 do
+      begin
+        if h[e[v]]+w[v]>h[j] then h[j]:=h[e[v]]+w[v];v:=r[v];
+      end;
+    end;
+  end;
+  writeln(ans);gc(o);
+  for i:=1 to n do if p[i] then write(i,' ');writeln;
+end.

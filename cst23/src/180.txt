@@ -1,0 +1,27 @@
+#include<stdio.h>
+#include<math.h>
+int main()
+{
+    int num, m, newnum,flag=0;
+    scanf("%d",&m);
+    if(m<0)
+    {
+             flag=1;
+    }
+    num=fabs(m);
+    newnum=0;
+    while(num)
+    {
+              newnum=newnum*10+num%10;
+              num=num/10;
+    }
+    if(flag==1)
+    {
+      printf("-%d",newnum);
+    }
+    else
+    {
+        printf("%d",newnum);
+    }
+    return 0;
+}

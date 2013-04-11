@@ -1,0 +1,24 @@
+#include<iostream>
+using namespace std;
+string s;
+int n;
+void work(int l,int r)
+{
+     int i,ling=0,yi=0;
+     for(i=l;i<=r;i++)
+     {if(s[i]=='0')ling++;
+     if(s[i]=='1')yi++;
+     if(ling&&yi){cout<<"C";work(l,(l+r-1)/2);work((l+r-1)/2+1,r);return;}
+     }
+     if(ling)cout<<"A";
+     if(yi)cout<<"B";
+}
+int main()
+{
+    cin>>s;
+    n=s.length();
+    s=' '+s;
+    work(1,n);
+     return 0;
+}
+

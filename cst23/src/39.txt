@@ -1,0 +1,28 @@
+const c:array[0..9] of longint=(6,2,5,5,4,5,6,3,7,6);
+var a,s,d,tot,f,n:longint;
+    ans:array[1..10000]of int64;
+begin
+  read(n);
+  for a:=0 to 1111 do
+    for s:=0 to 1111 do begin
+      f:=0;
+      d:=a+s;tot:=a;
+      repeat
+        f:=f+c[tot mod 10];
+        tot:=tot div 10;
+      until tot=0;
+      tot:=s;
+      repeat
+        f:=f+c[tot mod 10];
+        tot:=tot div 10;
+      until tot=0;
+      tot:=d;
+      repeat
+        f:=f+c[tot mod 10];
+        tot:=tot div 10;
+      until tot=0;
+      inc(ans[f+4]);
+    end;
+  writeln(ans[n]);
+end.
+

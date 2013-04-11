@@ -1,0 +1,32 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+int main()
+{
+    int 
+    a=1, 
+    b=1,
+    s=3;
+    int d;
+    int c;
+    scanf("%d",&c);
+    if(c==1 || c==2)
+    {
+               printf("%d",a);
+               system("pause");
+               return 0;
+    }
+    else 
+    while(s<=c)
+    {
+             d=a+b;
+             if(a<=b)      
+             a=d;
+             else
+             b=d;
+             s++;
+}
+    printf("%d",d);
+    system("pause");
+    return 0;
+}

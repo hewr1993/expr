@@ -1,0 +1,25 @@
+#include<stdio.h>
+int main()
+{
+	char a[24][24];
+	int i,j;
+	int n,m;
+	scanf("%d %d",&n,&m);
+	for(i=0;i<n;i++)            //第i行
+	{
+		a[i][i]=65;
+		for(j=i+1;j<m;j++)
+			a[i][j]=a[i][j-1]+1;
+		for(j=i-1;j>=0;j--)
+			a[i][j]=a[i][j+1]+1;
+	}
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<m;j++)
+		    printf("%c",a[i][j]);
+		printf("
+");
+	}
+
+    return 0;
+}

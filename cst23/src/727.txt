@@ -1,0 +1,108 @@
+//program 2128
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<cmath>
+
+using namespace std;
+
+struct Number
+{
+  int X,Y,Value;
+};
+
+bool operator <(Number A,Number B)
+{
+  return A.Value<B.Value;
+}
+
+int L;
+int Len[3];
+long long W[3][3000];
+Number Data[62500];
+int DP[250][250][250];
+
+long long Get(int X)
+{
+  long long Sum=0;
+  for(int i=0;i<3;i++)
+    Sum+=W[i][(X+1)%Len[i]];
+  return Sum;
+}
+
+int Find(int X,int N)
+{
+  if(X<Data[0].Value)return -1;
+  int Left=0,Right=N-1;
+  while(Left<Right)
+    {
+      int Mid=(Left+Right+1)/2;
+      if(Data[Mid].Value<=X)Left=Mid;else Right=Mid-1;
+    }
+  return Left;
+}
+
+void Init(int M,int N)
+{
+  L=(int)sqrt(M*N);
+  static int A[250][250];
+  for(int i=0;i<M*N;i++)
+    A[Data[i].X][Data[i].Y]=i;
+  memset(DP,0,sizeof(DP));
+  for(int T=0;T<=(M*N-1)/L;T++)
+    for(int i=0;i<M;i++)
+      for(int j=0;j<N;j++)
+        {
+          if(i)DP[T][i][j]+=DP[T][i-1][j];
+          if(j)DP[T][i][j]+=DP[T][i][j-1];
+          if(i&&j)DP[T][i][j]-=DP[T][i-1][j-1];
+          if(A[i][j]<T*L)DP[T][i][j]++;
+        }
+}
+
+int Query(int X,int Y,int Number)
+{
+  if(X<0||Y<0||Number<0)return 0;
+  int Ans=DP[Number/L][X][Y];
+  for(int i=Number/L*L;i<=Number;i++)
+    if(Data[i].X<=X&&Data[i].Y<=Y)Ans++;
+  return Ans;
+}
+
+int main()
+{
+  for(int i=0;i<3;i++)
+    {
+      scanf("%d",&Len[i]);
+      for(int j=0;j<Len[i];j++)
+        scanf("%d",&W[i][j]);
+    }
+  int M,N,Mod;scanf("%d%d%d",&M,&N,&Mod);
+  for(int i=0;i<M;i++)
+    for(int j=0;j<N;j++)
+      Data[i*N+j]=(Number){i,j,(Get(i)+Get(j))%Mod};
+  sort(Data,Data+M*N);
+  Init(M,N);
+  int Total,Ans=0;scanf("%d",&Total);
+  for(int i=0;i<Total;i++)
+    {
+      int a=(Get(i)+Get(0))%M,c=(Get(i)+Get(1))%N;
+      int b=(Get(i)+Get(2))%M,d=(Get(i)+Get(3))%N;
+      int LB=(Get(i)+Get(4))%Mod,UB=(Get(i)+Get(5))%Mod;
+      if(a>b)swap(a,b);a--;
+      if(c>d)swap(c,d);c--;
+      if(LB>UB)swap(LB,UB);
+      LB=Find(LB-1,M*N);UB=Find(UB,M*N);
+      int Count=Query(b,d,UB)-Query(a,c,LB);
+      Count-=Query(a,d,UB)+Query(b,c,UB)+Query(b,d,LB);
+      Count+=Query(b,c,LB)+Query(a,d,LB)+Query(a,c,UB);
+      Ans^=Count;
+    }
+  printf("%d
+",Ans);
+  return 0;
+}
+

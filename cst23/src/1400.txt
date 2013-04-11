@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cstdlib>
+#include <climits>
+using namespace std;
+int t[51], f[1001][51];
+int main()
+{
+	int n, m, s, i, j, k, tmp;
+	cin >> m >> n >> s;
+	for(i = 1; i <= s; i++)
+		cin >> t[i];
+	for(i = 0; i <= 1000; i++)
+		f[i][1] = i * t[1];
+	for(i = 1; i <= m; i++)
+		for(j = 2; j <= s; j++)
+		{
+			f[i][j] = INT_MAX;
+			for(k = 0; k <= i; k++)
+				if((tmp = max(t[j] * (i - k), f[k][j - 1])) < f[i][j])
+					f[i][j] = tmp;
+		}
+	cout << f[m][s] * n << endl;
+	return EXIT_SUCCESS;
+}
+

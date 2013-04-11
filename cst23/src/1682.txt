@@ -1,0 +1,133 @@
+Var
+  Cmd : String;
+  Para: Longint;
+  Top : Integer;
+  Stack : Array [0..1000,1..3] Of Longint;
+  Result: Array [0..21] Of Longint;
+
+Procedure Init;
+
+Begin
+ Top:= 0;
+ FillChar(Result, SizeOf(Result), 0);
+End;
+
+Procedure ReadOne;
+Var
+  ch: Char;
+  s : String;
+  h : Integer;
+Begin
+ Repeat
+  Read(ch);
+ Until ch in ['a'..'z'];
+ Cmd:= '';
+ While ch in ['a'..'z'] Do Begin
+   Cmd:= Cmd + ch;
+   Read(ch);
+ End;
+ If (Cmd = 'op') or (Cmd = 'loop') Then Begin
+   Repeat
+    Read(ch);
+   Until ch in ['0'..'9','n'];
+   If ch = 'n' Then para:= 0
+   Else Begin
+     s:= '';
+     While ch in ['0'..'9'] Do Begin
+       s:= s + ch;
+       Read(ch);
+     End;
+     Val(s, Para, h);
+   End;
+ End;
+End;
+
+Procedure Calc(Before:Integer);
+Var
+  k:Integer;
+Begin
+ Repeat
+  ReadOne;
+  If Cmd = 'loop' Then Begin
+    Inc(Top);
+    Stack[top,1]:= Para;
+    Stack[top,2]:= Before;
+    Stack[top,3]:= 0;
+    Calc(Top);
+  End Else If Cmd = 'end' Then Begin
+    Exit;
+  End Else If Cmd = 'op' Then Begin
+    Inc(Top);
+    Stack[Top,1]:= Para;
+    Stack[Top,2]:= Before;
+    Stack[Top,3]:= 1;
+  End Else If (Cmd = 'break') and (Before<>0) Then Begin
+    Stack[Before,1]:=1;
+    k:= 0;
+    Repeat
+     ReadOne;
+     If Cmd = 'loop' Then inc(k)
+     Else If Cmd = 'end' Then dec(k);
+    Until (Cmd='end') and (k = -1);
+    Exit;
+  End Else If (Cmd = 'continue') and (Before<>0) Then Begin
+    k:= 0;
+    repeat
+      ReadOne;
+      If Cmd = 'loop' Then Inc(k)
+      Else If Cmd = 'end' Then Dec(k);
+    until (Cmd='end') and (k = -1);
+    Exit;
+  End;
+ Until False;
+End;
+
+Function myStr(x: Longint): String;
+Var
+  s: String;
+Begin
+ Str(x, s);
+ myStr:= s;
+End;
+
+Procedure Print;
+Var
+  i, j: Integer;
+  a, b: Longint;
+  s   : String;
+Begin
+ For i:= 1 to Top Do
+  If Stack[i,3] = 1 Then Begin
+    j:= i;  a:= 1;  b:=0;
+    While j<>0 do Begin
+      If Stack[j,1]=0 Then Inc(b)
+                      Else a:= a * Stack[j,1];
+      j:= Stack[j,2];
+    End;
+    Inc(Result[b], a);
+  End;
+ s:= '';
+ For i:= 21 downto 0 Do
+  If Result[i] > 0 Then Begin
+    Case i Of
+     0: s:=s + '+' + myStr(Result[i]);
+     1: If Result[i] > 1
+          Then s:=s + '+' + myStr(result[i]) + 'n'
+          Else s:=s + '+n';
+     Else If Result[i]>1
+            Then s:=s + '+' + myStr(result[i]) + 'n^'+myStr(i)
+            Else s:=s + '+' + 'n^' + myStr(i)
+    End;
+  End;
+ If Length(s)>0 Then Delete(s,1,1)
+                Else s:='0';
+
+ Writeln(s);
+End;
+
+Begin
+ Init;
+ ReadOne;
+ Calc(0);
+ Print;
+End.

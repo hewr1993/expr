@@ -1,0 +1,16 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+    char c;
+         scanf("%c",&c);
+    
+    if(c>='a'&& c<='z')
+         printf("lower");
+        
+    else
+        printf("upper");
+        system("pause");
+        return 0; 
+} 

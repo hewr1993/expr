@@ -1,0 +1,47 @@
+/*
+	Problem: IOI 2005 Mea
+	Author: Amber
+	Method: Simple Maths
+	Complexity: O(N)
+*/
+#include <fstream>
+#include <iostream>
+#include <cstdio>
+#include <cmath>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+ifstream fin("mea.in");
+ofstream fout("mea.out");
+
+const int INFINITE = 2147483647;
+
+int N;
+
+int main()
+{
+	scanf("%d",&N);
+	int left = -INFINITE, right = INFINITE;
+	int k1 = 0, k2, m;
+	
+	for (int i = 1; i <= N && left <= right; i++)
+	{
+		scanf("%d",&m);
+		k2 = 2 * m - k1;
+		if (i & 1)
+			right =min(right, (k2 - k1) / 2);
+		else
+			left =max(left, (k1 - k2) / 2);
+		k1 = k2;
+	}
+
+	if (left <= right)
+		cout << right - left + 1 << "
+";
+	else 
+		cout << 0 << "
+";
+	return 0;
+}
+

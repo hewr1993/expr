@@ -1,0 +1,70 @@
+program xqz;
+const maxn=2000; mo=999983;
+var
+  ans,i,j,k,m,n,e,now,t1,o,k1,k2:longint;
+  p,a:array[0..maxn] of longint;
+  x,y,next,hash,z:array[0..maxn*maxn] of longint;
+  edge:array[0..mo] of longint;
+  c,dfn:array[0..maxn] of longint;
+function min(a,b:longint):longint;
+begin
+  if a<b then min:=a
+  else min:=b;
+end;
+
+function find(i:longint):longint;
+begin
+  find:=0;
+  while i>0 do
+  begin
+    if (dfn[i]=t1)and(c[i]>find) then
+      find:=c[i];
+    i:=i-i and (-i);
+  end;
+end;
+
+procedure add(i,de:longint);
+begin
+  while i<=n do
+  begin
+    if (dfn[i]<>t1)or(de>c[i]) then
+    begin
+      dfn[i]:=t1; c[i]:=de;
+    end;
+    i:=i+i and (-i);
+  end;
+end;
+
+begin
+  read(n,k1,k2);
+  for i:=1 to n-1 do
+  begin
+    read(p[i]); inc(p[i],p[i-1]);
+  end;
+  for i:=1 to n do read(a[i]);
+  e:=0; ans:=maxlongint;
+  for k:=n-1 downto 0 do
+    for j:=n-k downto 1 do
+    begin
+      i:=j+k; inc(e); hash[e]:=a[i]-p[j-1]; now:=abs(hash[e]) mod mo;
+      x[e]:=i; y[e]:=j; next[e]:=edge[now]; z[e]:=0; edge[now]:=e;
+    end;
+  for e:=e downto 1 do
+  if z[e]=0 then
+  begin
+    now:=hash[e]; k:=e; inc(t1);
+    while k<>0 do
+    begin
+      if hash[k]=now then
+      begin
+        z[k]:=1; i:=x[k]; j:=y[k];
+        if j=1 then o:=0
+        else o:=find(j-1);
+        inc(o); add(j,o);
+        ans:=min(ans,k1*(j-o)+k2*(i-j)+min(k1,k2)*(n-i));
+      end;
+      k:=next[k];
+    end;
+  end;
+  writeln(ans);
+end.

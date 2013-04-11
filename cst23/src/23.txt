@@ -1,0 +1,57 @@
+#include <iostream>
+
+using namespace std;
+
+int compute(int n)
+{  int a,b,c,d,i,j,p;
+   if(n>=1000)
+   {for(a=0;n>=1000;a=a+1)
+    n=n-1000;
+    for(b=0;n>=100;b=b+1)
+    n=n-100;
+    for(c=0;n>=10;c=c+1)
+    n=n-10;
+    d=n;
+    int num[4]={a,b,c,d};
+    for(j=1;j<=3;j++)
+    {for(i=0;i<=3-j;i++)
+    {if(num[i]<num[i+1])
+    {p=num[i];
+     num[i]=num[i+1];
+     num[i+1]=p;}
+     }
+     }
+    return 999*num[0]+90*num[1]-(999*num[3])-(90*num[2]);
+    }
+    if(n<1000)
+    return n=9*n;
+}
+
+
+
+
+
+int main()
+{   int t,p,n=0;
+    cin>>t;
+    p=t;
+    int time[t];
+    for(t=t;t>=1;t--)
+    cin>>time[t];
+    
+    for(p=p;p>=1;p--)
+ {cout<<time[p]<<" ";
+     for(n=n;n>=n-1;n++)
+     {if(compute(time[p])==0||compute(time[p])==6174)
+     {cout<<compute(time[p])<<endl;
+      break;}
+     else
+     {time[p]=compute(time[p]);
+      cout<<time[p]<<" ";
+      continue;}
+    }
+ }
+   
+
+    return 0;
+}

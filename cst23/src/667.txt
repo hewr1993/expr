@@ -1,0 +1,17 @@
+#include<iostream>
+using namespace std;
+int main ()
+{
+	int m,n,p=1;
+	cin>>m>>n;
+	if(m%n==0)
+		m=m/n;
+	else
+		m=m/n+1;
+	for(int i=1;i<=m;i++)
+	{
+		p=p*2;
+	}
+	cout<<p-1<<endl;
+	return 0;
+}

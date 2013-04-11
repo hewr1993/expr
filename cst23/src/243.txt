@@ -1,0 +1,68 @@
+/* NOIP2007 Prob1 - Count */
+/* Honglei Zhuang         */
+/* Oct,18th 2009          */
+
+#include<iostream>
+
+using namespace std;
+
+int i,n,m,k,sum;
+int a[200001];
+
+void heapify(int x) // 堆的Heapify操作 所建堆为最大堆
+{
+    int y=x<<1,temp;
+    while (y<=n)
+    {
+        if (y<n && a[y]<a[y+1]) y++;
+        if (a[x]>a[y]) return;
+        temp=a[x];
+        a[x]=a[y];
+        a[y]=temp;
+        x=y;
+        y<<=1;
+    }
+}
+
+int extract() // 取出堆顶元素
+{
+    int temp=a[1];
+    a[1]=a[n];
+    a[n]=temp;
+    n--;
+    heapify(1);
+    return temp;
+}
+
+int main()
+{
+
+    //输入与初始化 - 对所有元素进行堆排序
+    scanf("%d",&n);
+    m=n;
+    for (i=1;i<=n;i++) scanf("%d",&a[i]);
+    for (i=n/2;i>=1;i--) heapify(i);  // 建堆
+    for (i=n;i>=2;i--) extract(); // 堆排序
+
+    //统计每个元素出现的次数并输出
+    k=a[1];
+    sum=1;
+    for (i=2;i<=m;i++)
+    {
+        if (a[i]!=k)
+        {
+            printf("%d %d
+",k,sum);
+            k=a[i];
+            sum=1;
+        }
+        else sum++;
+    }
+    printf("%d %d
+",k,sum);
+
+    return 0;
+}
+
+
+

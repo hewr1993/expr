@@ -1,0 +1,73 @@
+//By Lin
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+
+using namespace std; 
+
+char 	L[155],s[30][30];
+int	 	n,m,len[30],ans[155];
+int		mark[155][155][30][30];
+bool	ok[155][155];
+
+bool	check(int st ,int ed ,int k ,int i ){
+	if ( mark[st][ed][k][i] != 0 ) return mark[st][ed][k][i] == 1;
+	if ( i == len[k] ) {
+		if ( st>ed || ok[st][ed] ) mark[st][ed][k][i] = 1; 
+		return mark[st][ed][k][i] == 1; 
+	}
+	if ( L[st] == s[k][i] && check(st+1,ed,k,i+1) ) {
+		mark[st][ed][k][i] = 1; 
+		return true; 
+	}
+	for (int j = st; j+len[k]-i <=ed; j++ ) 
+		if ( ok[st][j] && L[j+1] == s[k][i] && check(j+2,ed,k,i+1) ) {
+			mark[st][ed][k][i] = 1; 
+			return true; 
+		}
+	mark[st][ed][k][i] = -1; 
+	return false; 
+}
+
+int		main()
+{
+	scanf("%s%d", L , &n );
+	m = strlen(L);
+	for (int i = 0; i<n; i++) {
+		scanf("%s", s[i] );
+		len[i] = strlen(s[i]);
+	}
+	for (int j = 1; j<=m; j++)
+		for (int st = 0; st+j-1<m; st++){
+			int ed = st+j-1;
+			for (int k = st; k<ed; k++) 
+				if ( ok[st][k] && ok[k+1][ed] ) { ok[st][ed] = true; break; }
+			if ( ok[st][ed] ) continue; 
+			for (int k = 0; k<n; k++){
+				if ( len[k] > j || L[st] != s[k][0] ) continue; 
+				if ( check(st+1,ed,k,1) ){
+					ok[st][ed] = true; 
+					break;
+				}
+			}
+		}
+
+	ans[0] = ok[0][0]?0:1;
+/*	for (int i = 0; i<m; i++) 
+		for (int j = 0; j<m; j++) {
+			if ( ok[i][j] ){
+				for (int k = i; k<=j; k++) printf("%c", L[k] );
+				printf("
+");
+			}
+		}*/
+	for (int i = 1; i<m; i++) {
+		ans[i] = ans[i-1]+1;
+		if ( ok[0][i] ) ans[i] = 0; 
+		for (int j = 1; j<=i; j++) 
+			if ( ok[j][i] ) ans[i] = min( ans[i] , ans[j-1] );
+	}
+	printf("%d
+" , ans[m-1] );
+}
+

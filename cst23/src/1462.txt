@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+using namespace std;
+
+int main()
+{
+	char Or[200],code[200],tra[200];
+	char x[26]={0};
+	char b[26]={0};
+	cin >> Or >> code >> tra;
+	for (int k = 0; k < strlen(Or);k++)
+	{
+		if (x[Or[k]-65]==0)
+		{
+			x[Or[k]-65] = code[k];
+		}
+	    else 
+	    {
+			if (code[k]!=x[Or[k]-65])
+			{
+				cout << "Failed";
+				system("pause");
+				return 0;
+			}
+	    }
+	}
+	for (int k = 0; k < strlen(Or);k++)
+	{
+		if (b[code[k]-65]==0)
+		{
+			b[code[k]-65] = Or[k];
+		}
+	    else 
+	    {
+			if (Or[k]!=b[code[k]-65])
+			{
+				cout << "Failed";
+				system("pause");
+				return 0;
+			}
+	    }
+	}
+	for (int i = 0;i < 26;i++)
+	{
+		if (x[i]==0)
+		{
+			cout << "Failed";
+			system("pause");
+			return 0;
+		}
+    } 
+	for (int k =0 ;k < strlen(tra);k++)
+		cout <<x[tra[k]-65];
+	 	system("pause");
+	return 0;
+}
+					
+

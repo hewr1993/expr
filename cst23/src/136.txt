@@ -1,0 +1,83 @@
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <stdio.h>
+using namespace std;
+
+int main()
+{
+	string dic[101];
+	string temps="";
+	int count=0,i,j;
+	char temp;
+	string *p = dic;
+	int dict[101];
+	for(i=0;i<101;i++)
+		dict[i]=1;
+	while(temp=getchar())
+	{
+		if(temp=='
+')
+			break;
+		if(temp>=97&&temp<=122)
+			temp-=32;
+		if(temp>=65&&temp<=90)
+			temps+=temp;
+		else if(temps!="")
+		{
+			for(i=0; i<count; i++)
+				if(dic[i]==temps)
+				{
+					dict[i]++;
+					break;
+				}
+			if(i==count)
+			{
+				dic[count]=temps;
+				count++;
+			}
+			temps="";
+		}
+	}
+	int max=0;
+	for(i=0;i<count;i++)
+		if(dic[i].size()>max)
+			max=dic[i].size();
+	for(i=0;i<count;i++)
+	{
+		for(j=0;j<max-dic[i].size();j++)
+			cout<<" ";
+		cout<<dic[i]<<":";
+		for(j=0;j<dict[i];j++)
+			cout<<"*";
+		cout<<dict[i]<<endl;
+	}
+	return 0;
+}
+
+/*
+ÎÊÌâÃèÊö
+¡¡¡¡Í³¼ÆÊäÈëÓ¢ÎÄÎÄÕÂ¶ÎÂäÖÐ²»Í¬µ¥´Ê£¨µ¥´ÊÓÐ´óÐ¡Ð´Ö®·Ö,
+¡¡¡¡µ«Í³¼ÆÊ±ºöÂÔ´óÐ¡Ð´£©¸÷×Ô³öÏÖµÄ´ÎÊý¡£ ÊäÈë¶ÎÂäÖÐËùº¬µ¥´ÊµÄ×ÜÊý²»³¬¹ý100£¬×î³¤µ¥´ÊµÄ³¤¶È²»³¬¹ý20¸ö×ÖÄ¸.
+
+ÊäÈë¸ñÊ½
+¡¡¡¡Ò»¸ö°üº¬Èô¸É¾ä×ÓµÄ¶ÎÂä, Ã¿¸ö¾ä×ÓÓÉÈô¸ÉÓ¢ÎÄµ¥´Ê×é³É. ³ý¿Õ¸ñ,
+¡¡¡¡¶ººÅºÍ¾äºÅÍâ, ÕâÐ©ÊäÈëµÄ¾ä×ÓÖÐ²»º¬ÆäËû·Ç×ÖÄ¸×Ö·û, ²¢ÇÒ, ¶ººÅºÍ¾äºÅ½ô¸úÔÚËüÇ°ÃæµÄÓ¢ÎÄµ¥´ÊºóÃæ, ÖÐ¼äÃ»ÓÐ¿Õ¸ñ. 
+	¶ÎÂä×îºóÒ»¸ö×Ö·ûÊÇ»Ø³µ·û,±íÊ¾ÊäÈë½áÊø.
+
+Êä³ö¸ñÊ½
+¡¡¡¡Èô¶ÎÂäÖÐ¹²ÓÐM¸ö²»Í¬µÄÓ¢ÎÄµ¥´Ê£¬Ôò°´ÕÕÆäÔÚ¶ÎÂäÖÐ³öÏÖµÄÏÈºóË³ÐòÊä³öMÐÐ£¬¸÷ÐÐµÄ¸ñÊ½Îª:
+¡¡¡¡µ¥´ÊÖÐËùÓÐ×ÖÄ¸¾ùÓÃ´óÐ´ÐÎÊ½Êä³ö£¨×î³¤µÄµ¥´Ê¶¥¸ñÊä³ö£¬ËüÇ°ÃæÃ»ÓÐ¶àÓàµÄ¿Õ¸ñ;
+¡¡¡¡ÆäÓàµ¥´ÊÓëÆäÓÒ¶ÔÆë£©+Ã°ºÅ+N¸ö*ºÅ+¸Ãµ¥´ÊÔÚ¶ÎÂäÖÐµÄ³öÏÖ´ÎÊýN
+
+ÑùÀýÊäÈë
+This is a test. This test is easy. This is a test. This test is easy.
+
+ÑùÀýÊä³ö
+THIS:****4
+  IS:****4
+   A:**2
+TEST:****4
+EASY:**2
+
+*/

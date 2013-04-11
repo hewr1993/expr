@@ -1,0 +1,33 @@
+#include<iostream>
+#include<cstring> 
+#include<memory> 
+using namespace std;
+int main()
+{
+   int n;
+   n=50; 
+   bool a[100];
+   memset(a,false,sizeof(a));
+   //for(int i=1;i<=n;i++)
+   //cout<<a[i]<<endl;
+   //cout<<"********************************"<<endl; 
+   for(int j=2;j<=n;j++)
+   {
+       for(int k=1;k<=n;k++)
+       {
+           if(k%j==0)
+           {
+               if (a[k]==true)
+               {
+                     a[k]=false;
+               } 
+               else a[k]=true;
+           }
+       }
+   } 
+   for(int i=1;i<=n;i++)
+   if(a[i]==true) cout<<i<<endl; 
+   //system("pause");
+    return 0;
+} 
+

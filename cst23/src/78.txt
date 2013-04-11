@@ -1,0 +1,46 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+int a[100008];
+int b[100008];
+void rank(int a[],int s)
+{
+	for(int i=1;i<=s-1;i++)
+	{
+		for(int j=1;j<=s-i;j++)
+		{
+			if(a[j]>a[j+1])
+				swap(a[j],a[j+1]);
+		}
+	}
+}
+int check(int a[],int s)
+{
+	int g=1;
+	for(int i=1;i<=s;i++)
+	{
+		if(a[i]!=i)
+		{
+			g=0;
+			break;
+		}
+	}
+	return g;
+}
+int main()
+{
+	int N;
+	cin>>N;
+	for(int i=1;i<=N;i++)
+	{
+		cin>>a[i];
+	}
+	for(int i=1;i<N;i++)
+	{
+		b[i]=abs(a[i]-a[i+1]);	
+	}
+	rank(b,N-1);
+	if(check(b,N-1)) cout<<"I'm happy!!"<<endl;
+	else		 cout<<"I'm unhappy!!"<<endl;
+	return 0;	
+}

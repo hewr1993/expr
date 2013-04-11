@@ -1,0 +1,106 @@
+#include <fstream>
+#include <iostream>
+using namespace std;
+int i,n;
+int add[30][30];
+char word[30][30];
+long length=0;
+int use[30],len[30];
+void calc();
+void dfs(int m,int j);
+
+int main()
+{
+	 memset(add,0,sizeof(add));            //初始化数组 
+	 memset(use,0,sizeof(use));
+	 memset(len,0,sizeof(len));
+	 int i,j,max=0;
+	 char st;
+	 memset(word,0,sizeof(word));
+	 cin>>n;
+	 for(i=1;i<=n;i++)
+	 {
+        cin>>word[i];
+	 }
+	 for(i=1;i<=n;i++)
+	 {
+        for(j=strlen(word[i])-1;j>=0;j--)
+	       word[i][j+1]=word[i][j];
+        word[i][0]=strlen(word[i])-1;        //长度存在word[i][0]中 
+     }	    
+     cin>>st;
+	 calc();
+	 for(i=1;i<=n;i++)
+	 {
+        if(word[i][1]==st)
+        {
+          length+=word[i][0];
+          use[i]++;
+          dfs(i,i);
+          if(len[i]>max) max=len[i];        //找出以符合条件的单词开头的龙的最大长度 
+          if(length>max) max=length;
+          length=0;use[i]--;
+        }
+     }
+	 cout<<max;
+	 return 0;
+}
+
+void calc()        //计算各个单词两两相连所增加的长度,记在add[i][j]中 
+{
+     int i,j;
+	 for(i=1;i<=n;i++)
+	 for(j=1;j<=n;j++)
+	 {
+        if(i==j&&word[i][1]==word[i][word[i][0]]) add[i][j]=word[i][0]-1; //同一单词首尾相连情况 
+        else
+        {
+            int p;int q;
+            for(p=word[i][0];p>=1;p--)
+            {
+               int g=0,k=1;
+               for(q=p;q<=word[i][0];q++)
+               {
+                  if(word[i][q]==word[j][k]) g++;
+                  else {g=0;break;}
+                  k++;
+               }
+               if(g!=0)
+               {
+                 add[i][j]+=word[j][0]-g;break;
+               }
+            }
+        }
+	 }
+}
+
+void dfs(int m,int j)             //回溯搜索,枚举所能达到的最大长度 
+{
+     int i;
+     for(int i=1;i<=n;i++)
+     {
+        if(add[j][i]!=0&&use[i]!=2)
+        {
+          length+=add[j][i];
+          use[i]++;
+          if(len[m]<length) len[m]=length;
+          dfs(m,i);                      //递归 
+          length-=add[j][i];
+          use[i]--;
+        }
+     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

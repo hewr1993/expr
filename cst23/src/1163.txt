@@ -1,0 +1,56 @@
+#include<iostream>
+#include<iomanip>
+#include<Algorithm> 
+#include<cstring>
+#include<cmath>
+using namespace std;
+int a[100],b[100];
+int n;
+int main()
+{
+	cin>>n;
+	for(int i=0;i<n;i++)
+	{
+		cin>>a[i];
+	}
+	for(int i=0;i<n;i++)
+	{
+		cout<<"Insert element["<<i+1<<"]:"<<endl;
+		b[i]=a[i];
+		cout<<"Init:";
+		for(int j=0;j<i+1;j++)
+		{
+			cout<<b[j]<<" ";
+		}
+		cout<<endl;
+		
+		for(int j=i;j>=0;j--)
+		{
+			if(a[i]>=b[j-1])
+			{
+				b[j]=a[i];
+				break;
+			}
+			else
+			{
+				b[j]=b[j-1];
+				cout<<"Move back:";
+				for(int k=0;k<i+1;k++)
+				{
+					cout<<b[k]<<" ";
+				}
+				cout<<endl;
+			}
+			
+		}
+		
+		cout<<"Final:";
+		for(int j=0;j<i+1;j++)
+		{
+			cout<<b[j]<<" ";
+		}
+		cout<<endl;
+	}
+	return 0;
+}
+

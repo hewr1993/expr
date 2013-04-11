@@ -1,0 +1,49 @@
+#include <iostream>
+using namespace std;
+int n, v;//变量命名不要重，内外有别 
+int** a;
+int* c;
+int* b;
+int sum = 0;
+bool sumk = false;
+void doit1(int i)
+{
+     for (int k = 0 ; k < n && sumk == false; k ++)
+     {
+         if (i == 0 || (a[c[i - 1]][k] != 0 && b[k] == 0))
+         {
+            c[i] = k;
+            b[k] = 1;
+            if (i != n - 1)
+               doit1(i + 1);
+            else
+            {
+                sum ++;
+                if (sum == v)
+                {
+                   for (int m = 0; m < n ; m ++)
+                       cout << c[m]  << " " ;
+                   sumk = true;             
+                } 
+            }         
+            b[k] = 0;
+         }
+     }
+}
+int main()
+{
+    cin >> n >> v;
+    a = new int*[n];
+    c = new int[n];
+    b = new int[n];
+    for (int i = 0 ; i < n ; i ++) 
+    {
+        a[i] = new int[n];
+        c[i] = -1;
+        b[i] = 0;
+        for (int j = 0 ; j < n ; j ++)
+            cin >> a[i][j];
+    }       
+    doit1(0);
+    //system("pause");
+}

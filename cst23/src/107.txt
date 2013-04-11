@@ -1,0 +1,34 @@
+#include <iostream>
+using namespace std;
+
+int main (){
+	int v1,v2,t,s,l,i;
+	int T,Sx = 0;
+	
+	cin >> v1 >> v2 >> t >> s >> l;
+	T = l / v2;
+	
+	for (i = 1; i <= T; i ++){
+  		if (Sx < t)
+  			Sx += v1 - v2;
+		else{
+        	i += s - 1;
+        	Sx -= s * v2;
+       	}
+       	if (Sx + (v2 * i) == l)
+       		break;
+ 	}
+ 	
+ 	if (i == T)
+ 		cout << "D" << "
+" << i;
+	if (i < T)
+ 		cout << "R" << "
+" << i;
+	if (i > T)
+ 		cout << "T" << "
+" << T;
+	
+	//system ("pause");
+	return 0;
+}

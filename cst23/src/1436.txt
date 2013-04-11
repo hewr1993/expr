@@ -1,0 +1,44 @@
+/* 
+ * tsinsen/1145/1145.cpp
+ *
+ * Copyright (c) 2012  Tung Cheng
+ *
+ */
+
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+const int N_MAX = 100;
+
+long long int tri[N_MAX][N_MAX];
+
+void init()
+{
+	int i, j;
+
+	memset(tri, 0, sizeof(tri));
+	tri[0][0] = 1;
+	for (i = 1; i <= 40; i ++) {
+		tri[i][0] = 1;
+		for (j = 1; j <= i; j ++)
+			tri[i][j] = tri[i - 1][j] + tri[i - 1][j - 1];
+	}
+}
+
+int main()
+{
+	int n;
+
+	init();
+
+	cin >> n;
+
+	cout << tri[2 * n][n] / (n + 1) << endl;
+
+	return 0;
+}
+
+
+

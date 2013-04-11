@@ -1,0 +1,23 @@
+#include<math.h>
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+	char ch1, ch2, ch3;
+	int v1, v2, v3, value;
+	scanf("%c%c%c", &ch1, &ch2, &ch3);
+	if (ch1 >= 'A')
+	{v1 = ch1 - 'A' + 10;}
+	else{v1=ch1-48;}
+	if(ch2 >= 'A')
+	{v2 = ch2 - 'A' + 10;}
+	else{v2=ch2-48;}
+	if(ch3 >= 'A')
+	{v3 = ch3 - 'A' + 10;}
+	else {v3=ch3-48;}
+	value = v1*16*16 + v2*16 + v3;
+	printf("%c%c%c %d  %o", ch1,ch2,ch3, value, value);
+	system("pause");
+	return 0;
+
+}

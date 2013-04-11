@@ -1,0 +1,113 @@
+/*问题描述
+　　某场比赛过后，你想要知道A~E五个人的排名是什么，
+于是要求他们每个人说了一句话。（经典的开头……-_-!）得了第1名的人23，
+说了假话；得了第5名的人不好意思，也说了假话；为了使求解问题简单，第3名同样说了假话。
+（奇数名次说假话）
+输入格式
+　　共5行，各行依次表示A~E说的话。
+　　每行包含一个形如“A>=3”的名次判断，即一个大写字母+关系运算符+一个数字，不包含空格。
+　　大写字母A~E，关系运算<、<=、=、>=、>、!=，数字1~5。注意：等于是“=”不是“==”！
+
+输出格式
+　　可能有多解，请按照字典序输出排名序列，每个解一行
+　　最后一行输出解的数量
+样例输入
+A=2
+D=5
+E>3
+A>2
+B!=1
+样例输出
+ACDEB
+AECBD
+BADCE
+BCADE
+BDACE
+CEADB
+CEBDA
+7*/
+#include<iostream>
+#include<cstring>
+using namespace std;
+char s[5][5];
+int a[6];
+int f[6];
+void get_bool(int ming, int ren)
+{
+	int shu;
+	int len = strlen(s[ren-1]);
+	for (int i=0; i<5; i++)
+	{
+		if((int)s[ren-1][0]-64==a[i])
+			shu=i+1;
+	}
+	if (len==3)
+	{
+		if(s[ren-1][1]=='>')
+		f[ming]=(shu>(int)s[ren-1][2]-48);
+		if(s[ren-1][1]=='=')
+		f[ming]=(shu==(int)s[ren-1][2]-48);
+		if(s[ren-1][1]=='<')
+		f[ming]=(shu<(int)s[ren-1][2]-48);
+	}
+	if (len==4)
+	{
+		if (s[ren-1][1]=='>'&&s[ren-1][2]=='=')
+			f[ming]=(shu>=(int)s[ren-1][3]-48);
+		if (s[ren-1][1]=='!'&&s[ren-1][2]=='=')
+			f[ming]=(shu!=(int)s[ren-1][3]-48);
+		if (s[ren-1][1]=='<'&&s[ren-1][2]=='=')
+			f[ming]=(shu<=(int)s[ren-1][3]-48);
+	}
+}
+bool get_bool2()
+{
+	if (f[1]+f[3]+f[5]==0&&f[2]+f[4]==2)
+		return true;
+	return false;
+}
+
+int main()
+{
+	int i;
+	int cnt=0;
+	for (i=0; i<5; i++)
+		cin >> s[i];	
+	for (a[0]=1; a[0]<=5; a[0]++){
+		for (a[1]=1; a[1]<=5; a[1]++){ if (a[1]==a[0]) continue;
+		for (a[2]=1; a[2]<=5; a[2]++){ if (a[2]==a[1]||a[2]==a[0]) continue;
+		for (a[3]=1; a[3]<=5; a[3]++){ if (a[3]==a[2]||a[3]==a[1]||a[3]==a[0]) continue;
+		for (a[4]=1; a[4]<=5; a[4]++)
+		{
+			if (a[4]==a[3]||a[4]==a[2]||a[4]==a[1]||a[4]==a[0])
+				continue;
+			for (i=0; i<5; i++)
+				get_bool(i+1,a[i]);
+			//for (i=0; i<5; i++)
+			//	st[i]= char (i+65);
+		
+			if (get_bool2())
+			{
+				cnt++;
+			/*	for (i=1; i<=5; i++)
+				{
+					for (int j=0; j<5; j++)
+					{
+						if (i==a[j])
+							cout << st[j];
+					}
+				}*/
+				for (i=0; i<5; i++)
+					cout << char(a[i]+64);
+				cout << endl;
+			}
+		}
+		}
+		}
+		}
+	}
+	cout << cnt << endl;
+	return 0;
+}
+			
+

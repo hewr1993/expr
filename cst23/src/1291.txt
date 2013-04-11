@@ -1,0 +1,40 @@
+#include<iostream>
+using namespace std;
+struct rj{int x,y;}a[205];
+double w[40005],mid;
+int n;
+void qsort(int l,int r)
+{
+     int i=l,j=r;
+     mid=w[(l+r)/2];
+     while( i<=j)
+     {
+            while(mid>w[i])i++;
+            while(mid<w[j])j--;
+            if(i<=j)swap(w[i++],w[j--]);
+            }
+     if(i<r)qsort(i,r);
+     if(l<j)qsort(l,j);
+}
+void Init()
+{
+     int i,j,tot=0;
+     cin>>n;
+     for(i=1;i<=n;i++)cin>>a[i].x>>a[i].y;
+     for( i=1;i<=n;i++)
+        for( j=1;j<i;j++)
+        if(a[i].x!=a[j].x)
+        w[++tot]=double((a[i].y-a[j].y))/(a[i].x-a[j].x);
+        else w[++tot]=1e100;
+     n=tot;
+}
+int main()
+{
+    int i,ans=1;
+    Init();
+    qsort(1,n);
+    for( i=2;i<=n;i++)
+    if(w[i]!=w[i-1])ans++;
+    cout<<ans;
+     return 0;
+}

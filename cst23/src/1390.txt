@@ -1,0 +1,22 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+
+using namespace std;
+
+double a, b;
+
+int main()
+{
+    double x, y;
+    while(cin >> x >> y){
+                     a += x - y;
+                     b += x;
+    }
+    int ans = (int)(a * 100 / b);
+    cout<< ans;
+    return 0;
+}
+

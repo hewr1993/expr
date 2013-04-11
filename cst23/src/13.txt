@@ -1,0 +1,60 @@
+#include<iostream>
+#include<string>
+using namespace std;
+const string s[] = {"语文","算术","政治","地理","音乐","美术"};
+const int A = 1,B = 2,C = 3;
+const int Chinese = 0,Math = 1,Politics = 2,Geogrophy = 3,Music = 4,Art = 5;
+int Lesson[4][2];  //每位老师个教哪些课 
+int Teacher[6];		//每门课由哪些老师教 
+bool c1,c2,c3,c4,c5; //逻辑语句  
+int main()
+{
+	memset(Lesson,0,sizeof(Lesson));
+	memset(Teacher,0,sizeof(Teacher));
+	for (Lesson[A][0]=0;Lesson[A][0]<6;Lesson[A][0]++){ // 枚举A教的第一门课 
+		if (Teacher[Lesson[A][0]]!=0) continue ;else//如果这门课没有老师教，则继续枚举
+		Teacher[Lesson[A][0]] = A;
+	for (Lesson[A][1] = 0;Lesson[A][1] < 6;Lesson[A][1] ++){
+		if (Teacher[Lesson[A][1]]!=0)	continue;else
+		Teacher[Lesson[A][1]] = A;
+	for (Lesson[B][0]=0;Lesson[B][0]<6;Lesson[B][0]++){ // 枚举B教的第一门课 
+		if (Teacher[Lesson[B][0]]!=0) continue ;else//如果这门课没有老师教，则继续枚举
+		Teacher[Lesson[B][0]] = B;
+	for (Lesson[B][1] = 0;Lesson[B][1] < 6;Lesson[B][1] ++){
+		if (Teacher[Lesson[B][1]]!=0)	continue;else
+		Teacher[Lesson[B][1]] = B;
+	for (Lesson[C][0]=0;Lesson[C][0]<6;Lesson[C][0]++){ // 枚举B教的第一门课 
+		if (Teacher[Lesson[C][0]]!=0) continue ;else//如果这门课没有老师教，则继续枚举
+		Teacher[Lesson[C][0]] = C;
+	for (Lesson[C][1] = 0;Lesson[C][1] < 6;Lesson[C][1] ++){
+		if (Teacher[Lesson[C][1]]!=0)	continue;else
+		Teacher[Lesson[C][1]] = C;
+	c1 = (Teacher[Politics]!=Teacher[Math]);
+	c2 = (Teacher[B]!=Teacher[Chinese]);
+	c3 = (Teacher[Geogrophy]!=B);
+	c4 = (Teacher[Geogrophy]!=A&&Teacher[Math]!=A);
+	c5 = (Teacher[Music]!=B&&Teacher[Chinese]!=B);
+	if (c1+c2+c3+c4+c5 == 5){
+		for (int i = 1;i <= 3;i ++){
+		cout << s[Lesson[i][0]] << "和" << s[Lesson[i][1]] ;
+		cout << endl;
+		}	
+		break;
+	}
+//	}
+		Teacher[Lesson[C][1]] = 0;
+	}
+		Teacher[Lesson[C][0]] = 0;
+	}
+		Teacher[Lesson[B][1]] = 0;
+	}
+		Teacher[Lesson[B][0]] = 0;
+	}
+		Teacher[Lesson[A][1]] = 0;
+	}
+		Teacher[Lesson[A][0]] = 0;
+	}
+	//system ("pause");
+	return 0;	
+}
+

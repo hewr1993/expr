@@ -1,0 +1,74 @@
+program cjzd(input,output);
+const
+	maxn=50;
+type
+	bignum=array[0 .. 50]of longint;
+var
+	f:array[0 .. 6,0 .. maxn]of bignum;
+	num:array[0 .. maxn,0 .. maxn]of bignum;
+	str:string;
+	n,m,i,j,k:longint;
+function max(a,b:bignum):bignum;
+var
+	i:longint;
+begin
+	if a[0]=0 then exit(b);
+	if a[0]>b[0] then exit(a);
+	if a[0]<b[0] then exit(b);
+	for i:=a[0] downto 1 do
+	if a[i]>b[i] then exit(a)
+	else if b[i]>a[i] then exit(b);
+	exit(a);
+end;
+function mul(a,b:bignum):bignum;
+var
+	i,j:longint;
+begin
+	fillchar(mul,sizeof(mul),0);
+	mul[0]:=a[0]+b[0]-1;
+	for i:=1 to a[0] do
+	for j:=1 to b[0] do
+	mul[i+j-1]:=mul[i+j-1]+a[i]*b[j];
+	for i:=1 to mul[0]-1 do begin
+	mul[i+1]:=mul[i+1]+mul[i] div 10;
+	mul[i]:=mul[i] mod 10;
+	end;
+	while mul[mul[0]]>10 do begin
+	mul[mul[0]+1]:=mul[mul[0]] div 10;
+	mul[mul[0]]:=mul[mul[0]] mod 10;
+	inc(mul[0]);
+	end;
+end;
+procedure print;
+var
+	i:longint;
+begin
+	for i:=f[m,n][0] downto 1 do write(f[m,n][i]);
+end;
+procedure prework;
+var
+	i,j:longint;
+begin
+	for j:=1 to length(str) do
+	for i:=j downto 1 do begin
+	num[i,j]:=num[i+1,j];
+	num[i,j][0]:=num[i,j][0]+1;
+	num[i,j][num[i,j][0]]:=ord(str[i])-ord('0');
+	end;
+	for i:=1 to length(str) do
+	for j:=i to length(str) do
+	while num[i][j][num[i,j][0]]=0 do dec(num[i][j][0]);
+	f[0,0][0]:=1; f[0,0][1]:=1;
+	for i:=1 to n do
+	f[0,i]:=num[1,i];
+end;
+begin
+	readln(n,m);
+	readln(str);
+	prework;
+	for i:=1 to m do
+	for j:=i+1 to n do
+	for k:=i to j-1 do
+	f[i,j]:=max(f[i,j],mul(f[i-1,k],num[k+1,j]));
+	print;
+end.

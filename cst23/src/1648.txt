@@ -1,0 +1,171 @@
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+#define Rep(i,j,k) for(int i=(j); i<=(k); i++)
+#define fi first
+#define se second
+typedef long long LL;
+#define maxn 110000
+
+int n, ans;
+struct T{
+	int x,y,kind;
+} a[maxn];
+LL f[4][maxn];
+int t[4][maxn*4];
+pair<int,int> X[maxn];
+int xtot, pos[maxn], xx[maxn];
+
+LL val(int i, int op){
+	if (i==-1) return (LL)-1e18;
+	if (op==0) return (LL)a[i].x-a[i].y;
+	if (op==1) return (LL)a[i].x+a[i].y;
+	if (op==2) return 2LL*a[i].x-a[i].y;
+	if (op==3) return 2LL*a[i].x+a[i].y;
+	puts("error");
+}
+
+void insfmin(LL *f, int x, LL y){
+	while(x<=xtot)
+		f[x]=min(f[x],y),
+		x+=x&-x;
+}
+
+void insfmax(LL *f, int x, LL y){
+	while(x<=xtot)
+		f[x]=max(f[x],y),
+		x+=x&-x;
+}
+
+LL getfmin(LL *f, int x){
+	LL ret=(LL)1e12;
+	while(x)
+		ret=min(ret,f[x]),
+		x-=x&-x;
+	return ret;
+}
+
+LL getfmax(LL *f, int x){
+	LL ret=(LL)-1e12;
+	while(x)
+		ret=max(ret,f[x]),
+		x-=x&-x;
+	return ret;
+}
+
+void update(int &ret, int x, int op){
+	if (x!=-1)
+	if (ret==-1 || (op&1) && val(x,op)<val(ret,op)
+			 || !(op&1) && val(x,op)>val(ret,op))
+		ret=x;
+}
+
+int query(int *t, int x, int sl, int sr, int ql, int qr, int op){
+	if (qr<xx[sl] || xx[sr]<ql) return -1;
+	if (ql<=xx[sl] && xx[sr]<=qr) return t[x];
+	int smid=(sl+sr)/2, ret=-1;
+	update(ret,query(t,2*x,sl,smid,ql,qr,op),op);
+	update(ret,query(t,2*x+1,smid+1,sr,ql,qr,op),op);
+	return ret;
+}
+
+void ins(int *t, int x, int sl, int sr, int p, int op){
+	if (sl==sr){
+		t[x]=p;
+		return;
+	}
+	int smid=(sl+sr)/2;
+	if (pos[p]<=smid)
+		ins(t,2*x,sl,smid,p,op);
+	else
+		ins(t,2*x+1,smid+1,sr,p,op);
+	t[x]=-1;
+	update(t[x],t[2*x],op);
+	update(t[x],t[2*x+1],op);
+}
+
+void del(int *t, int x, int sl, int sr, int p, int op){
+	if (sl==sr){
+		t[x]=-1;
+		return;
+	}
+	int smid=(sl+sr)/2;
+	if (pos[p]<=smid)
+		del(t,2*x,sl,smid,p,op);
+	else
+		del(t,2*x+1,smid+1,sr,p,op);
+	t[x]=-1;
+	update(t[x],t[2*x],op);
+	update(t[x],t[2*x+1],op);
+}
+
+int main(){
+	
+	cin>>n;
+	Rep(i,1,n){
+		char s[10];
+		scanf("%d%d%s",&a[i].x,&a[i].y,s);
+		X[i]=make_pair(a[i].x,i);
+		if (s[0]=='W') a[i].kind=1; else a[i].kind=2;
+	}
+	
+	sort(X+1,X+n+1);
+	Rep(i,1,n) pos[X[i].se]=i, xx[i]=X[i].fi;
+	xtot=unique(X+1,X+n+1)-X-1;
+	
+	Rep(i,0,maxn-1)
+		f[0][i]=f[2][i]=(LL)1e12,
+		f[1][i]=f[3][i]=(LL)-1e12;
+	
+	Rep(o,0,3)
+		Rep(i,0,maxn*4-1)
+			t[o][i]=-1;
+	
+	ans=0;
+	Rep(i,1,n){
+		int x=lower_bound(X+1,X+xtot+1,make_pair(a[i].x,i))-X;
+		bool ok= val(i,0)>=getfmin(f[0],xtot-x+1) ||
+				 val(i,1)<=getfmax(f[1],x) ||
+				 val(i,2)>=getfmin(f[2],xtot-x+1) ||
+				 val(i,3)<=getfmax(f[3],x);
+		if (!ok){
+			ans++;
+			if (a[i].kind==1){
+				//wide
+				insfmin(f[0],xtot-x+1,val(i,0));
+				insfmax(f[1],x,val(i,1));
+				
+				int p;
+				while( (p=query(t[0],1,1,n,X[1].fi,a[i].x,0)) != -1 && val(p,0)>=val(i,0)){
+					Rep(o,0,3) del(t[o],1,1,n,p,o);
+					ans--;
+				}
+				while( (p=query(t[1],1,1,n,a[i].x,X[xtot].fi,1)) != -1  && val(p,1)<=val(i,1)){
+					Rep(o,0,3) del(t[o],1,1,n,p,o);
+					ans--;
+				}
+			}else{
+				//narrow
+				insfmin(f[2],xtot-x+1,val(i,2));
+				insfmax(f[3],x,val(i,3));
+				
+				int p;
+				while( (p=query(t[2],1,1,n,X[1].fi,a[i].x,2)) != -1  && val(p,2)>=val(i,2)){				
+					Rep(o,0,3) del(t[o],1,1,n,p,o);
+					ans--;
+				}
+				while( (p=query(t[3],1,1,n,a[i].x,X[xtot].fi,3)) != -1  && val(p,3)<=val(i,3)){				
+					Rep(o,0,3) del(t[o],1,1,n,p,o);
+					ans--;
+				}
+			}
+			Rep(o,0,3)
+				ins(t[o],1,1,n,i,o);
+			printf("%d
+",ans);
+		}else puts("FAIL");
+	}
+	
+	return 0;
+}

@@ -1,0 +1,103 @@
+#include<cstdio>
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+const int MaxN=50010;
+
+int N,M;
+vector<int> v[MaxN];
+int used[MaxN];
+int pre[MaxN];
+
+long double k[MaxN],b[MaxN],bs[MaxN],u[MaxN],us[MaxN];
+
+void build(int x)
+{
+	used[x]=1;
+	k[x]=v[x].size();
+	for (vector<int>::iterator it=v[x].begin();it!=v[x].end();++it)
+		if (!used[*it])
+		{
+			build(*it);
+			pre[*it]=x;
+			k[x]-=k[*it];
+		}
+	k[x]=1/k[x];
+}
+
+void init()
+{
+	cin>>N>>M;
+	for (int i=1;i<N;++i)
+	{
+		int x,y;
+		scanf("%d%d",&x,&y);
+		v[x].push_back(y);
+		v[y].push_back(x);
+	}
+	for (int i=1;i<=N;++i)
+		if (v[i].size()==1)
+		{
+			v[i].push_back(0);
+			v[0].push_back(i);
+			break;
+		}
+	for (int i=1;i<=N;++i)
+		if (v[i].size()==1)
+			v[i].push_back(i);
+	build(0);
+}
+
+void add(int x,int c)
+{
+	u[x]+=c;
+	us[pre[x]]+=c;
+	for (;x;x=pre[x])
+	{
+		bs[pre[x]]-=b[x];
+		b[x]=(bs[x]+us[x]-u[x])*k[x];
+		bs[pre[x]]+=b[x];
+	}
+}
+
+long double solve(int x)
+{
+	return (!x)?0:solve(pre[x])*k[x]+b[x];
+}
+
+void work()
+{
+	char s[2];
+	while (M--)
+	{
+		scanf("%s",s);
+		if (s[0]=='C')
+		{
+			int x,y,c;
+			scanf("%d%d%d",&x,&y,&c);
+			if (pre[x]!=y)
+			{
+				swap(x,y);
+				c=-c;
+			}
+			add(x,c);
+		}
+		else
+		{
+			int x;
+			scanf("%d",&x);
+			printf("%.10lf
+",(double)solve(x));
+		}
+	}
+}
+
+int main()
+{
+	init();
+	work();
+	return 0;
+}
+

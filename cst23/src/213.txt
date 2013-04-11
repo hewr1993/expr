@@ -1,0 +1,27 @@
+const
+     z=10000;
+var
+   a:array[0..z+1]of integer;
+   n,j,i,k:longint;
+begin
+     readln(n);
+     a[1]:=1;
+      for i:=1 to n do
+    	begin
+    	     for j:=1 to z do
+               a[j]:=a[j]*i;
+             for k:=1 to z do
+               begin
+                    a[k+1]:=a[k+1]+a[k]div 10;
+                    a[k]:=a[k]mod 10;
+               end;
+        end;
+    i:=z;k:=0;
+    repeat
+         if a[i]<>0 then k:=1;
+         i:=i-1;
+    until k=1;
+    k:=0;
+    for j:=i+1 downto 1 do
+      write(a[j]);
+end.

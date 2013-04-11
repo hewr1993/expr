@@ -1,0 +1,21 @@
+#include <iostream>
+using namespace std;
+
+int main ()
+
+{
+    double a,b;
+        
+    cout.setf(ios::fixed);
+    cout.setf(ios::showpoint);
+    cout.precision(2);
+
+    cin >> a >> b;
+    cout << -b / a << endl;
+    
+    
+    
+    return 0;
+    
+}
+

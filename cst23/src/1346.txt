@@ -1,0 +1,84 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+struct info{
+	long fi,fj,fnum;
+} f[100001],g[100001];
+
+int big(info a,info b){
+	if (a.fi<b.fi) return -1;
+	if (a.fi>b.fi) return 1;
+	if (a.fj<b.fj) return -1;
+	if (a.fj>b.fj) return 1;
+	return 0;
+}
+
+void qsort(info* f,long l,long r){
+	long i=l,j=r;
+	info x=f[(i+j)/2],t;
+	while(i<=j){
+		while(big(f[i],x)<0) i++;
+		while(big(f[j],x)>0) j--;
+		if(i<=j){
+			t=f[i]; f[i]=f[j]; f[j]=t;
+			i++; j--;
+		}
+	}
+	if (i<r) qsort(f,i,r);
+	if (l<j) qsort(f,l,j);
+}
+
+/*void qsort(info* f,int n){
+	int i,j;
+	info t;			
+
+	for (i=0;i<n-1;i++)
+        for (j=0;j<n-1-i;j++)
+          if (big(f[j],f[j+1])>0){
+				t=f[j];
+				f[j]=f[j+1];
+				f[j+1]=t;
+			}
+
+
+}*/
+
+int main(){
+	long p,q,i;
+
+	cin>>p;
+	for (i=0;i<p;i++) cin>>f[i].fi>>f[i].fj>>f[i].fnum;
+	qsort(f,0,p-1);
+
+	cin>>q;
+	for (i=0;i<q;i++) cin>>g[i].fi>>g[i].fj>>g[i].fnum;
+	qsort(g,0,q-1);
+
+	long j=0;
+	i=0;
+
+	while (i<p && j<q){
+		switch(big(f[i],g[j])){
+		case 0:	cout<<f[i].fi<<' '<<
+					  f[i].fj<<' '<<
+					  f[i].fnum+g[j].fnum<<endl;
+				i++;
+				j++;
+				break;
+		case -1:cout<<f[i].fi<<' '<<
+				  	  f[i].fj<<' '<<
+					  f[i].fnum<<endl;
+				 i++;
+				 break;
+		case 1: cout<<g[j].fi<<' '<<
+				  	  g[j].fj<<' '<<
+					  g[j].fnum<<endl;
+				 j++;
+				 break;
+	}}
+	for (;i<p;i++) cout<<f[i].fi<<' '<<f[i].fj<<' '<<f[i].fnum<<endl;
+	for (;j<q;j++) cout<<g[j].fi<<' '<<g[j].fj<<' '<<g[j].fnum<<endl;
+	return 0;
+
+}

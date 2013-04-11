@@ -1,0 +1,24 @@
+# include <iostream>
+using namespace std;
+int main()
+{
+    int x=0,A,B,C,D,sum,k;
+    for (k=1;k<=4;k++)
+    {
+        A=(k==2);
+       B=(k==4);
+        C=(k!=3);
+        D=(k!=4);
+        sum=A+B+C+D;
+        if(sum==1)
+        {
+            cout<<k<<" is the best"<<endl;
+            if (k==4)
+                cout<<"B is right"<<endl;
+            else
+                cout<<"D is right"<<endl;
+        }
+
+ }return 0;
+}
+

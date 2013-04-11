@@ -1,0 +1,37 @@
+#include<iostream> 
+#include<iomanip> 
+#include<cmath> 
+using namespace std; 
+double D(double,double); 
+int main() 
+{ 
+    int hour,minute,second; 
+    double phour,pminute,psecond; 
+    cout<<setfill('0'); 
+    for(hour=0;hour<12;hour++) 
+    {    
+    for(minute=0;minute<60;minute++) 
+    { 
+    for(second=0;second<60;second++) 
+    { 
+        psecond=(double)second; 
+        pminute=minute+psecond/60; 
+        phour=hour*5+pminute/12; 
+        if(D(psecond,pminute)<1&&D(pminute,phour)<1&&D(psecond,phour)<1) 
+        { 
+            cout<<setw(2)<< 
+            hour<<":"<<setw(2)<<minute<<":"<<setw(2)<<second<<endl; 
+        } 
+    } 
+} 
+} 
+cout<<"12:00:00"<<endl; 
+        return 0; 
+} 
+double D(double p,double q) 
+{ 
+    double k=fabs(p-q); 
+    if(k<=30)return k; 
+    else return 60-k; 
+}
+

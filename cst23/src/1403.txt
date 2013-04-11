@@ -1,0 +1,24 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+using namespace std;
+int round(double n)
+{
+    if (n - (double)((int)n) < 0.5)
+        return (int)n;
+    return (int)n + 1;
+}
+int main (int argc, const char * argv[])
+{
+    char a[7];
+    scanf("%s",a);
+    double x = (double)(a[0] - '0') * 0.1 + (double)(a[1] - '0') * 0.01 + (double)(a[3] - '0') * 0.001 + (double)(a[4] - '0') * 0.0001;
+    for (double i = 1;;++i)
+        if (round(round(x * i) / i * 10000) == round(x * 10000))
+        {
+            printf("%d",(int)i);
+            return 0;
+        }
+    return 0;
+}

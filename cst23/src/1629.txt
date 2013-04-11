@@ -1,0 +1,41 @@
+
+#include <cstdio>
+#include <cstring>
+
+
+int	a[105],f[2][105][105];
+int	n,i,j;
+
+
+inline int max(int x,int y)
+{
+	return x>y?x:y;
+}
+
+int main()
+{
+	int	total=0;
+	memset(f,-2,sizeof(f));
+	scanf("%d",&n);
+	for (i=1;i<=n;++i)
+	{
+		scanf("%d",&a[i]);
+		total+=a[i];
+	}
+	if (n%2==1) for (i=1;i<=n;++i) f[0][i][i]=a[i]; else
+	for (i=1;i<=n;++i) f[0][i][i]=0;
+	
+	for (i=1;i<n;++i)
+	for (j=1;j<=n-i;++j)
+	if (i%2==n%2) f[i%2][j][j+i]=max(-f[(i+1)%2][j+1][j+i],-f[(i+1)%2][j][j+i-1]); else
+	f[i%2][j][j+i]=max(-f[(i+1)%2][j+1][j+i]+a[j],-f[(i+1)%2][j][j+i-1]+a[j+i]);
+	
+	
+	if (n%2==1) printf("%d %d
+",f[0][1][n],total-f[0][1][n]); else
+	printf("%d %d
+",f[1][1][n],total-f[1][1][n]);
+	
+	return 0;
+}
+

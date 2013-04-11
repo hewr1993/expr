@@ -1,0 +1,33 @@
+#include <cstdio>
+
+int main(void)
+
+{ 
+printf("Calendar 2006-12
+");     
+printf("--------------------------
+");
+printf("Su  Mo  Tu  We  Th  Fr  Sa
+");
+printf("--------------------------
+");
+printf("                    1   2 
+");
+printf("3   4   5   6   7   8   9 
+");
+printf("10  11  12  13  14  15  16
+");
+printf("17  18  19  20  21  22  23
+");
+printf("24  25  26  27  28  29  30
+");
+printf("31                        
+");
+printf("--------------------------
+");
+
+
+return 0;
+
+} 
+

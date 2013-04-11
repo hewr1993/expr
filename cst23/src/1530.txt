@@ -1,0 +1,89 @@
+#include<iostream>
+using namespace std;
+int a[21][21]={0};
+int b[21]={0};
+int n;
+int sum=0;
+int M1=0;
+int d[21]={0};
+int e[21]={0};
+int c[21];
+void Search(int p,int q)
+{
+        	b[p]=1;
+        	d[q]=p;
+       		for(int i=1;i<=n;i++)
+                {
+                        if(b[i]==0&&(a[p][i-p]==1||a[i][p-i]==1))
+                        {
+                                b[i]=1;
+                                sum=sum+c[i];
+                                Search(i,q+1);
+                                if(sum>M1)
+                                {
+                                        for(int j=1;j<=20;j++)
+                                        {
+                                                e[j]=d[j];
+                                        }               
+                                        M1=sum;
+                                }
+                                sum=sum-c[i];
+                                b[i]=0;        
+                        }
+                }
+                b[p]=0;
+        
+}                                        
+                        
+int main()
+{
+       
+        cin>>n;
+        
+        for(int i=1;i<=n;i++)
+        {
+                cin>>c[i];
+        }
+        for(int i=1;i<=n-1;i++)
+        {
+                for(int j=1;j<=n-i;j++)
+                {
+                        cin>>a[i][j];
+                }
+        }
+        for(int i=1;i<=n;i++)
+        {
+                sum=c[i];
+                Search(i,1);
+        }
+        int flag=0;
+        int t;
+        for(int i=1;i<=n;i++)
+        {
+                if(c[i]>M1)
+                {
+                        M1=c[i];
+                        flag=1;
+                        t=i;
+                }
+        }
+        if(flag==1)
+        {
+                cout<<t<<endl;
+        }
+        else
+        {
+                int z;                        
+        	for(z=1;e[z]!=0;z++)
+        	{};
+        	for(int i=1;i<=z-2;i++)
+        	{
+        	        cout<<e[i]<<"-";
+        	}
+         	cout<<e[z-1]<<endl;        
+	}                
+  
+        cout<<"MAX="<<M1<<endl;                
+
+        return 0;
+}

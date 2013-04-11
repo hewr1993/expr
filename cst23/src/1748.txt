@@ -1,0 +1,209 @@
+const
+	dire:array[1..4,1..2] of shortint =
+		((-1,0),(0,1),(1,0),(0,-1));
+	infns='2.in';
+	outfns='2.out';
+	maxn=30;
+	maxn2=maxn+maxn;
+type
+	floortyp=array[1..maxn2,1..maxn2] of byte;
+var
+	given,floor:floortyp;
+	n,n2,last:byte;
+	//f:text;
+        abc:boolean;
+procedure readin;
+	var
+		//f:text;
+		i,j:byte;
+	begin
+		//assign(f,infns);
+		//reset(f);
+		readln(n);
+		n2:=n+n;
+		last:=n2-1;
+		for i:=1 to n2 do
+			for j:=1 to n2 do
+				read(given[i,j]);
+		//close(f);
+	end;
+
+procedure init;
+	var
+		i,j:byte;
+	begin
+		if n=1 then
+			begin
+				floor[1,1]:=1;
+				floor[2,1]:=2;
+				floor[1,2]:=0;
+				floor[2,2]:=0;
+				exit;
+			end;
+		for j:=1 to last do
+			begin
+				floor[1,j]:=2-byte(odd(j));
+				floor[n2,j]:=2-byte(odd(j));
+			end;
+		floor[n2,last]:=2;
+		for i:=2 to last do
+			fillchar(floor[i],sizeof(floor[i]),1+byte(odd(i)));
+		floor[n2,n2-2]:=1;
+		floor[n2,n2-3]:=2;
+		floor[1,1]:=2;
+		floor[3,n2-2]:=1;
+		for i:=1 to n2-2 do
+			floor[i,n2]:=floor[i+1,n2];
+		floor[last,n2]:=0;
+		floor[n2,n2]:=0;
+	end;
+
+procedure out(var x,y:byte; d,step:byte);
+	var
+		i,tx,ty:byte;
+	begin
+		for i:=1 to step do
+		begin
+			tx:=x+dire[d,1];
+			ty:=y+dire[d,2];
+			given[x,y]:=given[tx,ty];
+			given[tx,ty]:=0;
+			writeln(tx:2,ty:3,x:3,y:3);
+			x:=tx;y:=ty;
+		end;
+	end;
+
+procedure towhere(fromx,fromy,tox,toy:byte);
+	var
+		dx,dy:shortint;
+	begin
+		dx:=1+2*byte(tox>fromx);
+		dy:=2+2*byte(toy<fromy);
+		out(fromx,fromy,dx,abs(tox-fromx));
+		out(fromx,fromy,dy,abs(toy-fromy));
+	end;
+
+procedure left(up,left:byte);
+	var
+		x,y:byte;
+	begin
+		x:=n2;y:=n2;
+		up:=x-up;left:=y-left;
+		out(x,y,1,up);
+		out(x,y,4,left);
+		out(x,y,3,up);
+		out(x,y,2,left);
+	end;
+
+procedure right(up,left:byte);
+	var
+		x,y:byte;
+	begin
+		x:=n2;y:=n2;
+		up:=x-up;left:=y-left;
+		out(x,y,4,left);
+		out(x,y,1,up);
+		out(x,y,2,left);
+		out(x,y,3,up);
+	end;
+
+procedure tiletofloor;
+	var
+		x,y,t,i,j,k:byte;
+		same:byte;
+	begin
+		t:=1;
+		for x:=1 to n2 do
+			for y:= 1 to n2 do
+				if given[x,y]=0 then
+					begin
+						towhere(x,y,t,t);t:=n2;
+					end;
+		for i:=1 to n2-2 do
+			for j:=1 to n2 do
+				begin
+					t:=0;same:=floor[i,j];
+					for k:=i+1 to n2 do
+						if given[k,j]=same then
+							begin
+								t:=k;
+								break;
+							end;
+					if t=0 then
+						begin
+                            abc:=true;
+							for x:=i+1 to n2 do
+                                begin
+									if not abc then break;
+									for y:=1 to n2 do
+										if given[x,y]=same then
+										begin
+											t:=x;
+											abc:=false;
+											break;
+										end;
+								end;
+							if t=n2 then k:=last
+							else k:=t;
+							if y>j
+								then for x:=y-1 downto j do right(k,j)
+								else for x:=y+1 to j do left(k,y);
+						end;
+					if j=n2 then
+					begin
+						for k:=1 to t-(i+1) do right(i+1,j-1);
+					end
+					else for k:=1 to t-(i+1) do left(i+1,j);
+					x:=i;y:=j;
+					out(x,y,3,1);
+					if j<n2 then
+					begin
+						out(x,y,2,1);
+						out(x,y,1,1);
+					end
+					else out(x,y,4,last);
+				end;
+		for j:=1 to last do
+		begin
+			same:=floor[last,j];
+			x:=last;y:=j;
+			if given[n2,j]=same
+				then out(x,y,3,1)
+				else
+				begin
+					k:=j+1;
+					while given[last,k]<>same do
+						left(last,k);
+						out(x,y,2,1);
+						out(x,y,3,1);
+						out(x,y,4,1);
+				end;
+					if j=last then break;
+					same:=floor[n2,j];k:=j+1;
+					while given[x,k]<>same do
+						left(last,k);
+					out(x,y,2,1);
+					out(x,y,1,1);
+		end;
+		x:=n2;
+		out(x,n2,1,1);
+		y:=n2-1;
+		out(n2,y,2,1);
+		out(last,n2,1,n2-2);
+	end;
+
+
+begin
+	readin;
+	init;
+	//assign(f,outfns);
+	//rewrite(f);
+	case n of
+		1:writeln(2);
+		2:writeln(19);
+		else writeln(2*n2*n2-(last)*4);
+	end;
+	tiletofloor;
+	//close(f);
+end.
+

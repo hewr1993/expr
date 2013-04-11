@@ -1,0 +1,41 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+using namespace std;
+
+char in[20],a[5],b[5],m[5];
+
+int main (){
+	cin >> in;
+	
+	int len = strlen (in);
+	int num = 0;
+	int j = 0;
+	
+	for (int i = 0; i < len; i ++){
+		if (in[i] == ','){
+			num ++;
+			j = 0;
+		}
+		else{
+			if (num == 0)
+			    a[j ++] = in[i];
+			if (num == 1)
+			    b[j ++] = in[i];
+            if (num == 2)
+			    m[j ++] = in[i];
+		}
+	}
+	
+	int A = atoi (a),B = atoi (b),M = atoi (m);
+	//cout << a[0] << " " << b[1] << " " << m[1] << endl;
+	//cout << A << " " << B << " " << M << endl;
+	for (int i = 1; i <= M / (A + B); i ++)
+	    for (int j = i; j < M / B; j ++)
+	        if ((A * i + B * j) <= M)
+	            cout << i << "," << j << endl;
+	
+	//system ("pause");
+	return 0;
+}
+

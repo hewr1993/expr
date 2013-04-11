@@ -1,0 +1,38 @@
+#include<iostream>
+#include<cstdlib>
+#include<fstream>
+#include<iomanip>
+using namespace std ;
+
+
+
+
+int main()
+{
+    int n , m;
+    cin >> n >>m ;
+    int x=0,y=0;
+    int rectangle = 0, square = 0;
+   // while ((x>0)&&(y>0)){
+   //       square += x*y;
+   //       x--;
+   //       y--;
+   // }
+   while(true){
+    for(int i = x ; i < n ; i++)
+    for(int j = y ; j < m ; j++){
+            if ( (i-x)!= (j-y) )rectangle +=1;
+            else square += 1;
+            }
+    x+=1;
+    if( x >= n ){
+        y++;
+        x=0;
+        }
+    if( y >= m )break;
+    }
+    cout << square<<" "<<rectangle;
+    system("pause");
+    return 0;
+}
+

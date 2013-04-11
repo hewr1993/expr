@@ -1,0 +1,22 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+string s;
+int main() {
+	cin >> s;
+	int n = s.length();
+	int max = 0;
+	for(int i = 0; i < n; i++){
+		for(int j = i + 1; j < n; j++){
+			if((i + j - 1) % 2 != 0 ) continue;
+			int k = (j - i + 1) / 2;
+			if(s.compare(i,k,s,i+k,k) == 0){
+				if((j - i + 1) > max){
+					max = j - i + 1;
+				}
+			}
+		}
+	}
+	cout << max;
+	return 0;
+}

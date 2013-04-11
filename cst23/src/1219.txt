@@ -1,0 +1,44 @@
+#include<iostream>
+#include<cstring>
+
+using namespace std;
+
+struct carpet
+{
+	int x , y , x1 , y1;
+};
+
+carpet car[10000];
+
+int main()
+{
+	int n , k , a , b , i , j , position;
+	cin >> n;
+	for (i = 0;i < n;i++)
+		cin >> car[i].x >> car[i].y >> car[i].x1 >> car[i].y1;
+	cin >> k;
+	for (i = 0;i < k;i++)
+	{
+		cin >> a >> b;
+		position = -2;
+		for (j = 0;j < n;j++)
+			if ((a >= car[j].x) && (b >= car[j].y) && (a - car[j].x <= car[j].x1) && (b - car[j].y <= car[j].y1))
+				position = j;
+		cout << position + 1 << endl;
+	}
+	
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

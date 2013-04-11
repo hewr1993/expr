@@ -1,0 +1,88 @@
+
+// Program  :  CTSC 2010 galaxy
+
+#include <cstring>
+#include <cstdio>
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+
+using namespace std;
+
+struct node
+  {
+    int data;
+    node *next;
+  } *ge[50000], edge[100000];
+
+int down[50000][2], up[50000][2], h[50000], pre[50000];
+int queue[50000], ans[50000], depth[50000], deg[50000];
+bool v[50000];
+
+void Ins_Edge(int a, int b)
+  {
+    static int top = 0;
+    node *p = &edge[top ++];
+    p->data = b, p->next = ge[a], ge[a] = p;
+  }
+
+int main()
+  {
+    int n, i, a, b, head, tail, now;
+    
+    scanf("%d", &n);
+    for (i = 0; i < n; i ++) scanf("%d", &h[i]);
+    for (i = 0; i < n; i ++) ge[i] = 0;
+    memset(deg, 0, sizeof(deg));
+    for (i = 1; i < n; i ++)
+      {
+        scanf("%d%d", &a, &b), deg[a] ++, deg[b] ++;
+        Ins_Edge(a, b), Ins_Edge(b, a);
+      }
+    for (i = 0; i < n; i ++) h[i] -= deg[i];
+    
+    memset(v, false, sizeof(v));
+    v[0] = true, depth[0] = 0, queue[0] = 0;
+    for (head = 0, tail = 1; head < tail; head ++)
+      for (node *p = ge[queue[head]]; p; p = p->next)
+        if (! v[p->data])
+          {
+            pre[p->data] = queue[head];
+            depth[p->data] = depth[queue[head]] + 1;
+            v[p->data] = true, queue[tail ++] = p->data;
+          }
+    
+    memset(v, false, sizeof(v));
+    for (i = tail - 1; i >= 0; i --)
+      {
+        now = queue[i], v[now] = true;
+        down[now][0] = 0, down[now][1] = h[now];
+        for (node *p = ge[now]; p; p = p->next)
+          if (v[p->data])
+            {
+              down[now][0] += down[p->data][1];
+              down[now][1] += min(down[p->data][0], down[p->data][1]);
+            }
+      }
+    
+    ans[0] = min(down[0][0], down[0][1]);
+    for (i = 1; i < tail; i ++)
+      {
+        now = queue[i];
+        up[now][0] = down[pre[now]][0] - down[now][1];
+        up[now][1] = down[pre[now]][1] - min(down[now][0], down[now][1]);
+        if (pre[now] != 0)
+          {
+            up[now][0] += up[pre[now]][1];
+            up[now][1] += min(up[pre[now]][0], up[pre[now]][1]);
+            up[now][1] ++;
+          }
+        ans[now] = down[now][1] + 1 + min(up[now][0], up[now][1]);
+        ans[now] = min(ans[now], down[now][0] + up[now][1]);
+      }
+    
+    for (i = 0; i < n; i ++)
+      printf("%d
+", ans[i] * 2 - depth[i] + 2 * (n - 1));
+    
+    return 0;
+  }
+

@@ -1,0 +1,67 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <map>
+#include <algorithm>
+using namespace std;
+#define MM(a , x) memset(a , x , sizeof(a))
+#define sqr(x) ((x) * (x))
+#define abs(x) ((x > 0) ? (x) : -(x))
+#define REP(i , n) for ((i) = 0; (i) < (n); ++(i))
+#define FOR(i , a , b) for ((i) = (a); (i) <= (b); ++(i))
+#define FORD(i , a , b) for ((i) = (a); (i) >= (b); --(i))
+typedef long long LL;
+
+const int maxn = 100008;
+
+int n , m , tot , p1 , p2;
+LL ans;
+int data[maxn] , a[maxn];
+
+void init()
+{
+	scanf("%d" , &n);
+	int i;
+	FOR (i , 1 , n) scanf("%d" , &data[i]);
+}
+
+void merge(int l , int r)
+{
+	if (l == r) return;
+	int i , j , k , mid , tp;
+	mid = ((l + r) >> 1);
+	merge(l , mid);
+	merge(mid + 1 , r);
+	p1 = l; p2 = mid + 1; tot = l;
+	while (tot <= r)
+	{
+		if ((data[p1] <= data[p2] || p2 > r) && p1 <= mid)
+		{
+			a[tot++] = data[p1++];
+		}
+		else
+		{
+			a[tot++] = data[p2++];
+			ans += (LL)mid - p1 + 1;
+		}
+	}
+	FOR (i , l , r) data[i] = a[i];
+}
+
+void work()
+{
+	ans = 0;
+	merge(1 , n);
+	cout << ans << endl;
+}
+
+int main()
+{
+	init();
+	work();
+	return 0;
+}
+

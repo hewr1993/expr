@@ -1,0 +1,16 @@
+#include<iostream>
+using namespace std;
+int a[100005];
+int main()
+{
+	int i = 0, s = 0, h, n;
+	while(!cin.eof())
+		cin >> a[++i];
+	h = a[i - 1];
+	n = a[i];
+	for(i = 1; i <= n; i++)
+		if(a[i] <= h)s++;
+	cout << s << endl;
+	return 0;
+}
+

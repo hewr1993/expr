@@ -1,0 +1,165 @@
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+
+#define rep(i,x,y) for(i=x;i<=y;i++)
+#define CL(S,x) memset(S,x,sizeof(S))
+
+typedef unsigned int int32;
+
+const int mod=51061;
+const int MAXN=100010;
+int n,m,i,j,x,y,c;char kind;
+int son[MAXN][2],fa[MAXN],size[MAXN];
+int32 key[MAXN],add[MAXN],mul[MAXN],sum[MAXN];
+bool ro[MAXN],rev[MAXN];
+
+#define up0(x,y) x=((x)+(y))%mod
+#define up1(x,y) x=((x)*(y))%mod
+void padd(int i,int32 c){up0(key[i],c);up0(add[i],c);up0(sum[i],c*(size[i]%mod)%mod);}
+void pmul(int i,int32 c){up1(key[i],c);up1(mul[i],c);up1(sum[i],c);up1(add[i],c);}
+void prev(int i){rev[i]=!rev[i];swap(son[i][0],son[i][1]);}
+void pdown(int i)
+{
+    for(int t=0;t<=1;t++)if(son[i][t])
+    {
+        if(mul[i]!=1)pmul(son[i][t],mul[i]);
+        if(add[i])padd(son[i][t],add[i]);
+        if(rev[i])prev(son[i][t]);
+    }
+    add[i]=0;mul[i]=1;rev[i]=0;
+}
+void updata(int i)
+{
+    sum[i]=(sum[son[i][0]]+sum[son[i][1]]+key[i])%mod;
+    size[i]=size[son[i][0]]+size[son[i][1]]+1;
+}
+void rot(int i,int t)
+{
+    int x=son[i][!t];
+    int y=son[x][t];
+    pdown(i);pdown(x);
+    son[i][!t]=y;
+    son[x][t]=i;
+    if(y)fa[y]=i;
+    if(fa[i])
+        if(son[fa[i]][0]==i)son[fa[i]][0]=x;
+        else if(son[fa[i]][1]==i)son[fa[i]][1]=x;
+    fa[x]=fa[i];
+    fa[i]=x;
+    swap(ro[i],ro[x]);
+    updata(i);
+}
+
+void spl(int x)
+{
+    int y,z;
+    pdown(x);
+    while(!ro[x])
+    {
+        y=fa[x];z=fa[y];
+        pdown(z);pdown(y);
+        if(ro[y])
+            if(son[y][0]==x)rot(y,1);else rot(y,0);
+        else
+            if(son[z][0]==y)
+                if(son[y][0]==x)rot(z,1),rot(y,1);
+                else rot(y,0),rot(z,1);
+            else
+                if(son[y][0]==x)rot(y,1),rot(z,0);
+                else rot(z,0),rot(y,0);
+    }
+    updata(x);
+}
+
+void access(int x)
+{
+    int i;
+    for(i=0;x;i=x,x=fa[x])
+    {
+       spl(x);
+       if(son[x][1])ro[son[x][1]]=1;
+       son[x][1]=i;if(i)fa[i]=x,ro[i]=0;
+       updata(x);
+    }
+}
+void makeroot(int x)
+{
+    access(x);
+    spl(x);
+    prev(x);
+}
+void addedge(int x,int y)
+{
+    makeroot(x);
+    fa[x]=y;
+}
+void deledge(int x,int y)
+{
+    makeroot(x);
+    access(y);
+    spl(x);
+    son[x][1]=0;updata(x);
+    fa[y]=0;ro[y]=1;
+}
+void findpath(int x,int y,int kind)
+{
+    makeroot(x);
+    access(y);
+    spl(y);
+    if(kind==0)printf("%u
+",sum[y]);
+    else if(kind==1)padd(y,c);
+    else pmul(y,c);
+}
+
+int edge,e[MAXN*2],b[MAXN*2],first[MAXN],last[MAXN],q[MAXN];
+void clear(){CL(first,-1);CL(b,-1);}
+void add0(int x,int y){e[edge]=y;if(first[x]==-1)first[x]=edge;else b[last[x]]=edge;last[x]=edge++;}
+void prepare()
+{
+    int i,j,k;
+    q[1]=1;
+    for(i=j=1;i<=j;i++)
+    for(k=first[q[i]];k>=0;k=b[k])if(e[k]!=fa[q[i]])
+    {fa[e[k]]=q[i];q[++j]=e[k];}
+    rep(i,1,n)sum[i]=key[i]=1,ro[i]=1,mul[i]=1;
+}
+char getc(){char x;for(x=getchar();x<=32;x=getchar());return x;}
+int getint(){char x;int ans=getc()-'0';for(x=getchar();x>32;x=getchar())ans=ans*10+x-'0';return ans;} 
+int main()
+{
+    n=getint();m=getint();
+    clear();rep(i,1,n-1)x=getint(),y=getint(),add0(x,y),add0(y,x);
+    prepare();
+    
+    for(;m;m--)
+    {
+        kind=getc();x=getint();y=getint();
+        switch(kind)
+        {
+            case '+':
+                c=getint();
+                findpath(x,y,1);
+                break;
+            case '-':
+                deledge(x,y);
+                x=getint();y=getint();
+                addedge(x,y);
+                break;
+            case '*':
+                c=getint();
+                findpath(x,y,2);
+                break;
+            case '/':
+                findpath(x,y,0);
+                break;
+        }
+    }
+    
+    scanf("
+");
+    return 0;
+}
+

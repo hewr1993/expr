@@ -1,0 +1,85 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <utility>
+using namespace std;
+
+int n, m, **s;
+
+const int DIRECTION_X[] = { 1, 0, -1, 0 };
+const int DIRECTION_Y[] = { 0, 1, 0, -1 };
+
+typedef pair<short, short> pos_t;
+typedef pair<int, pos_t> height_pos_t;
+
+struct height_pos_comparator {
+  bool operator () (const height_pos_t &a, const height_pos_t &b) {
+    return a.first > b.first;
+  }
+};
+
+height_pos_comparator op;
+priority_queue<height_pos_t, vector<height_pos_t>, height_pos_comparator> q(op);
+
+void add_cell(int x, int y) {
+  q.push(height_pos_t(s[x][y], pos_t(x, y)));
+  s[x][y] = -1;
+}
+
+int expand(int height, int x, int y) {
+  int result = 0;
+  for (int i = 0; i < 4; i++) {
+    int nx = x + DIRECTION_X[i];
+    int ny = y + DIRECTION_Y[i];
+    if (nx >= 0 && nx < n && ny >= 0 && ny < m) {
+      int v = s[nx][ny];
+      if (v >= 0) {
+        if (v <= height) {
+          result += height - v;
+          s[nx][ny] = -1;
+          result += expand(height, nx, ny);
+        } else {
+          add_cell(nx, ny);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+int solve() {
+  for (int i = 0; i < n; i++) {
+    add_cell(i, 0);
+    add_cell(i, m - 1);
+  }
+  for (int i = 1; i < m - 1; i++) {
+    add_cell(0, i);
+    add_cell(n - 1, i);
+  }
+
+  int result = 0;
+  while (!q.empty()) {
+    height_pos_t v = q.top();
+    q.pop();
+    result += expand(v.first, v.second.first, v.second.second);
+  }
+  return result;
+}
+
+int main() {
+  cin >> n >> m;
+  s = new int * [n];
+  for (int i = 0; i < n; i++) {
+    s[i] = new int [m];
+    for (int j = 0; j < m; j++)
+      cin >> s[i][j];
+  }
+
+  cout << solve() << endl;
+
+  for (int i = 0; i < n; i++)
+    delete[] s[i];
+  delete[] s;
+
+}
+

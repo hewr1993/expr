@@ -1,0 +1,67 @@
+#include<stdio.h>
+#include<math.h>
+int move[100][100000]={};//move[step][status];//status是一个 M进制, time位 的状态存储量； 
+int time,map[100][20],M,N;//横 M <20，竖 N<100，M<N，规模：M+N<=100,time<=10,((2M)^time)*(M+N)<=10000000;
+int trial;//trial=2^time; //trial是一个 2进制，time位 的增量存储变量 ； 
+int fp(int step,int status)
+{
+    if(move[step][status]!=0)return move[step][status];//曾经已经求出过此状态的值 ； 
+    int temp=0,max;//temp:此状态下,覆盖的值!   max:从此开始(包括此状态)一直到终止状态的最大值,赋temp为初值!;
+    int flag[100][20]={};//一个位置的值是否被取过了;
+    int rem=status,i;
+    int list[10];
+    for(i=0;i<time;i++)//计算:temp; 
+    {
+        int x=rem%M,y=step-x;   //翻译 ； 
+        list[i]=x;
+        if(flag[y][x]==0)  //之前这个地方没有被取过 
+        {
+            temp+=map[y][x];
+            flag[y][x]=1;  
+        }
+        rem/=M;  
+    } //for 
+    max=temp;
+    for(i=0;i<trial;i++)//枚举下一层搜索中所有单位的 (0--1)横向增量状态:i;
+    {
+        //计算新编码; 
+        int flag2=0;//flag==0则新编码合法,flag==1则新编码越界; 
+        int p=i,j;
+        int new_stitus=0;//新状态编码; 
+        for(j=0;j<time;j++)//对于增量编码 p(from:i),计算新的状态编码 ； 
+        {
+            int increase=p%2;  
+            if( (increase==0?(step-list[time-j-1]+1):(list[time-j-1]+1))>=(increase==0?N:M) )//是否越界？ 
+            {//如果越界 ； 
+                flag2=1;//标志越界 ； 
+                break;
+            }
+            //转录 ； 
+            new_stitus*=M;           
+            new_stitus+=list[time-j-1]+increase;
+            p=p/2;
+        }//for
+        if(flag2==0&&max<temp+fp(step+1,new_stitus))//不越界
+        {
+            max=temp+fp(step+1,new_stitus);//更新 max 的值（同时进行状态的转移） 
+        }
+    }//for
+    move[step][status]=max;//存储此状态的结果 ； 
+    return max;
+}
+int main(void)
+{
+    int i,j;    
+    scanf("%d%d%d",&time,&M,&N);
+    if(M<time)time=M;
+    //压缩（当M<time时，更快的方法是直接输出map上所有数的简单相加和，
+    //由于数据规模比2S运算量小一个数量级，故这样也可以得满分）； 
+    for(i=0;i<N;i++)
+       for(j=0;j<M;j++)
+            scanf("%d",&map[i][j]);
+    trial=(int)pow(2,time);//0---(trail-1)即所有的0--1状态 ;
+    printf("%d",fp(0,0));
+    return 0;
+} 
+
+

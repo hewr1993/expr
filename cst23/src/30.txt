@@ -1,0 +1,33 @@
+#include<iostream>
+using namespace std;
+int ans[6];
+int product(int n)
+{
+    if(n<10)
+        return n;
+    else
+    {
+        int tmp = n;
+        int k = 0;
+        while(tmp!=0)
+        {
+             ans[k]=tmp%10;
+             tmp=tmp/10;
+             k++;    
+        }
+        int cur = 1;
+        for(int i=0;i<k;i++)
+           if(ans[i]!=0)
+               cur *= ans[i] ;
+        return product(cur);
+     }
+}
+int main()
+{
+    int n; 
+    cin >> n;
+    cout << product(n) << endl;
+    //system("pause");
+    return 0;    
+}
+

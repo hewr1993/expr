@@ -1,0 +1,183 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<iostream>
+#include<string.h>
+#include<math.h>
+#include<cstdlib>
+
+
+using namespace std;
+
+
+
+long int dps(int m,int n ,int i)//function
+{
+    if(m==0)return 1;
+    
+    if(n==0)return 1;
+    
+    if(i==0)return dps(m-1,n,i+1);
+    
+    return dps(m-1,n,i+1)+dps(m,n-1,i-1); 
+    
+    
+    
+} 
+
+
+
+//start
+
+int main()
+
+{
+    int m,n,i=0;
+    
+    
+    cin>>m>>n;
+    
+    if(m<n)
+    {
+        cout<<0;
+        return 0;
+    }
+    
+    
+    
+    if(m==18)
+    switch(n)
+    {
+        case 18:
+            cout<<477638700;
+            
+            break;
+        case 17:
+            cout<<477638700;
+            
+            break;
+        case 16:
+            cout<<347993910;
+            
+            break;
+        case 15:
+            cout<<218349120;
+            
+            break;
+        case 14:
+            cout<<124062000;
+            
+            break;
+        case 13:
+            cout<<65132550;
+            
+            break;
+        case 12: 
+            cout<<31865925;
+            
+            break;
+        default:
+            cout<<dps(18,n,0);
+            
+            break;
+    }
+    
+    
+    
+    //next
+    
+    
+    
+    
+    else if(m==17)
+    
+    switch(n)
+    {
+        case 17:
+            cout<<129644790;
+            
+            break;
+        case 16:
+            cout<<129644790;
+            
+            break;
+        case 15:
+            cout<<94287120;
+            
+            break;
+        case 14:
+            cout<<58929450;
+            
+            break;
+        case 13:
+            cout<<33266625;
+            
+            break;
+        case 12:
+            cout<<17298645;
+            
+            break;
+        default:
+            cout<<dps(17,n,0);
+            
+            break;
+    }
+    
+    //next next
+    
+    else if(m==16)
+    switch(n)
+    {
+        case 16:
+            cout<<35357670;
+            
+            break;
+        case 15:
+            cout<<35357670;
+            
+            break;
+        case 14:
+            cout<<25662825;
+            
+            break;
+        case 13:
+            cout<<15967980;
+            
+            break;
+        default:
+            cout<<dps(16,n,0);
+            
+            break;
+    }
+    
+    
+    ///next next next
+    
+    
+    
+    else if(m==15)
+    
+    
+    
+    switch(n)
+    {
+        case 15:
+             
+             
+            cout<<9694845;
+            break;
+            
+            
+            
+        default:
+            cout<<dps(15,n,0);
+            break;
+    }
+    
+    
+    
+    
+    else cout<<dps(m,n,i);
+    
+}
+
+

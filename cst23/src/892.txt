@@ -1,0 +1,62 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+
+using namespace std;
+int n;
+int a[10000];
+int r;
+int ans;
+int num;
+
+int calc(int t)
+{
+	int ret=0;
+	if(t<=1000)
+		ret+=t*100;
+	else if(t<=2000)
+		ret=1000*100+(t-1000)*90;
+	else
+		ret=1000*100+1000*90+(t-2000)*80;
+	return ret;
+}
+
+
+int sort(int *a,int n)
+{
+	int t=0;
+	for(int i=0;i<n;i++)
+	{
+		if(a[i]>a[num])
+			t++;
+	}
+	return t+1;
+}
+ 
+int main()
+{
+	int s;
+	char c;
+	
+	cin>>n;
+	for(int i=0;i<n-1;i++)
+		cin>>a[i]>>c;
+	cin>>a[n-1];
+	cin>>num;
+	s=sort(a,n);
+	if(s>10)
+	{
+		cout<<s<<endl;
+		cout<<"Sorry,No Rabbit"<<endl;
+	}
+	else
+	{
+		cin>>r;
+		cout<<s<<endl;
+		ans=calc(r);
+		cout<<ans<<endl;
+		cout<<"Save $"<<ans<<" Success"<<endl;
+	}
+	return 0;
+}

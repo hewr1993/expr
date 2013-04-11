@@ -1,0 +1,34 @@
+#include<iostream>
+using namespace std;
+int n,i;
+char ans[9];
+int cal(int a,int b,char c,int x)
+{
+    int t1=a+b,t2=a-b;
+    if(x==1)if(c=='+')return t1;else return t2;
+    else if(c=='+')return t2;else return t1;
+}
+void dfs(int dep,int t,bool pre)
+{
+     if(dep==n)
+     {if(t==0)
+      {for(i=1;i<n;i++)cout<<i<<ans[i];
+       cout<<n<<endl;}return;}
+     if(!pre){
+     ans[dep]=' ';
+     dfs(dep+1,cal(cal(t,dep,ans[dep-1],0),dep*11+1,ans[dep-1],1),true);
+     }
+     ans[dep]='+';
+     dfs(dep+1,t+dep+1,false);
+     ans[dep]='-';
+     dfs(dep+1,t-dep-1,false);
+     
+}
+int main()
+{
+    cin>>n;
+    ans[0]='+';
+    dfs(1,1,0);
+     return 0;
+}
+

@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int column;
+    scanf("%d", &column);
+    
+    int a[column], b[column];
+    int i;
+    int sum=0;
+    for(i=0;i<column;i++)
+    {
+                         scanf("%d", &a[i]);
+    }
+    for(i=0;i<column;i++)
+    {
+                         scanf("%d", &b[i]);
+    }
+    for(i=0;i<column;i++)
+    {
+                        sum = sum + a[i] * b[i];
+    }
+
+    printf("%d", sum);
+    //system("pause");
+    return 0;
+}

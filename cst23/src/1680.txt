@@ -1,0 +1,9 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+ cout<<"3a5b3+2a2b2+ab3+b+6"<<endl<<"((3,0,0,0,),0,0,(2,0,0,),(1,0,0,0,),(1,6,))"<<endl;
+
+ return 0;
+}

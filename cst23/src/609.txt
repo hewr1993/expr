@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <memory.h>
+
+int judge_fday(int fday[], int year, int month, int leap);
+int judge_leap(int year);
+int get_amount(int firstday, int leap, int month, int amount);
+void print(int year, int month, int firstday, int leap, int amount);
+
+int main()
+{
+	int year, month, firstday, leap, amount;
+	scanf("%d %d", &year, &month);
+	int fday[12] = { 1, 4, 4, 7, 2, 5, 7, 3, 6, 1, 4, 6 };
+
+	leap = judge_leap(year);
+	firstday = judge_fday(fday, year, month, leap);
+
+	if (firstday == 7)
+		firstday = 0;
+
+	amount = get_amount(firstday, leap, month, amount);
+	print(year, month, firstday, leap, amount);
+
+	return 0;
+}
+
+int judge_leap(int year)
+{
+	int res = 0;
+	if (year % 4 == 0)
+		if (year % 100 != 0)
+			res = 1;
+		else if (year % 400 == 0)
+			res = 1;
+
+	return res;
+}
+
+int judge_fday(int fday[], int year, int month, int leap)
+{
+	int gap = year - 2007;
+	gap = gap + (gap + 3) / 4 - (gap + 7) / 100 + (gap + 7) / 400;
+	if ((leap == 1) && (month <= 2))
+		gap = gap - 1;
+
+	return (fday[month - 1] + gap) % 7;
+}
+
+int get_amount(int firstday, int leap, int month, int amount)
+{
+	int i;
+	int thirty[4] = { 4, 6, 9, 11 };
+
+	if ((month == 2) && (leap == 0))
+		amount = 28;
+	else if ((month == 2) && (leap == 1))
+		amount = 29;
+	else
+	{
+		amount = 31;
+		for (i = 0; i < 4; i++)
+			if (month == thirty[i])
+				amount = 30;
+	}
+
+	return amount;
+}
+
+void print(int year, int month, int firstday, int leap, int amount)
+{
+	int i, j;
+
+	if (month < 10)
+		printf("Calendar %d-0%d
+", year, month);
+	else
+		printf("Calendar %d-%d
+", year, month);
+
+	printf("---------------------
+");
+	printf(" Su Mo Tu We Th Fr Sa
+");
+	printf("---------------------
+");
+
+	for (i = 0; i < firstday; i++)
+		printf("   ");
+	for (i = 1; i <= amount; i++)
+	{
+		if (i < 10)
+			printf(" %d ", i);
+		else
+			printf("%d ", i);
+
+		if ((i + firstday) % 7 == 0)
+			printf("
+");
+	}
+	if ((amount + firstday) % 7 != 0)
+		printf("
+---------------------");
+	else
+		printf("---------------------");
+}
+

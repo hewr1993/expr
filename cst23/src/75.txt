@@ -1,0 +1,38 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+struct P{
+    char name[20];
+    int fenshu;
+    int jing;
+    int zong;
+};
+int main()
+{
+    int n;
+    cin>>n;
+    P a[n],m;
+    for(int i=1;i<=n;i++)
+    cin>>a[i-1].name
+    >>a[i-1].fenshu
+    >>a[i-1].jing
+    >>a[i-1].zong;
+    for(int j=1;j<=n-1;j++)
+    for(int i=1;i<=n-j;i++)
+    {
+        if(a[i-1].fenshu<a[i].fenshu||(a[i-1].fenshu==a[i].fenshu&&a[i-1].jing<a[i].jing)||(a[i-1].fenshu==a[i].fenshu&&a[i-1].jing==a[i].jing&&
+        a[i-1].zong<a[i].zong)||(a[i-1].fenshu==a[i].fenshu&&a[i-1].jing==a[i].jing&&
+        a[i-1].zong==a[i].zong&&(strcmp(a[i-1].name,a[i].name)==1)))
+        {
+            
+            m=a[i-1];
+            a[i-1]=a[i];
+            a[i]=m;
+        }
+    }
+    for(int i=1;i<=n;i++)
+    cout<<a[i-1].name<<endl;
+    
+    return 0;
+}
+

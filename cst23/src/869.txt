@@ -1,0 +1,24 @@
+#include<stdio.h>
+int main()
+{
+ int a;
+ float b,w;
+ scanf("%d %f",&a,&b);
+ if(a<=40)
+ {
+  w=a*b;
+  printf("%.2f",w);
+ }
+ else
+  if(a>40  && a<=50)
+  {
+   w=40*b+(a-40)*b*1.5;
+  printf("%.2f",w);
+  }
+  else 
+  { 
+   w=40*b+10*1.5*b+(a-50)*b*2;
+   printf("%.2f",w);
+  }
+ return 0;
+}

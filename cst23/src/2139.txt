@@ -1,0 +1,35 @@
+#include <map>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <cstdlib>
+#include <cstring>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#define PB push_back
+#define FF first
+#define SS second
+#define foreach(i,x) for (__typeof((x).begin()) i=(x).begin();i!=(x).end();i++)
+#define FOR(i,l,r) for (int i=(l);i<=(r);i++)
+#define ROF(i,r,l) for (int i=(r);i>=(l);i--)
+using namespace std;
+
+#define num "9"
+
+int main() {
+  int n;
+  cin>>n;
+  long long s1=0,s2=0,s3=0;
+  FOR(i,1,n) {
+    int a;
+    cin>>a;
+    s1+=a,s2+=a*a,s3+=a*a*a;
+  }
+  cout<<fixed<<setprecision(4)<<(s1*s1*s1-s2*s1*3+s3*2)/(1.*n*(n-1)*(n-2))<<endl;
+  return 0;
+}
+

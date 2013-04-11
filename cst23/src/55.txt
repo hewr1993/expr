@@ -1,0 +1,86 @@
+//******************************************************* 
+//*程序名:绘制图形.cpp                                  *
+//*作者:huanglj                                         *  
+//*编制时间:2012.9.22                                   *
+//*主要功能:绘制图形                                    *
+//******************************************************* 
+#include<iostream>
+#include<fstream> 
+#include<string>
+#include<cmath>
+using namespace std;
+
+int main()
+{
+    int a[33][33]={0};
+    int c[33][33]={0};
+    int n;
+    cin >> n;
+    for (int i=1; i<=n; i++)
+    {
+        for (int j=1; j<=n; j++)
+        {
+            c[i][j]=1;
+        }
+    }
+    int k=0;
+    int i=1, j=1;
+    while ((c[i-1][j]!=0) || (c[i+1][j]!=0) || (c[i][j-1]!=0) || (c[i][j+1]!=0))
+    {
+        if (c[i][j+1]!=0)
+        {
+            while (c[i][j+1]!=0)
+            {
+                k++;
+                a[i][j]=k;
+                c[i][j]=0;
+                j++;
+            }
+        }
+        if (c[i+1][j]!=0)
+        {
+            while (c[i+1][j]!=0)
+            {
+                k++;
+                a[i][j]=k;
+                c[i][j]=0;
+                i++;
+            }
+        }
+        if (c[i][j-1]!=0)
+        {
+            while (c[i][j-1]!=0)
+            {
+                k++;
+                a[i][j]=k;
+                c[i][j]=0;
+                j--;
+            }
+        }
+        if (c[i-1][j]!=0)
+        {
+            while (c[i-1][j]!=0)
+            {
+                k++;
+                a[i][j]=k;
+                c[i][j]=0;
+                i--;
+            }
+        }
+    }
+    for (int i=1; i<=n; i++)
+    {
+        for (int j=1; j<=n; j++)
+        {
+            if (c[i][j]!=0)
+            {
+                k++;
+                a[i][j]=k;
+            }     
+            cout << a[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    return 0;
+}                                
+

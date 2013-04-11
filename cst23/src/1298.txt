@@ -1,0 +1,36 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<math.h>
+#include<time.h>
+using namespace std;
+int comp(const void *a,const void *b)
+{
+    return *(int *)a - *(int *)b;
+}
+
+int main (int argc, const char * argv[])
+{
+    int n,r;
+    scanf("%d%d",&n,&r);
+    int t[500];
+    for (int i = 0;i < n;++i)
+        scanf("%d",&t[i]);
+    int m[75] = {0};
+    int s = 0;
+    qsort(t,n,4,comp);
+    for (int i = 0;i < n;++i)
+    {
+        int p = 0;
+        for (int j = 0;j < r;++j)
+        {
+            if (m[j] < m[p])
+                p = j;
+        }
+        m[p] += t[i];
+        s += m[p];
+    }
+    printf("%d",s);
+    return 0;
+}

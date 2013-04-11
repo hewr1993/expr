@@ -1,0 +1,11 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+    int a,m;
+    cin>>a>>m;
+    long long ans;
+    ans=(a*a)%m;
+    cout<<ans<<endl;
+    }
+

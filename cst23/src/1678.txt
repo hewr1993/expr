@@ -1,0 +1,223 @@
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+#include <vector>
+ 
+using namespace std;
+ 
+struct Edge {
+        int a, b, w;
+} e1[500000], e2[500000];
+ 
+int s[2][300000], rank[2][300000], lead[300000], edge[300000], pp[300000], st[300000];
+int pre[300000], upNo[300000], depth[300000], root[300000], cnt[300000];
+vector<int> ge[300000], no[300000], list[2][300000], bak[300000];
+bool v[300000], check1[500000], check2[500000];
+
+int findSet(int x, int c) {
+        int res = x, bak;
+        while (s[c][res] != res) res = s[c][res];
+        for (int t = x; t != res; t = bak) {
+                bak = s[c][t];
+                s[c][t] = res;
+        }
+        return res;
+}
+ 
+void unionSet(int a, int b, int c) {
+        a = findSet(a, c);
+        b = findSet(b, c);
+        if (rank[c][a] < rank[c][b]) {
+                s[c][a] = b;
+        } else {
+                s[c][b] = a;
+                if (c == 1) lead[a] = lead[b];
+                if (rank[c][a] == rank[c][b]) rank[c][a] ++;
+        }
+}
+ 
+void DFS(int i) {
+     while (i!=-1)
+     {
+        re:
+        if (pp[i]==-1)
+           v[i] = true;
+        else
+           unionSet(i, ge[i][pp[i]], 0);
+        for (pp[i]++; pp[i] < ge[i].size(); pp[i] ++) {
+                if (pre[i]>=0 && no[i][pp[i]] == no[pre[i]][pp[pre[i]]]) continue;
+                if (! v[ge[i][pp[i]]]) {
+                        pre[ge[i][pp[i]]] = i;
+                        upNo[ge[i][pp[i]]] = no[i][pp[i]];
+                        depth[ge[i][pp[i]]] = depth[i] + 1;
+                        i=ge[i][pp[i]];
+                        goto re;
+                } else {
+                        int now = lead[findSet(i, 1)];
+                        while (depth[now] > depth[ge[i][pp[i]]]) {
+                                check1[upNo[now]] = true;
+                                unionSet(now, pre[now], 1);
+                                now = lead[findSet(now, 1)];
+                        }
+                        check1[no[i][pp[i]]] = true;
+                }
+        }
+        i=pre[i];
+   }
+}
+ 
+void cover(int a, int b, double ratio, double &ans) {
+        static bool v[300000] = {false};
+        int now = lead[findSet(a, 1)];
+        while (true) {
+                v[now] = true;
+                if (pre[now] == -1) break;
+                now = lead[findSet(pre[now], 1)];
+        }
+        now = lead[findSet(b, 1)];
+        while (! v[now])
+                now = lead[findSet(pre[now], 1)];
+        int lca = now;
+        now = lead[findSet(a, 1)];
+        while (true) {
+                v[now] = false;
+                if (pre[now] == -1) break;
+                now = lead[findSet(pre[now], 1)];
+        }
+        now = lead[findSet(a, 1)];
+        while (now != lca) {
+                check1[upNo[now]] = true;
+                ans += ratio * e1[upNo[now]].w;
+                unionSet(now, pre[now], 1);
+                now = lead[findSet(now, 1)];
+        }
+        now = lead[findSet(b, 1)];
+        while (now != lca) {
+                check1[upNo[now]] = true;
+                ans += ratio * e1[upNo[now]].w;
+                unionSet(now, pre[now], 1);
+                now = lead[findSet(now, 1)];
+        }
+}
+ 
+int main() {
+        int n, m1, m2;
+        scanf("%d%d%d", &n, &m1, &m2);
+        for (int i = 0; i < m1; i ++) {
+                scanf("%d%d%d", &e1[i].a, &e1[i].b, &e1[i].w);
+                e1[i].a --;
+                e1[i].b --;
+                ge[e1[i].a].push_back(e1[i].b);
+                no[e1[i].a].push_back(i);
+                ge[e1[i].b].push_back(e1[i].a);
+                no[e1[i].b].push_back(i);
+        }
+        for (int i=0;i<n;i++)
+           pp[i] = -1;
+        for (int i = 0; i < m2; i ++) {
+                scanf("%d%d%d", &e2[i].a, &e2[i].b, &e2[i].w);
+                e2[i].a --;
+                e2[i].b --;
+        }
+        
+        memset(v, false, sizeof(v));
+        memset(rank, 0, sizeof(rank));
+        memset(check1, false, sizeof(check1));
+        memset(check2, false, sizeof(check2));
+        for (int i = 0; i < n; i ++)
+                s[0][i] = s[1][i] = lead[i] = i;
+        double ans = 0;
+        for (int i = 0; i < m2; i ++)
+                if (! v[e2[i].a]) {
+                        depth[e2[i].a] = 0;
+                        pre[e2[i].a] = -1;
+                        upNo[e2[i].a] = -1;
+                        DFS(e2[i].a);
+                        root[findSet(e2[i].a, 0)] = i;
+                } else {
+                        int t = findSet(e2[i].a, 0);
+                        cover(e2[i].a, e2[root[t]].a, 0, ans);
+                        check2[root[t]] = check2[i] = true;
+                }
+        
+        for (int i = 0; i < m2; i ++)
+                list[0][findSet(e2[i].a, 0)].push_back(lead[findSet(e2[i].b, 1)]);
+        memset(v, false, sizeof(v));
+        vector<int> valid;
+        for (int i = 0; i < n; i ++) {
+                int now = findSet(i, 0);
+                if (v[now]) continue;
+                v[now] = true;
+                vector<int> &L = list[0][now];
+                sort(L.begin(), L.end());
+                L.erase(unique(L.begin(), L.end()), L.end());
+                if (L.size() > 1) valid.push_back(now);
+                if (L.size() == 1) edge[now] = L[0]; else edge[now] = -1;
+        }
+        
+        double pow = 1;
+        int cur = 1;
+        memset(cnt, 0, sizeof(cnt));
+        while (! valid.empty()) {
+                pow *= 0.9;
+                cur = ! cur;
+                for (int i = 0; i < valid.size(); i ++) {
+                        vector<int> &L = list[cur][valid[i]];
+                        for (int j = 0; j < L.size(); j ++)
+                                bak[i].push_back(findSet(L[j], 0));
+                }
+                for (int i = 0; i < valid.size(); i ++) {
+                        vector<int> &L = list[cur][valid[i]];
+                        for (int j = 1; j < L.size(); j ++) {
+                                int a = findSet(L[j-1], 0);
+                                int b = findSet(L[j], 0);
+                                if (a != b) {
+                                        unionSet(a, b, 0);
+                                        unionSet(e2[root[a]].a, e2[root[b]].a, 1);
+                                        if (! check2[root[a]]) {
+                                                ans += (1 - pow) * 10 * e2[root[a]].w;
+                                                check2[root[a]] = true;
+                                        }
+                                        if (! check2[root[b]]) {
+                                                ans += (1 - pow) * 10 * e2[root[b]].w;
+                                                check2[root[b]] = true;
+                                        }
+                                }
+                                cover(L[j-1], L[j], (1 - pow) * 10, ans);
+                        }
+                }
+                for (int i = 0; i < valid.size(); i ++) {
+                        vector<int> &L = list[cur][valid[i]];
+                        edge[valid[i]] = lead[findSet(L[0], 1)];
+                        cnt[findSet(L[0], 0)] ++;
+                        L.clear();
+                }
+                vector<int> tmp;
+                for (int i = 0; i < valid.size(); i ++) {
+                        int now = findSet(edge[valid[i]], 0);
+                        vector<int> &L1 = bak[i];
+                        vector<int> &L2 = list[! cur][now];
+                        for (int j = 0; j < L1.size(); j ++)
+                                if (edge[L1[j]] != -1) L2.push_back(lead[findSet(edge[L1[j]], 1)]);
+                        L1.clear();
+                        cnt[now] --;
+                        if (cnt[now] == 0) {
+                                sort(L2.begin(), L2.end());
+                                L2.erase(unique(L2.begin(), L2.end()), L2.end());
+                                if (L2.size() > 1) tmp.push_back(now);
+                                if (L2.size() == 1) edge[now] = L2[0];
+                        }
+                }
+                valid = tmp;
+        }
+        
+        for (int i = 0; i < m1; i ++)
+                if (! check1[i]) ans += 10 * e1[i].w;
+        for (int i = 0; i < m2; i ++)
+                if (! check2[i]) ans += 10 * e2[i].w;
+        printf("%.2lf
+", ans);
+        
+        return 0;
+}
+

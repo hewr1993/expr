@@ -1,0 +1,20 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+        int n;
+        int k;
+        double sum=0.0;
+        cin>>k;
+        for(double i=1.0;;i++)
+        {
+                sum=sum+1.0/i;
+                if(sum>k)
+                {
+                        n=i;
+                        break;
+                }
+        }
+        cout<<n<<endl;                              
+        return 0;
+} 

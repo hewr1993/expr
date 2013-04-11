@@ -1,0 +1,70 @@
+#include<iostream>
+#include<string.h>
+using namespace std;
+void jiami(char);
+int main()
+{
+	char z[100];
+	cin >> z;
+	for(int i=0;i<strlen(z);i++)
+	{
+		jiami(z[i]);
+	}
+	return 0;
+}
+
+void jiami(char x)
+{
+	if(x=='A'||x=='a')
+		cout << "* = ";
+	if(x=='B'||x=='b')
+		cout << "= * * * ";
+	if(x=='C'||x=='c')
+		cout << "= * = * ";
+	if(x=='D'||x=='d')
+		cout << "= * * ";
+	if(x=='E'||x=='e')
+		cout << "* ";
+	if(x=='F'||x=='f')
+		cout << "* * = * ";
+	if(x=='G'||x=='g')
+		cout << "= = * ";
+	if(x=='H'||x=='h')
+		cout << "* * * * ";
+	if(x=='I'||x=='i')
+		cout << "* * ";
+	if(x=='J'||x=='j')
+		cout << "* = = = ";
+	if(x=='K'||x=='k')
+		cout << "= * = *";
+	if(x=='L'||x=='l')
+		cout << "* = * * ";
+	if(x=='M'||x=='m')
+		cout << "= = ";
+	if(x=='N'||x=='n')
+		cout << "= * ";
+	if(x=='O'||x=='o')
+		cout << "= = = ";
+	if(x=='P'||x=='p')
+		cout << "* = = * ";
+	if(x=='Q'||x=='q')
+		cout << "= = * = ";
+	if(x=='R'||x=='r')
+		cout << "* = * ";
+	if(x=='S'||x=='s')
+		cout << "* * * ";
+	if(x=='T'||x=='t')
+		cout << "= ";
+	if(x=='U'||x=='u')
+		cout << "* * = ";
+	if(x=='V'||x=='v')
+		cout << "* * * = ";
+	if(x=='W'||x=='w')
+		cout << "* = = ";
+	if(x=='X'||x=='x')
+		cout << "= * * = ";
+	if(x=='Y'||x=='y')
+		cout << "= * = = ";
+	if(x=='Z'||x=='z')
+		cout << "= = * *";
+}

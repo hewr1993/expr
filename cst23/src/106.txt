@@ -1,0 +1,21 @@
+#include<iostream>
+#include<cmath>
+#include<iomanip>
+
+using namespace std;
+
+int main()
+{
+	int n,x1=0,y1=0,z1=0,x2=0,y2=0,z2=0,a,b,c,d,e,f,t,i;
+	cin>>n;
+	for (i=1;i<=n;i++)
+	{
+		cin>>a>>b>>c>>d>>e>>f>>t;
+		x1+=a*t, y1+=b*t, z1+=c*t, x2+=d*t, y2+=e*t, z2+=f*t;
+	}
+	cin>>a>>b>>c>>d>>e>>f;
+	x1+=a, y1+=b, z1+=c, x2+=d, y2+=e, z2+=f;
+	cout<<setiosflags(ios::fixed)<<setprecision(4)
+		<<sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2))<<endl;
+	return 0;
+}

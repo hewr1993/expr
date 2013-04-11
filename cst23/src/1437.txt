@@ -1,0 +1,59 @@
+/* 
+ * tsinsen/1142/1142.cpp
+ *
+ * Copyright (c) 2012  Tung Cheng
+ *
+ */
+
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+const int N_MAX = 100;
+const int dx[] = {2, 1, -1, -2, -2, -1, 1, 2};
+const int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+
+bool block[N_MAX][N_MAX];
+
+int n, m;
+long long int f[N_MAX][N_MAX];
+
+bool check_bound(int x, int y)
+{
+	if (0 <= x && x <= n && 0 <= y && y <= m)
+		return true;
+	else
+		return false;
+}
+
+int main()
+{
+	int X, Y;
+	int i, j;
+
+	cin >> n >> m >> X >> Y;
+	memset(block, 0, sizeof(block));
+	memset(f, 0 ,sizeof(f));
+	block[X][Y] = true;
+	for (i = 0; i < 8; i ++)
+		if (check_bound(X + dx[i], Y + dy[i]))
+			block[X + dx[i]][Y + dy[i]] = true;
+
+	f[0][0] = 1;
+	for (i = 0; i <= n; i ++)
+		for (j = 0; j <= m; j ++) {
+			if (block[i][j])
+				continue;
+			if (check_bound(i - 1, j))
+				f[i][j] += f[i - 1][j];
+			if (check_bound(i, j - 1))
+				f[i][j] += f[i][j - 1];
+		}
+
+	cout << f[n][m] << endl;
+
+	return 0;
+}
+
+

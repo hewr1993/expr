@@ -1,0 +1,48 @@
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <cctype>
+using namespace std;
+string r,p;
+int mark[1000000];
+int main()
+{
+    string w,a;
+    cin >>w;
+    cin.get();
+    getline(cin,a);
+    int l=0;
+    for (int i=0; i<(int)w.size(); i++)
+    {
+        r+=tolower(w[i]);
+        l++;
+    }
+    int q=0,f=0;
+    for (int i=0; i<(int)a.size(); i++)
+    {
+        if (isalpha(a[i])) p+=tolower(a[i]); else if (a[i]==' ') {p+=' '; q++; mark[q]=i;} else p+=a[i];
+        f++;
+    }
+    mark[0]=-1; mark[q+1]=f;
+    int flag,v,count=0,fir;
+    for (int i=0; i<=q; i++)
+    {
+        flag=0;v=0;
+        if (mark[i+1]-mark[i]-1!=l) flag=1;
+        for (int j=mark[i]+1; j<=mark[i+1]-1; j++)
+        {
+            if (r[v]!=p[j]) flag=1;
+            v++;
+        }
+        if (flag==0)
+        {
+            count++;
+            if (count==1) fir=mark[i]+1;
+        }
+    }
+    int fail=-1;
+    if (count==0) printf("%d",fail); else printf("%d %d",count,fir);
+    //system("pause");
+    return 0;
+}

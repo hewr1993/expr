@@ -1,0 +1,21 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+double f(double x){
+	return cos(x)+x;
+}
+
+int main(){
+	int i,m;
+	double h,s;
+	m=2000;
+	h=3/double(m);
+	s=0.5*(f(1)+f(4));
+	for(i=1;i<m;i++){
+		s=s+f(1+i*h);
+	}
+	s=s*h;
+	cout << s << endl;
+	return 0;
+}

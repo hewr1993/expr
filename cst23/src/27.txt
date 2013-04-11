@@ -1,0 +1,72 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int n,w[20],d = 0,x,y,z;
+    for(int i = 14; i < 32; i++)
+    {
+        n = i * i;
+        int a = n / 100;
+        int b = n / 10 % 10;
+        int c = n % 10;
+        if((a != b) && (a != c) && (b != c))
+        {
+            w[d] = n;
+            d++;
+        }    
+    }
+    for(int i = 0;i < d;i++)
+    for(int j = 0;j < d;j++)
+    for(int k = 0;k < d;k++)
+    {
+        int a1,a2,a3,b1,b2,b3,c1,c2,c3;
+        a1 = w[i] / 100;
+        b1 = w[i] / 10 % 10;
+        c1 = w[i] % 10;
+        a2 = w[j] / 100;
+        b2 = w[j] / 10 % 10;
+        c2 = w[j] % 10;
+        a3 = w[k] / 100;
+        b3 = w[k] / 10 % 10;
+        c3 = w[k] % 10;
+        if(( a1 != a2 ) && ( a1 != b2 ) && ( a1 != c2 ) && ( a1 != a3 ) && ( a1 != b3 ) && ( a1 != c3 ))
+        if(( b1 != a2 ) && ( b1 != b2 ) && ( b1 != c2 ) && ( b1 != a3 ) && ( b1 != b3 ) && ( b1 != c3 ))
+        if(( c1 != a2 ) && ( c1 != b2 ) && ( c1 != c2 ) && ( c1 != a3 ) && ( c1 != b3 ) && ( c1 != c3 ))
+        if(( a2 != a3 ) && ( a2 != b3 ) && ( a2 != c3 ))
+        if(( b2 != a3 ) && ( b2 != b3 ) && ( b2 != c3 ))
+        if(( c2 != a3 ) && ( c2 != b3 ) && ( c2 != c3 ))
+        {
+            x=w[i];
+            y=w[j];
+            z=w[k];
+            break;   
+        }    
+    }
+    if(x > y)
+    {
+        int t = x;
+        x = y;
+        y = t;
+    }
+    
+    if(x > z)
+    {
+        int t = x;
+        x = z;
+        z = t;
+    }
+    
+    if(y > z)
+    {
+        int t = z;
+        z = y;
+        y = t;
+    }
+        
+    cout << x << endl;     
+    cout << y << endl;
+    cout << z << endl;
+          
+  
+    return 0;
+}     

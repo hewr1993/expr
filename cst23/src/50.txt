@@ -1,0 +1,38 @@
+//* 程序名：Hex1.cpp
+//* 作者： 2012080060
+//* 日期：09.11.2012
+#include <iostream>
+using namespace std;
+
+char hexchar(int n);
+
+int main()
+{
+	int x, y, z;
+	cin >> x;
+	y = x / 16;
+	z = x % 16;
+	if(y > 9)
+	{
+		cout << hexchar(y);
+	}
+	else
+	{
+		cout << y;
+	}
+	if(z > 9)
+	{
+		cout << hexchar(z) << endl;
+	}
+	else
+	{
+		cout << z << endl;
+	}
+	return 0;
+}
+
+char hexchar(int n)
+{
+	return n + 55;
+}
+

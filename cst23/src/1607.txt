@@ -1,0 +1,44 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#define max 100
+int t_num;
+int base;
+int ans[max];
+int ansp=0;
+int main()
+{
+    scanf("%i %i",&t_num,&base);
+    int pre;
+    int t=t_num;
+    while(t<0||t>=abs(base))
+    {
+        pre=t;
+        if(t<0&&(int)t/base*base!=t)
+        {
+            t=(int)t/base+1;
+            ans[ansp++]=pre-t*base;
+        }
+        else if((t<0&&(int)t/base*base==t)||t>0)
+        {
+            t=(int)t/base;
+            ans[ansp++]=pre-t*base;
+        }
+    } 
+    ans[ansp++]=t;
+    int f;
+    printf("%i=",t_num);
+    for(f=ansp-1;f>=0;f--)
+    {
+        if(ans[f]>9)
+        {
+            printf("%c",ans[f]-10+'A');
+        }
+        else
+        {
+            printf("%i",ans[f]);
+        }
+    }
+    printf("(base%i)",base);
+    return 0;
+}

@@ -1,0 +1,124 @@
+program flight;
+var u,head,next,w,pr:array[0..1000000]of longint;
+    t,c:array[0..200,0..200]of longint;
+    time,aim:array[0..200,1..2]of longint;
+    wei:array[0..200]of longint;
+    que:array[0..2000000]of longint;
+    from:array[0..1000000]of longint;
+    d,f:array[0..1000]of longint;
+    vis:array[0..1000]of boolean;
+    n,m,i,j,k,lim,last:longint;
+    ans,ss,tt:longint;
+    
+procedure init;
+var i,j,k,p:longint;
+begin
+  readln(n,m,lim,last);
+  for i:=1 to n do
+  begin
+    for j:=1 to n do read(t[i,j]);
+    readln;
+  end;
+  for i:=1 to n do
+  begin
+    for j:=1 to n do read(c[i,j]);
+    readln;
+  end;
+  for i:=1 to m do
+  begin
+    readln(aim[i,1],aim[i,2],time[i,1],time[i,2],wei[i]);
+    inc(aim[i,1]);inc(aim[i,2]);
+  end;
+end;
+
+procedure add(x,y,z,p:longint);
+begin
+  inc(u[0]);u[u[0]]:=y;next[u[0]]:=head[x];head[x]:=u[0];w[u[0]]:=z;pr[u[0]]:=p;
+  inc(u[0]);u[u[0]]:=x;next[u[0]]:=head[y];head[y]:=u[0];w[u[0]]:=0;pr[u[0]]:=-p;
+end;
+
+procedure ready;
+var i,j,k,p,s:longint;
+begin
+  u[0]:=1;
+  ss:=0;s:=n+m+2;tt:=m+m+1;
+  for i:=1 to m do
+    for j:=1 to m do
+    if i<>j
+    then if time[i,2]+t[aim[i,2],aim[j,1]]<=time[j,1]
+         then add(i*2,j*2-1,1,c[aim[i,2],aim[j,1]]);
+  add(ss,s,lim,0);
+  for i:=1 to m do
+  begin
+    add(i*2-1,i*2,1,-wei[i]);
+    if t[1,aim[i,1]]<=time[i,1]
+    then add(s,i*2-1,1,c[1,aim[i,1]]);
+    if t[aim[i,2],1]+time[i,2]<=last
+    then add(i*2,tt,1,c[aim[i,2],1]);
+  end;
+  add(s,tt,1000000,0);
+end;
+
+function spfa:boolean;
+var i,j,k,p:longint;
+begin
+  fillchar(vis,sizeof(vis),0);
+  fillchar(d,sizeof(d),63);
+  f[tt]:=0;d[ss]:=0;i:=1;j:=1;que[1]:=ss;
+  while i<=j do
+  begin
+    p:=que[i];k:=head[p];vis[p]:=false;
+    while k>0 do
+    begin
+      if w[k]>0
+      then begin
+           if d[u[k]]>d[p]+pr[k]
+           then begin
+                d[u[k]]:=d[p]+pr[k];
+                from[k]:=f[p];f[u[k]]:=k;
+                if not vis[u[k]]
+                then begin
+                     inc(j);que[j]:=u[k];vis[u[k]]:=true;
+                     end;
+                end;
+           end;
+      k:=next[k];
+    end;
+    inc(i);
+  end;
+  if f[tt]=0 then exit(false) else exit(true);
+end;
+
+procedure aug;
+var flow,k:longint;
+begin
+  k:=f[tt];flow:=10000000;
+  while k>0 do
+  begin
+    if w[k]<flow then flow:=w[k];
+    k:=from[k];
+  end;
+  k:=f[tt];
+  while k>0 do
+  begin
+    dec(w[k],flow);inc(w[k xor 1],flow);
+    inc(ans,flow*pr[k]);
+    k:=from[k];
+  end;
+end;
+
+procedure main;
+var i,j,k,p:longint;
+begin
+  ans:=0;
+  while spfa do aug;
+  writeln(-ans);
+end;
+  
+begin
+init;
+ready;
+main;
+end.
+
+

@@ -1,0 +1,112 @@
+/*
+	Problem: IOI 2005 Gar
+	Author: Amber
+	Method: Scan
+	Complexity: O(Size^3)
+*/
+#include <fstream>
+#include <memory>
+#include <cstring>
+#include <iostream>
+using namespace std;
+
+ifstream fin("gar.in");
+ofstream fout("gar.out");
+
+#define for_each(var, from, to) for (var = from; var <= to; var++)
+#define for_each_down(var, from, to) for (var = from; var >= to; var--)
+
+const int MAX_SIZE = 250;
+const int INFINITE = 0xFFFFFFF;
+
+int L, W, N, K;
+int S[MAX_SIZE + 1][MAX_SIZE + 1];
+int high[MAX_SIZE + 1], low[MAX_SIZE + 1];
+int ans;
+
+inline int getSum(int x1, int y1, int x2, int y2)
+{
+	return S[x2][y2] - S[x1 - 1][y2] - S[x2][y1 - 1] + S[x1 - 1][y1 - 1];
+}
+inline void update(int &a, int b)
+{
+	if (a > b) a = b;
+}
+int main()
+{
+	int i;
+	int x, y, x1, y1, x2, y2;
+	cin >> L >> W >> N >> K;
+	memset(S, 0, sizeof(S));
+	while (N--)
+	{
+		cin >> x >> y;
+		S[x][y]++;
+	}
+	for_each(x, 1, L)
+		for_each(y, 1, W)
+			S[x][y] += S[x - 1][y] + S[x][y - 1] - S[x - 1][y - 1];
+	ans = INFINITE;
+	for_each(i, 1, W)
+		high[i] = low[i] = INFINITE;
+	for_each(y1, 1, W)
+		for_each(y2, y1, W)
+		{
+			x1 = x2 = 1;
+			do
+			{
+				int sum = getSum(x1, y1, x2, y2);
+				if (sum == K)
+				{
+					update(low[y1], x2 - x1 + 1 + y2 - y1 + 1);
+					update(high[y2], x2 - x1 + 1 + y2 - y1 + 1);
+				}
+				if (sum >= K)
+					x1++;
+				else
+					x2++;
+			}
+			while (x2 <= L);
+		}
+	for_each(i, 2, W)
+		update(high[i], high[i - 1]);
+	for_each_down(i, W - 1, 1)
+		update(low[i], low[i + 1]);
+	for_each(i, 2, W)
+		update(ans, low[i] + high[i - 1]);
+
+	for_each(i, 1, L)
+		high[i] = low[i] = INFINITE;
+	for_each(x1, 1, L)
+		for_each(x2, x1, L)
+		{
+			y1 = y2 = 1;
+			do
+			{
+				int sum = getSum(x1, y1, x2, y2);
+				if (sum == K)
+				{
+					update(low[x1], x2 - x1 + 1 + y2 - y1 + 1);
+					update(high[x2], x2 - x1 + 1 + y2 - y1 + 1);
+				}
+				if (sum >= K)
+					y1++;
+				else
+					y2++;
+			}
+			while (y2 <= L);
+		}
+	for_each(i, 2, L)
+		update(high[i], high[i - 1]);
+	for_each_down(i, L - 1, 1)
+		update(low[i], low[i + 1]);
+	for_each(i, 2, L)
+		update(ans, low[i] + high[i - 1]);
+
+	if (ans != INFINITE)
+		cout << ans * 2 << endl;
+	else
+		cout << "NO" << endl;
+	return 0;
+}
+

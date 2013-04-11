@@ -1,0 +1,99 @@
+#include <cstdio>
+#include <cassert>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+
+const int N_MAX = 100010;
+
+struct Point {
+	int x, y;
+	Point(){}
+	Point(int _x, int _y):
+		x(_x), y(_y){}
+} hull[3][N_MAX], p[N_MAX], src;
+
+Point operator+ (const Point &p1, const Point &p2) {
+	return Point(p1.x + p2.x, p1.y + p2.y);
+}
+
+Point operator- (const Point &p1, const Point &p2) {
+	return Point(p1.x - p2.x, p1.y - p2.y);
+}
+
+ll cross(const Point &p1, const Point &p2) {
+	return (ll)p1.x * p2.y - (ll)p1.y * p2.x;
+}
+
+ll dot(const Point &p1, const Point &p2) {
+	return (ll)p1.x * p2.x + (ll)p1.y * p2.y;
+}
+
+int hsize[3];
+
+bool cmp_cross(const Point &p1, const Point &p2) {
+	ll tmp = cross(p1 - src, p2 - src);
+	if ( tmp > 0 || (tmp == 0 && dot(p1 - src, p1 - src) < dot(p2 - src, p2 - src)) )
+		return true;
+	return false;
+}
+
+void graham_scan(int n_pnt, Point *_pnt, Point *hull, int &hull_size) {
+	static Point pnt[N_MAX];
+	memcpy(pnt, _pnt, sizeof(Point) * n_pnt);
+	int lp = -1;
+	for ( int i = 0; i < n_pnt; i ++ )
+		if ( lp == -1 || pnt[i].x < pnt[lp].x || 
+				(pnt[i].x == pnt[lp].x && pnt[i].y < pnt[lp].y) )
+			lp = i;
+	swap(pnt[0], pnt[lp]);
+	src = pnt[0];
+	sort(pnt + 1, pnt + n_pnt, cmp_cross);
+	pnt[n_pnt] = pnt[0];
+	hull_size = 0;
+	for ( int i = 0; i <= n_pnt; i ++ ) {
+		while ( hull_size >= 2 
+				&& cross(pnt[i] - hull[hull_size - 2], 
+					hull[hull_size - 1] - hull[hull_size - 2]) >= 0 )
+			hull_size --;
+		hull[hull_size ++] = pnt[i];
+	}
+}
+
+int main() {
+	//freopen("t.in", "r", stdin);
+	ios::sync_with_stdio(false);
+	int n, m;
+	cin >> n >> m;
+	for ( int i = 0; i < n; i ++ ) 
+		cin >> p[i].x >> p[i].y;
+	graham_scan(n, p, hull[0], hsize[0]);
+	for ( int i = 0; i < m; i ++ )
+		cin >> p[i].x >> p[i].y;
+	graham_scan(m, p, hull[1], hsize[1]);
+
+	int ptr[2];
+	ptr[0] = ptr[1] = 0;	
+	hull[2][hsize[2] ++] = Point(0, 0);
+	hull[0][hsize[0]] = hull[0][1];
+	hull[1][hsize[1]] = hull[1][1];
+
+	while ( ptr[0] != hsize[0] - 1 || ptr[1] != hsize[1] - 1) {
+		Point v0 = hull[0][ptr[0] + 1] - hull[0][ptr[0]],
+			  v1 = hull[1][ptr[1] + 1] - hull[1][ptr[1]];
+		if ( cross(v0, v1) >= 0 ) {
+			hull[2][hsize[2]] = hull[2][hsize[2] - 1] + v0;
+			ptr[0] ++;
+		} else {
+			hull[2][hsize[2]] = hull[2][hsize[2] - 1] + v1;
+			ptr[1] ++;
+		}
+		hsize[2] ++;
+	}
+	ll area = 0;
+	for ( int i = 0; i < hsize[2]; i ++ ) 
+		area += cross(hull[2][i], hull[2][i + 1]);
+	cout << area << endl;
+}

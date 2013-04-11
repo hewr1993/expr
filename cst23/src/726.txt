@@ -1,0 +1,57 @@
+#include<cstdio>
+#include<cstring>
+const int N=105,M=20005;
+int a[N][N],b[N][N],c[N][N];
+int d[M],f[M],son[M],data[M*12],ed[M*12],next[M*12];
+int n,m,S,T,l=1,x,flow,ans=0;
+bool build()
+{
+	memset(d,-1,sizeof(d));
+	int h=0,t=1; f[1]=S; d[S]=0;
+	while (h<t){
+		int i=f[++h];
+		for (int p=son[i];p;p=next[p]){
+			int j=ed[p]; if (!data[p] || d[j]>=0) continue;
+			d[j]=d[i]+1; f[++t]=j; if (j==T) return 1;
+			}
+		}
+	return 0;
+}
+inline int min(int a,int b){return a<b?a:b;}
+int dinic(int i,int low)
+{
+	if (i==T) return low; int w=0,res=0;
+	for (int p=son[i];p && w<low;p=next[p]){
+		int j=ed[p];
+		if (data[p] && d[j]==d[i]+1 && (res=dinic(j,min(data[p],low-w))))
+			data[p]-=res,data[p^1]+=res,w+=res;		
+		}
+	if (!w) d[i]=-1; return w;
+}
+void addedge(int x,int y,int z1,int z2)
+{
+//	printf("%d %d %d %d
+",x,y,z1,z2);
+	ed[++l]=y; data[l]=z1; next[l]=son[x]; son[x]=l;
+	ed[++l]=x; data[l]=z2; next[l]=son[y]; son[y]=l;
+}
+int main()
+{
+	scanf("%d%d",&n,&m); S=100+n*m; T=S+1;
+	for (int i=0;i<n;i++) for (int j=0;j<m;j++) scanf("%d",&a[i][j]),a[i][j]*=2;
+	for (int i=0;i<n;i++) for (int j=0;j<m;j++) scanf("%d",&b[i][j]),b[i][j]*=2;
+	for (int i=1;i<n;i++) for (int j=0;j<m;j++)
+		scanf("%d",&x),a[i-1][j]+=x,a[i][j]+=x,c[i][j]=x;
+	for (int i=1;i<n;i++) for (int j=0;j<m;j++)
+		scanf("%d",&x),b[i-1][j]+=x,b[i][j]+=x,x+=c[i][j],addedge(i*m-m+j,i*m+j,x,x);
+	for (int i=0;i<n;i++) for (int j=1;j<m;j++)
+		scanf("%d",&x),a[i][j-1]+=x,a[i][j]+=x,c[i][j]=x;
+	for (int i=0;i<n;i++) for (int j=1;j<m;j++)
+		scanf("%d",&x),b[i][j-1]+=x,b[i][j]+=x,x+=c[i][j],addedge(i*m+j-1,i*m+j,x,x);
+	for (int i=0;i<n;i++) for (int j=0;j<m;j++)
+		addedge(S,i*m+j,a[i][j],0),addedge(i*m+j,T,b[i][j],0),ans+=a[i][j]+b[i][j];
+	while (build()) while (flow=dinic(S,10000000)) ans-=flow;
+	printf("%d
+",ans/2); return 0;
+}
+

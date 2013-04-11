@@ -1,0 +1,26 @@
+#include<iostream>			//查找整数 
+using namespace std;
+
+int main()
+{
+    int n, x;
+    cin >> n;
+    int a[1001];
+    for (int i=0; i<n; i++)
+		cin >> a[i];
+	cin >> x;
+	int g = 0;
+	
+	for (int i=0; i<n; i++)
+	{
+		if ( a[i] == x )
+		{
+			cout << i+1;
+			g = 1;
+			break;
+		}
+	}
+	if (g == 0)		cout << "-1";
+    return 0;
+}
+

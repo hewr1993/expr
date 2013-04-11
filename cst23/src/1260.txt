@@ -1,0 +1,121 @@
+#include<cstdio>
+#include<cstring>
+const int N_MAX = 20000 + 10, E_MAX = 200000 + 10, A_MAX = E_MAX * 4, INF = (1 << 30) - 1;
+int n, a_cnt, m, graph[N_MAX], cur[N_MAX], dist[N_MAX], L, svtx, tvtx;
+struct Edge
+{
+	int a, b, val;
+} edge[E_MAX];
+struct Arc
+{
+	int vtx, last, flow;
+} arc[A_MAX];
+
+int dinic_dfs(int v0, int flow)
+{
+	if (v0 == tvtx)
+		return flow;
+	int tot = 0, i = cur[v0];
+	for (; i; i = arc[i].last)
+	{
+		int v = arc[i].vtx;
+		if (!arc[i].flow || dist[v] != dist[v0] + 1)
+			continue;
+		int df = dinic_dfs(v, arc[i].flow < flow ? arc[i].flow : flow);
+		flow -= df;
+		arc[i].flow -= df;
+		arc[i ^ 1].flow += df;
+		tot += df;
+		if (!flow)
+			break;
+	}
+	cur[v0] = i;
+	if (flow)
+		dist[v0] = -1;
+	return tot;
+}
+
+bool dinic_bfs()
+{
+	static bool sign[N_MAX];
+	static int que[N_MAX];
+	int head = -1, tail = 0;
+	que[0] = svtx;
+	memset(sign, 0, sizeof(sign));
+	sign[svtx] = 1;
+	memset(dist, 0, sizeof(dist));
+	memcpy(cur, graph, sizeof(graph));
+	while (head != tail)
+	{
+		head ++;
+		int u = que[head];
+		for (int i = graph[u]; i; i = arc[i].last)
+		{
+			int v = arc[i].vtx;
+			if (arc[i].flow && !sign[v])
+			{
+				sign[v] = 1;
+				dist[v] = dist[u] + 1;
+				if (v == tvtx)
+					return 1;
+				que[++ tail] = v;
+			}
+		}
+	}
+	return 0;
+}
+
+int dinic()
+{
+	int ans = 0;
+	while (dinic_bfs())
+		ans += dinic_dfs(svtx, INF);
+	return ans;
+}
+
+void add_arc(int a, int b, int flow)
+{
+	arc[++ a_cnt].flow = flow;
+	arc[a_cnt].last = graph[a];
+	arc[a_cnt].vtx = b;
+	graph[a] = a_cnt;
+}
+
+
+int main()
+{
+	scanf("%d%d", &n, &m);
+	for (int i = 0; i < m; i ++)
+		scanf("%d%d%d", &edge[i].a, &edge[i].b, &edge[i].val);
+	scanf("%d%d%d", &svtx, &tvtx, &L);
+	a_cnt = 1;
+	for (int i = 0; i < m; i ++)
+	{
+		int a = edge[i].a, b = edge[i].b;
+		if (edge[i].val < L)
+		{
+			add_arc(a, b, 1);
+			add_arc(b, a, 0);
+			add_arc(a, b, 0);
+			add_arc(b, a, 1);
+		}
+	}
+	int ans = dinic();
+
+	a_cnt = 1;
+	memset(graph, 0, sizeof(graph));
+	for (int i = 0; i < m; i ++)
+	{
+		int a = edge[i].a, b = edge[i].b;
+		if (edge[i].val > L)
+		{
+			add_arc(a, b, 1);
+			add_arc(b, a, 0);
+			add_arc(a, b, 0);
+			add_arc(b, a, 1);
+		}
+	}
+	ans += dinic();
+	printf("%d
+", ans);
+}

@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void wavelet(char *infile, char *outfile)  // infile, outfile分别是输入输出文件名
+{
+	int n=0,i=0,k=0;
+	int a[1025]={0},s[513]={0},d[513]={0};
+    FILE *in;
+	FILE *out;
+	if((in=fopen(infile,"r"))==NULL)
+		printf("cannot open this file
+");
+	fread(&n,sizeof(int),1,in);
+	fread(&a[1],sizeof(int),n,in);
+	fclose(in);
+	
+	for(k=2;k<=n;k=k*2)
+	{
+		for(i=1;i<=k/2;i++)
+		{
+			s[i]=a[i];
+			d[i]=a[k/2+i];
+		}
+		for(i=1;i<=k;i=i+2)
+		{
+			a[i]=(s[(i+1)/2]+d[(i+1)/2])/2;//iiiii
+		}
+		for(i=2;i<=k;i=i+2)
+		{
+			a[i]=(s[i/2]-d[i/2])/2;//iiiii
+		}
+	}
+	if((out=fopen(outfile,"w"))==NULL)
+		printf("cannot open this file
+");
+	for(i=1;i<=n;i++)
+	fprintf(out,"%d ",a[i]);
+	fclose(out);
+}

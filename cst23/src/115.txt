@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int main(int argc, char *argv[])
+{
+  int n;
+  double T;
+  int t[1001]={0};
+  double l[1001]={0.0};
+  double vt[5]={0.0},vr[5]={0.0};
+  double zt,zr;
+  double ttime,rtime;
+  int i;
+  scanf("%d",&n);
+  scanf("%lf",&T);
+  for(i=1;i<5;i++)
+  {
+     scanf("%lf",&vt[i]);
+  }
+  for(i=1;i<5;i++)
+  {
+     scanf("%lf",&vr[i]);
+  }
+  for(i=1;i<=n;i++)
+  {
+     scanf("%d",&t[i]);
+     scanf("%lf",&l[i]);
+  }
+  zt=0.0,zr=0.0;
+  for(i=1;i<=n;i++)
+  {
+     zt+=l[i]/vt[t[i]];
+     zr+=l[i]/vr[t[i]];
+  }
+  int cnt=0;
+  /*from here symmetric about r and t*/
+  /*the following are about t*/
+  double _time=0.0;
+  for(i=10;i>0;i--)
+  {
+     _time+=T*i/10;
+     if(_time>=zt)
+     {
+        cnt++;
+        break;
+     }
+  }
+  /*bug before this line*/
+  if(cnt!=0)
+  {
+     if(_time==zt)
+     {
+        ttime=T*(11-i);
+     }
+     else
+     {
+        _time-=T*i/10;
+        ttime=T*(10-i)+(zt-_time)*10/i;
+     }
+  }
+  else
+  {
+     ttime=10*(zt-_time+T);
+  }
+  /*the following are about r*/
+  _time=0.0;
+  cnt=0;
+  for(i=10;i>0;i--)
+  {
+     _time+=T*i/10;
+     if(_time>=zr)
+     {
+        cnt++;
+        break;
+     }
+  }
+  if(cnt!=0)
+  {
+     if(_time==zr)
+     {
+        rtime=T*(11-i);
+     }
+     else
+     {
+        _time-=T*i/10;
+        rtime=T*(10-i)+(zr-_time)*10/i;
+     }
+  }
+  else
+  {
+     rtime=10*(zr-_time+T);
+  }
+  if(ttime>rtime)
+  {
+     printf("%c
+%.2lf",'R',rtime);
+  }
+  else if(ttime<rtime)
+  {
+     printf("%c
+%.2lf",'T',ttime);
+  }
+  else
+  {
+     printf("%c
+%.2lf",'D',ttime);
+  }
+  system("PAUSE");	
+  return 0;
+}
+

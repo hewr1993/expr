@@ -1,0 +1,148 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <utility>
+#include <algorithm>
+
+using namespace std;
+
+const int kMaxN = 50000, kMaxM = 100000;
+int n, m, anc[17][kMaxN], dep[kMaxN];
+bool cho[kMaxM];
+int rank[kMaxM];
+int tdep[kMaxN], tanc[kMaxN], tpre[kMaxN];
+pair<int, int> ee[kMaxM];
+
+struct DS {
+	int root[kMaxN];
+	void clear() {
+		for (int i = 0; i < n; ++ i) root[i] = i;
+	}
+	int find_root(int x) {
+		return (root[x] == x ? x : root[x] = find_root(root[x]));
+	}
+	void set_union(int x, int y) {
+		x = find_root(x), y = find_root(y);
+		root[x] = y;
+	}
+} ds, ds2;
+
+struct Edge {
+	int u, v, c, d, x;
+} e[kMaxM];
+
+struct Graph {
+	int cnt, begin[kMaxN], end[kMaxM * 2], next[kMaxM * 2];
+	Graph() : cnt(0) {
+		memset(begin, -1, sizeof(begin));
+	}
+	void add_edge(int u, int v) {
+		next[cnt] = begin[u];
+		begin[u] = cnt;
+		end[cnt ++] = v;
+	}
+} gr;
+
+bool CmpEdge(const Edge &a, const Edge &b) {
+	if (a.c != b.c) return (a.c > b.c);
+	if (a.d != b.d) return (a.d > b.d);
+	return (a.x > b.x);
+}		
+
+bool CmpEdge2(const Edge &a, const Edge &b) {
+	if (a.c != b.c) return (a.c > b.c);
+	return (a.x > b.x);
+}
+
+void Dfs(int u, int p) {
+	anc[0][u] = p;
+	for (int now = gr.begin[u], v; now != -1; now = gr.next[now])
+		if (p != (v = gr.end[now])) {
+			dep[v] = dep[u] + 1;
+			Dfs(v, u);
+		}
+}
+
+int Lca(int u, int v) {
+	if (dep[u] < dep[v]) swap(u, v);
+	int d = dep[u] - dep[v];
+	for (int j = 17; j >= 0; -- j)
+		if (d >> j & 1) u = anc[j][u];
+	for (int j = 17; j >= 0; -- j)
+		if (anc[j][u] != anc[j][v]) u = anc[j][u], v = anc[j][v];
+	if (u != v) u = anc[0][u];
+	return u;
+}
+
+void Cover(int a, int b, int c) {
+	while (true) {
+		a = ds2.find_root(a);
+		if (tdep[a] <= tdep[b]) break;
+		rank[tpre[a]] = c;
+		ds2.root[a] = ds2.find_root(tanc[a]);
+	}
+}
+
+int main() {
+	//freopen("t.in", "r", stdin);
+	scanf("%d%d", &n, &m);
+	for (int i = 0; i < m; ++ i) {
+		scanf("%d%d%d%d", &e[i].u, &e[i].v, &e[i].c, &e[i].d);
+		-- e[i].u, -- e[i].v;
+		e[i].x = i;
+	}
+	sort(e, e + m, CmpEdge);
+	ds.clear();
+	for (int i = 0; i < m; ++ i) {
+		int u = ds.find_root(e[i].u), v = ds.find_root(e[i].v);
+		if (u == v) continue;
+		ds.set_union(u, v);
+		cho[e[i].x] = true;
+		gr.add_edge(e[i].u, e[i].v), gr.add_edge(e[i].v, e[i].u);
+	}
+	Dfs(0, -1);
+	for (int j = 1; j < 17; ++ j)
+		for (int i = 0; i < n; ++ i)
+			if (anc[j - 1][i] != -1) anc[j][i] = anc[j - 1][anc[j - 1][i]];
+			else anc[j][i] = -1;
+	ds.clear();
+	sort(e, e + m, CmpEdge2);
+	for (int i = 0, j = 0; i < m; i = j) {
+		while (j < m && e[j].c == e[i].c) ++ j;
+		for (int k = i; k < j; ++ k) {
+			int u = ds.find_root(e[k].u), v = ds.find_root(e[k].v);
+			tdep[u] = n + 1, tdep[v] = n + 1;
+		}
+		for (int k = i; k < j; ++ k)
+			if (cho[e[k].x]) {
+				int u = e[k].u, v = e[k].v;
+				if (anc[0][u] != v) swap(u, v), swap(e[k].u, e[k].v);
+				u = ds.find_root(u), v = ds.find_root(v);
+				tpre[u] = e[k].x; 
+				tanc[u] = v;
+				tdep[u] = min(tdep[u], dep[e[k].u]);
+				tdep[v] = min(tdep[v], dep[e[k].v]);
+				ds2.root[u] = u;
+				ds2.root[v] = v;
+			}
+		for (int k = i; k < j; ++ k)
+			if (!cho[e[k].x]) {
+				int u = ds.find_root(e[k].u), v = ds.find_root(e[k].v);
+				int p = ds.find_root(Lca(e[k].u, e[k].v));
+				Cover(u, p, e[k].x);
+				Cover(v, p, e[k].x);
+			}
+		for (int k = i; k < j; ++ k)
+			if (cho[e[k].x]) ds.set_union(e[k].u, e[k].v);
+	}
+	for (int i = 0, las = -1; i < m; ++ i)
+		if (!cho[i]) ee[i] = make_pair(i, i), las = i;
+		else ee[i] = make_pair(max(rank[i], las) + 1, i);
+	sort(ee, ee + m);
+	for (int i = 0; i < m; ++ i) {
+		if (i) printf(" ");
+		printf("%d", ee[i].second + 1);
+	}
+	puts("");
+	return 0;
+}

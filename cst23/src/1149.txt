@@ -1,0 +1,23 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+using namespace std;
+int main()
+{
+    int l,n;
+    int a[5001];
+    cin >> l >> n;
+    for (int i=1; i<=n; i++) cin >> a[i];
+    int max = l,min = 0;
+    for (int i=1; i<=n; i++)
+    {
+        if (a[i]-1 <max) max = a[i]-1;
+        if (l-a[i]<max) max = l - a[i];
+        if ((a[i]<=l/2)&&(a[i]>min)) min = a[i];
+        if ((a[i]>l/2)&&(l+1-a[i]>min)) min = l+1 - a[i];
+    }
+    cout << min  << ' ' << l - max ;
+    return 0;
+}
+

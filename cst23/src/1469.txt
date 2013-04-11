@@ -1,0 +1,28 @@
+program sanguo;
+var
+   a:array[1..500,1..500] of longint;
+   a1,a2:array[1..500] of longint;
+   n,i,j,k,l:longint;
+begin
+     readln(n);
+     for i:=1 to n-1 do
+     begin
+         for j:=i+1 to n do
+         begin
+              read(a[i,j]);
+              a[j,i]:=a[i,j];
+         end;
+         readln;
+     end;
+     for i:=1 to n do
+     begin
+          for j:=1 to n do
+              if a[i,j]>a1[i] then a1[i]:=a[i,j];
+          for j:=1 to n do
+              if (a[i,j]>a2[i]) and (a[i,j]<a1[i]) then a2[i]:=a[i,j];
+     end;
+     for i:=1 to n do
+         if a2[i]>l then l:=a2[i];
+     writeln(1);
+     writeln(l);
+end.

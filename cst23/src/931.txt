@@ -1,0 +1,72 @@
+#include<stdio.h>
+#include<string.h>
+int sum[200][200];
+int nu[200][200];
+int cu[200][200];
+int f,v;
+int re(int now,int l){
+	int max,maxt;
+	int i;
+	if(sum[now][l])return sum[now][l];
+	if(now==f-1){
+		max = -99999999;
+		for(i=l;i<v;i++){
+			if(nu[now][i]>max){
+				max = nu[now][i];
+				maxt =i;
+			}
+		}
+		cu[now][l]=maxt;
+		return sum[now][l]=max;	
+	}
+	
+	max = -99999999;
+	for(i=l;i<v;i++){
+		if(nu[now][i]+re(now+1,i+1)>max){
+			 max = nu[now][i] + re(now+1,i+1);
+			 maxt = i;
+		}
+	}
+	cu[now][l]=maxt;
+	return sum[now][l] = max;
+}
+int main()
+{
+	int i,j;
+	int max;
+	int t;
+	while(scanf("%d%d",&f,&v)!=EOF){
+		for(i=0;i<f;i++){
+			for(j=0;j<v;j++)scanf("%d",&nu[i][j]);
+		}	
+		memset(sum,0,sizeof(sum));
+		
+		max = -99999999;
+		for(i=0;i<v;i++){
+			if(re(0,i)>max){
+				max = re(0,i);
+			}
+		}
+		/*
+		for(i=0;i<f;i++)for(j=0;j<v;j++)printf("(%d,%d): %d
+",i,j,re(i,j));
+		*/
+		printf("%d
+",max);
+		t = 0;
+		/*
+		for(i=0;i<f;i++){
+			for(j =0;j<v;j++)printf("cu %d,%d: %d
+",i,j,cu[i][j]);	
+		}*/
+		for(i=0;i<f;i++){
+			if(i)printf(" ");
+			printf("%d",cu[i][t]+1);
+			t = cu[i][t]+1;
+		}
+		printf("
+");
+	}
+	return 0;	
+}
+

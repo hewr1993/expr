@@ -1,0 +1,47 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+using namespace std;
+int inputarray(int *a)
+{
+	char c[10000];
+	cin.getline(c, 9999);
+	int f = 1, t = 0, j = 1, i;
+	for(i = 0; i <= strlen(c); i++)
+		if('0' <= c[i] && c[i] <= '9')
+			t = t * 10 + c[i] - '0';
+		else if(c[i] == '-')
+			f = -1;
+		else
+		{
+			a[j++] = t * f;
+			t = 0;
+			f = 1;
+		}
+	return j - 1;
+}
+int main()
+{
+	int n, i, x[51], y[51];
+	n = inputarray(x);
+	inputarray(y);
+	int maxx = -1000000000, maxy = -1000000000, minx = 1000000000, miny = 1000000000;
+	for(i = 1; i <= n; i++)
+	{
+		if(x[i] > maxx)
+			maxx = x[i];
+		if(y[i] > maxy)
+			maxy = y[i];
+		if(x[i] < minx)
+			minx = x[i];
+		if(y[i] < miny)
+			miny = y[i];
+	}
+	for(i = 1; i <= n; i++)
+		printf("%.0f %.0f
+", double(x[i] - minx) / (maxx - minx) * 1000,
+		                      double(y[i] - miny) / (maxy - miny) * 1000);
+	return EXIT_SUCCESS;
+}
+

@@ -1,0 +1,294 @@
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <set>
+using namespace std;
+long long gcd(long long a,long long b){return b?gcd(b,a%b):a;}
+inline unsigned long long mult_mod(unsigned long long a,long long b,long long m)
+{
+    unsigned long long ans=0;
+    while(b>0)
+    {
+       ans+=a*(b&0xf);
+       a<<=4;
+       ans%=m;
+       a%=m;
+       b>>=4;
+    }
+	return ans;
+}
+inline long long exp_mod(long long a,long long b,long long m)
+{
+    a%=m;
+    long long ans=1;
+    while(b>0)
+    {
+        if(b&1)
+        ans=mult_mod(ans,a,m);
+        a=mult_mod(a,a,m);
+        b>>=1;
+    }
+    return ans;
+}
+inline bool wintess(long long a,int q,long long m,long long n)
+{
+    long long x=exp_mod(a,m,n),y;
+    for(int j=1;j<=q;j++)
+    {
+        y=mult_mod(x,x,n);
+        if(y==1&&x!=1&&x!=(n-1))return 1;
+        x=y;
+    }
+    if(y!=1)return 1;
+    return 0;
+}
+bool miler(long long n,int T)
+{
+    if(n==1)return 0;
+    if(n==2)return 1;
+    if(n%2==0)return 0;
+    long long m=n-1;
+    int q=0;
+    while((m&1)==0)m>>=1,q++;
+    for(int i=1;i<=T;i++)
+    {
+        long long a=rand()%(n-2)+2;
+        if(wintess(a,q,m,n))return 0;
+    }
+    return 1;
+}
+long long rho(long long n)
+{
+    long long x=rand()%n,y=x;
+    int i=1,k=2;
+    long long t;
+    while(1)
+    {
+        i++;
+        x=mult_mod(x,x,n)+1;
+        if(x>=n)x-=n;
+        t=gcd(y-x,n);
+        if(t>1&&t<n)
+        return t;
+        if(x==y)
+        return n;
+        if(i==k)
+        {
+            y=x;
+            k<<=1;
+        }
+    }
+}
+long long SQRT(long long n)
+{
+    long long ans=max(1LL,(long long)sqrt((double)n)-3);
+    while((ans+1)*(ans+1)<=n)ans++;
+    return ans;
+}
+long long SQUFOF(int k,long long n)
+{
+    //if(n%2==0)return 2;
+    int i;
+    n = n * k;
+    static long long temp,sqn,p[10001],q[10001],b[10001];
+    sqn = SQRT(n);
+    p[0] = sqn;
+    q[0] = 1;
+    q[1] = n - p[0]*p[0];
+    if(q[1]==0)return 1;
+    for(i = 1; i < 10000; ++i)
+    {
+        b[i] = (sqn + p[i - 1])/q[i];
+        p[i] = b[i] * q[i] - p[i - 1];
+        q[i + 1] = q[i - 1] + b[i]*(p[i - 1] - p[i]);
+        temp = SQRT(q[i]);
+        if(temp * temp == q[i])
+            break;
+    }
+    if(i==10000)return 1;
+    b[0] = ((sqn - p[i - 1])/temp);
+    p[0] = b[0]*temp + p[i - 1];
+    q[0] = temp;
+    q[1] = (n - (p[0]*p[0]))/q[0];
+    for(i = 1; i < 10000; ++i)
+    {
+        b[i] = (sqn + p[i - 1])/q[i];
+        p[i] = b[i] * q[i] - p[i - 1];
+        q[i + 1] = q[i - 1] + b[i]*(p[i - 1] - p[i]);
+        if(p[i - 1] == p[i])
+            break;
+    }
+    if(i==10000)return 1;
+    return gcd(n/k,p[i]);
+}
+
+set <long long> p;
+
+void fj(long long n)
+{
+    long long te,res = SQRT(n);
+    while(res * res == n && n != 1)
+    {
+        n = res;
+        res = SQRT(n);
+    }
+    if(n==1)return;
+    if(miler(n,10))
+    {
+        p.insert(n);
+        return;
+    }
+    int k=1;
+    while(k<=10&&( (res = SQUFOF(k,n)) == 1 || res == n) ) ++k;
+    while(res==n||res==1||n%res!=0)res=rho(n);
+    fj(res);
+    fj(n/res);
+}
+inline long long exp(long long a,long long b,int m)
+{
+    long long ans=1;
+    while(b>0)
+    {
+        if(b&1)ans=ans*a%m;
+        a=a*a%m;
+        b>>=1;
+    }
+    return ans;
+}
+const int M=1000000007;
+const long long M2=1LL*M*M;
+int sz;
+long long P[100];
+long long INV[100];
+long long num[100];
+long long b[3010];
+long long c[3010][3010];
+long long inv[3010];
+long long a[3010];
+long long dp[20][3010][2];
+int main()
+{
+    for(int i=0;i<3010;i++)
+    {
+        c[i][0]=1;
+        for(int j=1;j<=i;j++)
+        {
+            c[i][j]=c[i-1][j]+c[i-1][j-1];
+            if(c[i][j]>=M)c[i][j]-=M;
+        }
+    }
+    for(int i=0;i<3010;i++)inv[i]=exp_mod(i,M-2,M);
+    b[0]=1;
+    for(int i=1;i<3010;i++)
+    {
+        for(int j=0;j<i;j++)
+        {
+            b[i]+=c[i+1][j]*b[j];
+            if(b[i]>=M2)b[i]-=M2;
+        }
+        b[i]%=M;
+        b[i]=-b[i]*inv[i+1]%M;
+        if(b[i]<0)b[i]+=M;
+    }
+    int T;
+    scanf("%d",&T);
+    long long n;
+    int x,y;
+    while(T--)
+    {
+        scanf("%I64d %d %d",&n,&x,&y);
+        if(n==1)
+        {
+            puts("1");
+            continue;
+        }
+        p.clear();
+        srand(123);
+        fj(n);
+        sz=0;
+        for(set <long long> :: iterator it = p.begin(); it!=p.end();++it)
+        {
+            //printf("%lld
+",*it);
+            P[sz]=*it%M;
+            INV[sz]=exp(P[sz],M-2,M);
+            long long nn=n;
+            long long cao=0;
+            while(nn%*it==0)cao++,nn/=*it;
+            num[sz++]=cao;
+        }
+        int MA=max(x,y+1);
+        MA=max(MA,70);
+        for(int i=0;i<sz;i++)
+        {
+            dp[i][0][0]=1;
+            for(int j=1;j<=MA;j++)
+            dp[i][j][0]=dp[i][j-1][0]*P[i]%M;
+            dp[i][0][1]=1;
+            dp[i][1][1]=dp[i][num[i]][0];
+            for(int j=2;j<=MA;j++)dp[i][j][1]=dp[i][j-1][1]*dp[i][1][1]%M;
+        }
+        for(int i=1;i<=y+1;++i)
+        a[i]=c[y+1][i]*b[y+1-i]%M*inv[y+1]%M;
+        if(y==0)a[0]=-1;
+        else a[0]=0;
+        int ans=0;
+        for(int i=0;i<=y+1;i++)
+        {
+            if(a[i]==0)continue;
+            long long tt=a[i];
+            for(int j=0;j<sz;j++)
+            {
+                long long cnt=0;
+                long long cao,P0;
+                if(i)
+                {
+                    if(i>x)
+                    {
+                        cao=dp[j][i-x][0];
+                        P0=dp[j][x][1]*dp[j][i-x-1][0]%M;
+                        for(int k=1;k<=num[j];k++,P0=P0*cao%M)
+                        {
+                            cnt+=P0;
+                            if(cnt>=M)cnt-=M;
+                        }
+                    }
+                    else
+                    {
+                        cao=dp[j][x-i][0];
+                        P0=dp[j][i-1][1]*dp[j][num[j]-1][0]%M;
+                        for(int k=1;k<=num[j];k++,P0=P0*cao%M)
+                        {
+                            cnt+=P0;
+                            if(cnt>=M)cnt-=M;
+                        }
+                    }
+                    cnt=cnt*(P[j]-dp[j][y-i+1][0])%M;
+                }
+                else
+                {
+                    cao=dp[j][x-i][0];
+                    P0=dp[j][i][1];
+                    for(int k=1;k<=num[j];k++,P0=P0*cao%M)
+                    {
+                        cnt+=P0;
+                        if(cnt>=M)cnt-=M;
+                    }
+                    cnt=cnt*(1-dp[j][y-i][0])%M;
+                }
+                cnt=(cnt+dp[j][x][1])%M;
+                tt=cnt*tt%M;
+            }
+            ans=(ans+tt)%M;
+        }
+        n%=M;
+        ans=ans*exp(n,y,M)%M;
+        ans=(ans+exp(n,x+y,M))%M;
+        if(ans<0)ans+=M;
+        printf("%d
+",ans);
+    }
+}
+

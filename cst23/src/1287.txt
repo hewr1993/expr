@@ -1,0 +1,40 @@
+/*
+Author:rj;
+Problem:flowers
+Language:C++;
+*/
+#include<iostream>
+#include<cstdio>
+using namespace std;
+
+struct cow{int t,v;}a[100005];
+long long sum=0,n,ans={0};
+double c[100005];
+void qsort(int l,int r)
+{
+     int i=l,j=r;
+     double mid=c[(l+r)/2];
+     while( i<=j)
+     {
+            while( c[i]>mid )i++;
+            while( c[j]<mid )j--;
+            if(i<=j){ swap(a[i],a[j]); swap(c[i],c[j]); i++;j--;}
+            }
+     if(i<r)qsort(i,r);
+     if(l<j)qsort(l,j);
+}
+int main()
+{
+    int i;
+    cin>>n;
+    for( i=1;i<=n;i++){ scanf("%d%d",&a[i].t,&a[i].v); c[i]=double(a[i].v)/a[i].t;sum+=a[i].v;}
+    qsort(1,n);
+    for( i=1;i<=n;i++)
+    {
+         sum-=a[i].v;
+        ans+=sum*a[i].t*2;
+         }
+    cout<<ans;
+     return 0;
+}
+

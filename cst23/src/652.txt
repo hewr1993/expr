@@ -1,0 +1,80 @@
+#include<stdio.h>
+#include<math.h>
+int sum(int b[],int t)
+{
+	int i,sum=1;
+	for(i=0;i<=t;i++)
+	{
+		sum=sum*(b[i]+1);
+	}
+	return sum;
+}
+
+int mod(int u,int a[],int n)
+{
+	int b[4000]={0};
+	int i=0,t=0,x=u;
+	while(i<n)
+	{
+		if(x%a[i]==0)
+		{
+			b[t]++;
+			x=(x/a[i]);
+		}
+		else
+		{
+			t++;
+			i++;
+		}
+	}
+	if(x!=1)
+	{
+		b[t]++;
+	}
+	return sum(b,t);
+}
+
+int main()
+{
+	int a[4000];
+	a[0]=2;
+	int t=0,n=1,i;
+	for(i=3;i<32000;i++)
+	{
+		int m=0;
+		for(t=(n-1);t>=0;t--)
+		{
+			if(i%a[t]==0)
+			{
+				m=1;
+			}
+		}
+		if(m!=1)
+		{
+			a[n]=i;
+			n++;
+		}
+	}
+	int b[10001];
+	int d,e;
+	scanf("%d",&d);
+	for(i=0;i<d;i++)
+	{
+		scanf("%d",&b[i]);
+	}
+	for(i=0;i<d;i++)
+	{
+		if(b[i]==1)
+		{
+			printf("1
+");
+		}
+		else
+		{
+			e=mod(b[i],a,n);
+			printf("%d
+",e);
+		}
+	}
+	return 0;
+}

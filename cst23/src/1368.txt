@@ -1,0 +1,30 @@
+#include<iostream>
+using namespace std;
+bool v[10035];
+int sumdigits(int i);
+
+int main()
+{
+    int d;
+    cin>>d;
+    for(int i=1;i<=d;i++)
+    v[sumdigits(i)]=1;
+    for(int i=1;i<=d;i++)
+    {
+        if(v[i]!=1)
+        cout<<i<<endl;
+    }
+    return 0;
+    
+} 
+int sumdigits(int i)
+{
+    int sum=i;
+    while(i>0)
+    {
+        sum+=i%10;
+        i/=10;
+    }
+    
+    return sum;
+}

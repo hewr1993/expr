@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+     int n;
+        n>=5&&n<=200;
+     int m;
+        m>=100&&m<=150;
+     int a[100];
+       scanf("%d %d
+",&n,&m);
+     int x=0;
+     int s;
+     m=m+30;
+     for (s=0;s<n;s++)
+        {
+        scanf("%d",&a[s]);
+            
+            if (a[s]<=m)
+            x++;
+        }
+        printf("%d",x);
+        system ("pause");
+        return 0; 
+} 
+

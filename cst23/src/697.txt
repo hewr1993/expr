@@ -1,0 +1,425 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+//#define DEBUG
+
+namespace get_data {
+	int n, m, l, now, a, b, q, tmp;
+
+	void Init() {
+#ifndef DEBUG
+		scanf("%d%d%d%d%d%d%d", &n, &m, &l, &now, &a, &b, &q);
+#endif
+	}
+
+	void GetN(int &x) {
+#ifndef DEBUG
+		x = n;
+#else
+		scanf("%d", &x);
+#endif
+	}
+
+	void GetV(int &v) {
+#ifndef DEBUG
+		now = (now * a + b) % q;
+		tmp = now % 10000;
+		now = (now * a + b) % q;
+		if (now * 2 < q) tmp *= -1;
+		v = tmp;
+#else
+		scanf("%d", &v);
+#endif
+	}
+
+	void GetE(int &u, int &v, int i) {
+#ifndef DEBUG
+		now = (now * a + b) % q;
+		tmp = (i < l) ? i : l;
+		u = i - now % tmp;
+		v = i + 1;
+#else
+		scanf("%d%d", &u, &v);
+#endif
+	}
+
+	void GetS(int &t, int i) {
+#ifndef DEBUG
+		if (i == m) {
+			t = 2;
+			return;
+		}
+		now = (now * a + b) % q;
+		if (now * 3 < q) {
+			now = (now * a + b) % q;
+			t = 0;
+		}
+		else {
+			now = (now * a + b) % q;
+			tmp = now % 10000;
+			now = (now * a + b) % q;
+			if (now * 2 < q) tmp *= -1;
+			now = (now * a + b) % q;
+			t = 1;
+		}
+#else
+		char cmd[8];
+		scanf("%s", cmd);
+		if (cmd[0] == 'Q') t = 0;
+		else if (cmd[0] == 'C') t = 1;
+		else t = 2;
+#endif
+	}
+
+	void GetQ(int &u) {
+#ifndef DEBUG
+		u = now % n + 1;
+#else
+		scanf("%d", &u);
+#endif
+	}
+
+	void GetC(int &u, int &v) {
+#ifndef DEBUG
+		u = now % n + 1;
+		v = tmp;
+#else
+		scanf("%d%d", &u, &v);
+#endif
+	}
+}
+
+namespace work_a {
+	const int kMaxN = 1000, kMaxM = (kMaxN - 1) << 1;
+	int n, val[kMaxN], dist[kMaxN];
+	bool vis[kMaxN];
+
+	struct Graph {
+		int cnt, begin[kMaxN], end[kMaxM], next[kMaxM];
+		Graph() : cnt(0) {
+			memset(begin, -1, sizeof(begin));
+		}
+		void add_edge(int u, int v) {
+			next[cnt] = begin[u];
+			begin[u] = cnt;
+			end[cnt ++] = v;
+		}
+	} gr;
+
+	void Main() {
+		get_data::GetN(n);
+		for (int i = 0; i < n; ++ i)
+			get_data::GetV(val[i]);
+		for (int u, v, i = 1; i < n; ++ i) {
+			get_data::GetE(u, v, i);
+			-- u, -- v;
+			gr.add_edge(u, v), gr.add_edge(v, u);
+		}
+		int cmd, u, v, cnt = 0;
+		while (true) {
+			++ cnt;
+			get_data::GetS(cmd, cnt);
+			if (cmd == 0) {
+				get_data::GetQ(u);
+				-- u;
+				memset(vis, false, sizeof(vis));
+				vis[u] = true;
+				dist[u] = val[u];
+				int res = dist[u];
+				static int q[kMaxN];
+				int qh = 0, qt = 0;
+				q[qt ++] = u;
+				while (qh < qt) {
+					u = q[qh ++];
+					res = max(res, dist[u]);
+					for (int now = gr.begin[u]; now != -1; now = gr.next[now])
+						if (!vis[v = gr.end[now]]) {
+							vis[v] = true;
+							dist[v] = dist[u] + val[v];
+							q[qt ++] = v;
+						}
+				}
+				printf("%d
+", res);
+			}
+			else if (cmd == 1) {
+				get_data::GetC(u, v);
+				-- u;
+				val[u] = v;
+			}
+			else break;
+		}
+	}
+}
+
+namespace work_b {
+	const int kMaxN = 100000, kInf = 0x3f3f3f3f;
+	int n, val[kMaxN], sum[kMaxN];
+
+	struct Info {
+		int maxv, minv;
+		Info() : maxv(-kInf), minv(kInf) {}
+		Info(int maxv_, int minv_) : maxv(maxv_), minv(minv_) {}
+	} emp;
+
+	struct Mark {
+		int delta;
+		Mark() : delta(0) {}
+		Mark(int delta_) : delta(delta_) {}
+		void clear() {
+			delta = 0;
+		}
+	};
+
+	Info operator + (const Info &a, const Info &b) {
+		return Info(max(a.maxv, b.maxv), min(a.minv, b.minv));
+	}
+
+	Info operator * (const Info &a, const Mark &b) {
+		return Info(a.maxv + b.delta, a.minv + b.delta);
+	}
+
+	Mark operator * (const Mark &a, const Mark &b) {
+		return Mark(a.delta + b.delta);
+	}
+
+	struct Node {
+		Info info;
+		Mark mark;
+		int l, r;
+		Node *son[2];
+		void update() {
+			info = son[0]->info + son[1]->info;
+		}
+	} node_pool[kMaxN * 2 - 1], *node_idx = node_pool, *root = NULL;
+
+	Node *Alloc(int l, int r) {
+		Node *res = node_idx ++;
+		res->l = l, res->r = r;
+		res->son[0] = res->son[1] = NULL;
+		return res;
+	}
+
+	Node *BuildTree(int l, int r) {
+		Node *res = Alloc(l, r);
+		if (l == r) res->info = Info(sum[l], sum[l]);
+		else {
+			int mid = (l + r) >> 1;
+			res->son[0] = BuildTree(l, mid);
+			res->son[1] = BuildTree(mid + 1, r);
+			res->update();
+		}
+		return res;
+	}
+
+	void DoPush(Node *pos, const Mark &mark) {
+		if (pos) {
+			pos->info = pos->info * mark;
+			pos->mark = pos->mark * mark;
+		}
+	}
+
+	void Push(Node *pos) {
+		if (pos) {
+			DoPush(pos->son[0], pos->mark);
+			DoPush(pos->son[1], pos->mark);
+			pos->mark.clear();
+		}
+	}
+
+	void ChangeOnRange(int l, int r, const Mark &mark, Node *pos) {
+		Push(pos);
+		if (l <= pos->l && r >= pos->r) {
+			DoPush(pos, mark);
+			return;
+		}
+		int mid = (pos->l + pos->r) >> 1;
+		if (l <= mid) ChangeOnRange(l, r, mark, pos->son[0]);
+		if (r > mid) ChangeOnRange(l, r, mark, pos->son[1]);
+		pos->update();
+	}
+
+	Info AskOnRange(int l, int r, Node *pos) {
+		Push(pos);
+		if (l <= pos->l && r >= pos->r) return pos->info;
+		int mid = (pos->l + pos->r) >> 1;
+		return (l <= mid ? AskOnRange(l, r, pos->son[0]) : emp) + (r > mid ? AskOnRange(l, r, pos->son[1]) : emp);
+	}
+
+	void Main() {
+		get_data::GetN(n);
+		for (int i = 0; i < n; ++ i)
+			get_data::GetV(val[i]);
+		sum[0] = val[0];
+		for (int i = 1; i < n; ++ i)
+			sum[i] = sum[i - 1] + val[i];
+		root = BuildTree(0, n - 1);
+		for (int u, v, i = 1; i < n; ++ i)
+			get_data::GetE(u, v, i);
+		int cmd, u, v, cnt = 0;
+		while (true) {
+			++ cnt;
+			get_data::GetS(cmd, cnt);
+			if (cmd == 0) {
+				get_data::GetQ(u);
+				-- u;
+				int s = AskOnRange(u, u, root).maxv;
+				int lmin = u == 0 ? 0 : AskOnRange(0, u - 1, root).minv;
+				int res = max(s, s - lmin);
+				s = u == 0 ? 0 : AskOnRange(u - 1, u - 1, root).maxv;
+				int rmax = AskOnRange(u, n - 1, root).maxv;
+				res = max(res, rmax - s);
+				printf("%d
+", res);
+			}
+			else if (cmd == 1) {
+				get_data::GetC(u, v);
+				-- u;
+				ChangeOnRange(u, n - 1, Mark(v - val[u]), root);
+				val[u] = v;
+			}
+			else break;
+		}
+	}
+}
+
+namespace work_c {
+	const int kMaxN = 100000, kMaxM = (kMaxN - 1) << 1, kInf = 0x3f3f3f3f;
+	int n, val[kMaxN], pre[kMaxN];
+
+	struct Graph {
+		int cnt, begin[kMaxN], end[kMaxM], next[kMaxM];
+		Graph() : cnt(0) {
+			memset(begin, -1, sizeof(begin));
+		}
+		void add_edge(int u, int v) {
+			next[cnt] = begin[u];
+			begin[u] = cnt;
+			end[cnt ++] = v;
+		}
+	} gr;
+
+#define NIL Node::nil
+
+	struct Node {
+		int v, fix;
+		Node *son[2], *par;
+		Node() {
+			son[0] = son[1] = par = NIL;
+		}
+		static Node nil_ins, *nil;
+	} node_pool[kMaxN - 1], *node_idx = node_pool;
+
+	Node Node::nil_ins;
+	Node *Node::nil = &nil_ins;
+
+	Node *pos[kMaxN];
+	Node *root[kMaxN];
+
+	Node *Alloc(int v) {
+		Node *res = node_idx ++;
+		res->v = v, res->fix = ((long long)rand() * rand()) % kInf;
+		return res;
+	}
+
+	Node *Merge(Node *x, Node *y) {
+		if (x == NIL || y == NIL)
+			return (x != NIL ? x : y);
+		if (x->v < y->v) return Merge(y, x);
+		if (x->son[0]->fix > x->son[1]->fix) {
+			x->son[0] = Merge(x->son[0], y);
+			x->son[0]->par = x;
+		}
+		else {
+			x->son[1] = Merge(x->son[1], y);
+			x->son[1]->par = x;
+		}
+		return x;
+	}
+
+	void Dfs(int u, int p) {
+		pre[u] = p;
+		for (int now = gr.begin[u], v; now != -1; now = gr.next[now])
+			if (p != (v = gr.end[now])) Dfs(v, u);
+		for (int now = gr.begin[u], v; now != -1; now = gr.next[now])
+			if (p != (v = gr.end[now])) {
+				pos[v] = Alloc(max(val[v], root[v]->v + val[v]));
+				root[u] = Merge(root[u], pos[v]);
+				root[u]->par = NIL;
+			}
+	}
+
+	void Remove(int u) {
+		Node *tmp = Merge(pos[u]->son[0], pos[u]->son[1]);
+		tmp->par = pos[u]->par;
+		if (pos[u]->par == NIL) root[pre[u]] = tmp;
+		else pos[u]->par->son[pos[u]->par->son[1] == pos[u]] = tmp;
+		pos[u]->par = pos[u]->son[0] = pos[u]->son[1] = NIL;
+	}
+	
+	void Renew(int u, int v) {
+		pos[u]->v = v, pos[u]->fix = ((long long)rand() * rand()) % kInf;
+	}
+	
+	void Main() {
+		NIL->v = -kInf, NIL->fix = kInf;
+		get_data::GetN(n);
+		for (int i = 0; i < n; ++ i) {
+			get_data::GetV(val[i]);
+			root[i] = pos[i] = NIL;
+		}
+		for (int u, v, i = 1; i < n; ++ i) {
+			get_data::GetE(u, v, i);
+			-- u, -- v;
+			gr.add_edge(u, v), gr.add_edge(v, u);
+		}
+		Dfs(0, -1);
+		int cmd, u, v, cnt = 0;
+		while (true) {
+			++ cnt;
+			get_data::GetS(cmd, cnt);
+			if (cmd == 0) {
+				get_data::GetQ(u);
+				-- u;
+				int res = max(val[u], val[u] + root[u]->v), sum = val[u];
+				for (int p = pre[u]; p != -1; u = p, p = pre[u]) {
+					sum += val[p];
+					res = max(res, sum);
+					if (root[p] != pos[u]) res = max(res, sum + root[p]->v);
+					else res = max(res, sum + max(root[p]->son[0]->v, root[p]->son[1]->v));
+				}
+				printf("%d
+", res);
+			}
+			else if (cmd == 1) {
+				get_data::GetC(u, v);
+				-- u;
+				val[u] = v;
+				for (int p = pre[u]; p != -1; u = p, p = pre[u]) {
+					Remove(u);
+					Renew(u, max(val[u], root[u]->v + val[u]));
+					root[p] = Merge(root[p], pos[u]);
+					root[p]->par = NIL;
+				}
+			}
+			else break;
+		}
+	}
+
+#undef NIL
+}
+
+int main() {
+	char type[2];
+	scanf("%s", type);
+	get_data::Init();
+	if (type[0] == 'A') work_a::Main();
+	else if (type[0] == 'B') work_b::Main();
+	else work_c::Main();
+	return 0;
+}

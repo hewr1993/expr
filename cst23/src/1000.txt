@@ -1,0 +1,36 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+int main()
+{
+   int n;
+   scanf("%d",&n);
+    
+    
+    int a[300];
+    int i,j;
+    
+    for(i=0;i<n;i++)
+    {
+    scanf("%d",&a[i]);
+    }
+    for(i=n-1;i>0;i--)
+    for(j=0;j<i;j++)
+    {
+      
+      if(a[j]>a[j+1])
+        {int m=a[j];
+        a[j]=a[j+1];
+        a[j+1]=m;
+        }
+      
+     }  
+     
+    
+    for(i=0;i<n;i++)
+    printf("%d ",a[i]);
+    
+    return 0;
+    
+}    
+

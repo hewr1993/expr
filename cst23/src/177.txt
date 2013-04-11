@@ -1,0 +1,41 @@
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+// 计算F(n)和F(n+1)除m的余数，分别放入fn和fn1中。
+void calcF(int n, int m, int &fn, int &fn1)
+{
+  if(n == 1)
+    {
+        fn = 1 ;
+        fn1 = 1 ;
+    }
+    else if (n == 2)
+    	{
+      	fn = 1 ;
+      	fn1 = 2 % m ;
+    	}
+    	else {
+    
+    if(n % 2 == 0)
+    {
+        int a , b ;
+    	calcF(n / 2 , m , a , b) ;
+    	fn = (b * a + a * (b - a + m)) % m ;
+     	
+      	fn1 = (a * a + b * b) % m ;
+	}
+        
+    else                                                                                                                                                                                                
+    {
+        int a , b , c , d ; 
+    	calcF((n - 1) / 2 , m , c , d) ;
+     	fn = (c * c + d * d) % m ;
+      	calcF((n + 1) / 2 , m , a , b ) ;
+       	fn1 = (b * a + a * (b - a + m)) % m ;		
+    }    
+		}    
+    
+}
+

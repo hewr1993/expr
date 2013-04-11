@@ -1,0 +1,68 @@
+#include<iostream>
+#include<fstream>
+#include<cstdlib>
+#include<cstdio>
+#include<cstring>
+
+using namespace std;
+
+struct bign
+{
+    int a[2000];
+    int len;
+};
+
+void print(bign x)
+{
+    for(int i=x.len;i>=1;i--)
+    printf("%d",x.a[i]);
+    cout<<endl;
+}
+bign add(bign &a,bign &b)
+{
+    bign ans;
+    ans.len=1;
+    memset(ans.a,0,sizeof(ans.a));
+    int maxlen=max(a.len,b.len);
+    //cout<<a.len<<" "<<b.len<<" "<<maxlen<<endl;
+    ans.len=maxlen;
+    for(int i=1;i<=maxlen;i++)
+        ans.a[i]=a.a[i]+b.a[i];
+    for(int i=1;i<=maxlen;i++)
+        if(ans.a[i]>=10)
+        {
+            ans.a[i+1]+=ans.a[i]/10;
+            ans.a[i]%=10;
+        }
+    if(ans.a[ans.len+1]>0)ans.len++;
+    return ans;
+}
+int main()
+{
+    struct bign A,B;
+    struct bign ans[20];
+    char n[2000],m[2000];
+    int t;
+    cin>>t;
+    for(int i=1;i<=t;i++) memset(ans[i].a,0,sizeof(ans[i].a));
+    for(int k=1;k<=t;k++)
+    {
+        cin>>n>>m;
+        A.len=strlen(n);B.len=strlen(m);
+        memset(A.a,0,sizeof(A.a));
+        memset(B.a,0,sizeof(B.a));
+        for(int i=A.len;i>=1;i--)
+        {
+            A.a[i]=n[A.len-i]-'0';
+        }
+         for(int i=B.len;i>=1;i--)
+        {
+            B.a[i]=m[B.len-i]-'0';
+        }
+        ans[k] =add(A,B);
+        
+    }
+    for(int j=1;j<=t;j++) print(ans[j]);
+    return 0;
+}
+

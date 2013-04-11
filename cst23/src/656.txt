@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include<string.h>
+int main()
+{
+	char sentence[100]={'0'},word[20][20]={'0'};
+	int i,j,k,h,numofword,m,n=0,total;
+	int num[20]={0};
+
+	num[0]=-1;
+	gets(sentence);
+	h=strlen(sentence);
+	sentence[h]=' ';
+	for(i=0;i<=h;i++)
+	{
+		if(sentence[i]==' ')
+		{
+			m=0;
+			n++;
+			num[n]=i;
+			for(j=num[n-1]+1;j<=num[n];j++)
+			{
+				word[n-1][m]=sentence[j];
+				m++;
+			}
+		}
+	}
+	numofword=n;
+	for(i=0;i<=n-1;i++)
+	{
+		for(j=i+1;j<=n-1;j++)
+		{
+			total=0;
+			for(k=0;k<=19;k++)
+			{
+				if(word[i][k]==word[j][k]) total=total+1;
+			}
+			if(total==20)
+			{
+				numofword=numofword-1;
+				for(k=0;k<=19;k++) word[j][k]='a'+j;
+			}
+		}
+	}
+		printf("%d",numofword);
+    return(0);
+}

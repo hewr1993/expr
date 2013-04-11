@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct tagHeight
+{
+       int x,y;
+}Height; 
+
+int max(int a,int b)
+{
+    if (a>b)
+       return a;
+    else
+        return b;
+}
+
+int main()
+{
+    int n,m;
+    Height height[10000],t;
+    int h[100][100];
+    int s[102][102];
+    scanf("%d%d",&n,&m);
+    int i,j,k,l;
+    for (i=0;i<102;++i)
+        for (j=0;j<102;++j)
+            s[i][j]=0;
+    for (i=0;i<n;++i)
+        for (j=0;j<m;++j)
+            scanf("%d",&h[i][j]);
+    for (i=0;i<n;++i)
+        for (j=0;j<m;++j)
+        {
+            t.x=i;
+            t.y=j;
+            for (k=0;k<i*m+j && h[t.x][t.y]>h[height[k].x][height[k].y];++k);
+            for (l=i*n+j-1;l>=k;--l)
+                height[l+1]=height[l];
+            height[k]=t;
+        }
+    for (i=0;i<n*n;++i)
+    {
+        if (h[height[i].x][height[i].y]!=h[height[i].x-1][height[i].y])
+           s[height[i].x+1][height[i].y+1]=s[height[i].x][height[i].y+1];
+        if (h[height[i].x][height[i].y]!=h[height[i].x+1][height[i].y])
+           s[height[i].x+1][height[i].y+1]=max(s[height[i].x+1][height[i].y+1],s[height[i].x+2][height[i].y+1]);
+        if (h[height[i].x][height[i].y]!=h[height[i].x][height[i].y+1])
+           s[height[i].x+1][height[i].y+1]=max(s[height[i].x+1][height[i].y+1],s[height[i].x+1][height[i].y+2]);
+        if (h[height[i].x][height[i].y]!=h[height[i].x][height[i].y-1])
+           s[height[i].x+1][height[i].y+1]=max(s[height[i].x+1][height[i].y+1],s[height[i].x+1][height[i].y]);
+        s[height[i].x+1][height[i].y+1]++;
+    }
+    int max=0;
+    for (i=1;i<=n;++i)
+        for (j=1;j<=m;++j)
+            if (s[i][j]>max)
+               max=s[i][j];
+    printf("%d",max);
+    return 0;
+}
+

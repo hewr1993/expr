@@ -1,0 +1,25 @@
+#include <iostream.h>
+
+int sum( int a[ ],  int n )
+{
+    if ( n > 0 )
+        return a[n-1]+sum(a, n-1) ;		
+    else
+		return 0;   
+		
+}
+
+int main()
+{
+	int array[200];
+	int n, i;
+	cin >> n;
+	for (i=0; i<n; i++)
+	{
+		cin >> array[i];
+	}
+
+	cout << sum( array, n ) << endl;		
+	return 0;
+}
+

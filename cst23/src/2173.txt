@@ -1,0 +1,150 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<set>
+#include<cmath>
+#include<cctype>
+
+using namespace std;
+
+#define readint(x) scanf("%d",&x)
+#define readlonglong(x) scanf("%I64d",&x)
+
+const double eps=1e-10;
+
+int n;
+
+double mx,my,sum;
+
+struct point
+{
+	long long x,y;
+	double v;
+	point(){}
+	point(long long a,long long b)
+	{
+		x=a;y=b;
+	}
+	void calc()
+	{
+		v=atan2(-my+y,-mx+x);
+	}
+	void init()
+	{
+		readlonglong(x);
+		readlonglong(y);
+	}
+	point operator-(const point &a)
+	{
+		return point(x-a.x,y-a.y);
+	}
+	long long operator*(const point &a)
+	{
+		return x*a.y-y*a.x;
+	}
+	bool operator<(const point &a)const
+	{
+		return v<a.v;
+	}
+}mid;
+
+set<point> hull;
+
+void pre()
+{
+	int opt;
+	point p1,p2,p3;
+	readint(opt);
+	p1.init();
+	readint(opt);
+	p2.init();
+	readint(opt);
+	p3.init();
+	double rands[]={0.4352341254,0.8242147544,0.3614575554};
+	sum=rands[0]+rands[1]+rands[2];
+	mx=(rands[0]*p1.x+rands[1]*p2.x+rands[2]*p3.x)/sum;
+	my=(rands[0]*p1.y+rands[1]*p2.y+rands[2]*p3.y)/sum;
+	p1.calc();hull.insert(p1);
+	p2.calc();hull.insert(p2);
+	p3.calc();hull.insert(p3);
+}
+
+point prev(point p)
+{
+	if (hull.count(p)) return p;
+	set<point>::iterator a=hull.lower_bound(p);
+	if (a==hull.begin()) a=hull.end();   
+	a--;
+	return *a;
+}
+
+point next(point p)
+{
+	set<point>:: iterator a=hull.upper_bound(p);
+	if (a==hull.end()) a=hull.begin();
+	return *a;
+}
+
+bool inside(point p)
+{
+	p.calc();
+	point p1=prev(p);
+	point p2=next(p);
+	return (p2-p1)*(p-p1)>=0;
+}
+
+void get(point p)
+{
+	if (inside(p)) return;
+	p.calc();
+	while (true)
+	{
+		point p1=next(p);
+		hull.erase(p1);
+		point p2=next(p);
+		if ((p2-p)*(p1-p)<0)
+		{
+			hull.insert(p1);
+			break;
+		}
+	}
+	while (true)
+	{
+		point p1=prev(p);
+		hull.erase(p1);
+		point p2=prev(p);
+		if ((p-p2)*(p1-p2)<0)
+		{
+			hull.insert(p1);
+			break;
+		}
+	}
+	hull.insert(p);
+}
+
+int main()
+{
+	readint(n);
+	pre();
+	for (int a=1;a<=n-3;a++)
+	{
+		int opt;
+		readint(opt);
+		point p;
+		if (opt==1)
+		{
+			p.init();
+			get(p);
+		}
+		else 
+		{
+			p.init();
+			if (inside(p)) printf("YES
+");
+			else printf("NO
+");
+		}
+	}
+
+	return 0;
+}

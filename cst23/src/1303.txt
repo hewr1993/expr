@@ -1,0 +1,17 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+long long a,b,n,w,x,y,i,m;
+int main()
+{
+    cin>>n;
+    a=(1+n)*n/2;
+    b=n*(n+1)*(n*2+1)/6;
+    for(i=1;i<=n-2;i++)
+    {cin>>m;a-=m;b-=m*m;}
+    w=2*a*2*a-2*4*(a*a-b);
+    y=sqrt(w);
+    cout<<(2*a-y)/4<<' '<<(2*a+y)/4;
+     return 0;
+}
+

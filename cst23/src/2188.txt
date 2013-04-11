@@ -1,0 +1,62 @@
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <algorithm>
+#include <ctime>
+using namespace std;
+
+int m,j,k,l,i,o,p,__t;
+long long n,ans;
+long long F[30][4][4];
+
+long long check(int st){
+	memset(F,0,sizeof F);
+	F[0][1][1] = 1;
+	for (int i = 1;i <= (m + 1) / 2;i ++){
+		for (int bef = 0;bef < 3;bef ++)
+		for (int beh = 0;beh < 3;beh ++) if (F[i - 1][bef][beh]){
+			int digit = -1,digit2 = -1;
+			if (i <= st) digit = (ans & (1LL << (i - 1))) > 0;
+			if (m - i + 1 <= st) digit2 = (ans & (1LL << (m - i))) > 0;
+			for (int a0 = 0;a0 < 2;a0 ++)
+				for (int a1 = 0;a1 < 2;a1 ++){
+					if (digit != -1 && a0 != digit) continue;
+					if (digit2 != -1 && a1 != digit2) continue;
+					if (i == (m + 1) / 2 && m % 2 == 1 && a0 != a1) continue;
+					int aimsta0 = bef,aimsta1 = beh;
+					if (bef == 1){
+						if (a0 == a1) aimsta0 = 1; else 
+						aimsta0 -= 1 * (2 * (a0 < a1) - 1);
+					}
+					if (beh == 1){
+						if (a0 != a1) aimsta1 = 1; else 
+						if (a0 > (a1 ^ 1)) aimsta1 = 2; else
+						aimsta1 = 0;
+					}
+					F[i][aimsta0][aimsta1] += F[i - 1][bef][beh];
+				}
+		}
+	}
+	#define s(i,j) F[(m + 1) / 2][i][j]
+	long long ret;
+	ret = s(0,0) + s(1,1) + s(1,0) + s(0,1);
+	return ret;
+}
+
+int main(){
+	cin >> m >> n;
+	if (check(1) <= n) printf("-1"); else {
+		for (int i = 1;i <= m;i ++){
+			long long now = check(i);
+			if (n >= now) {
+				n -= now;
+				ans ^= 1LL << (i - 1);
+			}
+		}
+		for (int i = 1;i <= m;i ++) printf("%d",(ans & (1LL << (i - 1))) > 0);
+	}
+	printf("
+");
+}
+

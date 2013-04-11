@@ -1,0 +1,24 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+
+using namespace std;
+
+int comp(const void *a,const void *b)
+{
+    return strcmp((char *)a,(char *)b);
+}
+
+int main()
+{
+    cin.get();
+    cin.get();
+    char c[4][500];
+    for (int i = 0;i<4;++i)
+        cin.getline(c[i],500);
+    qsort(c,4,sizeof(char)*500,comp);
+    for (int i = 0;i<4;++i)
+        cout << c[i] << endl;
+    return 0;
+}
+

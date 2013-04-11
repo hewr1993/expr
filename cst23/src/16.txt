@@ -1,0 +1,51 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+const double e=1e-10;
+double item(int n);
+double x;
+
+int main()
+{
+	cin >> x;
+	double sinx=0,cosx=0;
+	int n=1;
+	double now=item(n);
+
+	while(fabs(now)>e)
+	{
+		sinx=sinx+now;
+		n+=2;
+		now=item(n);
+	}
+
+	cout << sinx << endl;
+	n=0;
+	now=item(n);
+	
+	while(fabs(now)>e)
+	{
+		cosx=cosx+now;
+		n+=2;
+		now=item(n);
+	}
+
+	cout << cosx << endl;
+
+	return 0;
+}
+
+double item(int k)
+{
+	double ans=1.0;
+	for(int i=1;i<=k;i++)
+	{
+		ans*=x;
+		ans/=i;
+	}
+	
+	if(k%4==2||k%4==3)
+		ans=-ans;
+	return ans;
+}

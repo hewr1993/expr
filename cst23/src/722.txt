@@ -1,0 +1,119 @@
+//program 2162
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+
+using namespace std;
+
+const int Mod=19921228;
+
+vector<int> G_Boy[50],G_Girl[50];
+int Pair_Boy[50],Pair_Girl[50];
+bool Visited[50],OK[50];
+
+bool Find(int V)
+{
+  if(V==-1)return true;
+  if(Visited[V])return false;
+  Visited[V]=true;
+  for(int i=0;i<G_Boy[V].size();i++)
+    if(Find(Pair_Girl[G_Boy[V][i]]))
+      {
+        Pair_Girl[G_Boy[V][i]]=V;
+        return true;
+      }
+  return false;
+}
+
+void DFS(int V)
+{
+  if(Visited[V])return;
+  Visited[V]=true;
+  for(int i=0;i<G_Girl[V].size();i++)
+    {
+      OK[G_Girl[V][i]]=false;
+      DFS(Pair_Boy[G_Girl[V][i]]);
+    }
+}
+
+int Solve(int M,int N,int K)
+{
+  if(K<max(M,N))return 0;
+  if(K>M*N)return 0;
+  static int DP[51][51],C[2501][2501];
+  memset(C,0,sizeof(C));C[0][0]=1;
+  for(int i=1;i<=M*N;i++)
+    for(int j=0;j<=K;j++)
+      {
+        if(j)C[i][j]+=C[i-1][j-1];
+        if(j<i)C[i][j]+=C[i-1][j];
+        C[i][j]%=Mod;
+      }
+  int Ans=0;
+  for(int i=1;i<=M;i++)
+    for(int j=1;j<=N;j++)
+      {
+        int Temp=(long long)C[i*j][K]*C[M][i]%Mod*C[N][j]%Mod;
+        if((M^N^i^j)&1)Ans-=Temp;else Ans+=Temp;
+        if(Ans>=Mod)Ans-=Mod;if(Ans<0)Ans+=Mod;
+      }
+  return Ans;
+}
+
+int main()
+{
+  int N,K,M;
+  scanf("%d%d%d",&N,&K,&M);
+  static bool Flag[50][50];
+  memset(Flag,0,sizeof(Flag));
+  for(int i=0;i<M;i++)
+    {
+      int X,Y;
+      scanf("%d%d",&X,&Y);
+      Flag[X-1][Y-1]=true;
+    }
+  for(int i=0;i<N;i++)
+    {
+      G_Boy[i].clear();
+      for(int j=0;j<N;j++)
+        if(!Flag[i][j])
+          G_Boy[i].push_back(j);
+    }
+  for(int i=0;i<N;i++)
+    Pair_Boy[i]=Pair_Girl[i]=-1;
+  int Count=0;
+  for(int i=0;i<N;i++)
+    {
+      memset(Visited,0,sizeof(Visited));
+      Count+=Find(i);
+    }
+  for(int i=0;i<N;i++)
+    if(Pair_Girl[i]!=-1)
+      Pair_Boy[Pair_Girl[i]]=i;
+  static bool Match_Boy[50],Match_Girl[50];
+  memset(Match_Boy,0,sizeof(Match_Boy));
+  memset(Match_Girl,0,sizeof(Match_Girl));
+  for(int i=0;i<N;i++)Match_Boy[i]=(Pair_Boy[i]!=-1);
+  for(int i=0;i<N;i++)Match_Girl[i]=(Pair_Girl[i]!=-1);
+  for(int i=0;i<N;i++)
+    if(Match_Boy[i])
+      for(int j=0;j<G_Boy[i].size();j++)
+        G_Girl[G_Boy[i][j]].push_back(i);
+  memset(Visited,0,sizeof(Visited));
+  memset(OK,1,sizeof(OK));
+  for(int i=0;i<N;i++)
+    if(!Match_Girl[i])DFS(i);
+  int Boy=N-Count,Girl=N-Count;
+  for(int i=0;i<N;i++)
+    if(Match_Boy[i])
+      if(OK[i])Boy++;else Girl++;
+  printf("%d %d
+%d
+",Boy,Girl,Solve(Boy,Girl,K));
+  return 0;
+}
+

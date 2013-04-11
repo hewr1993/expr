@@ -1,0 +1,41 @@
+#include<iostream>
+using namespace std;
+
+void gao(int n)
+{
+	int ttl = 1, di = 1;
+	while(n > ttl)
+	{
+		di++;
+		ttl += di;
+	}
+	if(ttl == n)
+	{
+		if(di%2 == 0) cout << di << "/1" << endl;
+		else cout << "1/" << di << endl;
+	}
+	if(ttl > n)
+	{
+		int temp = n-ttl+di;
+		if(di%2 == 0) cout << temp << "/" << di+1-temp << endl;
+		else cout << di+1-temp << "/" << temp << endl;
+	}
+}
+
+int main()
+{
+	int T;
+	cin >> T;
+	int n[T];
+	for(int i = 0;i < T;i++)
+	{
+		cin >> n[i];
+	}
+	for(int i = 0;i < T;i++)
+	{
+		gao(n[i]);
+	}
+//	system("pause");
+	return 0;
+}
+

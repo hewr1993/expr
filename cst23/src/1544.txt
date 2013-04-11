@@ -1,0 +1,40 @@
+#include<iostream>
+using namespace std;
+int main() {
+    int N, a, b, c, d, e, f, g, h, i, aa, bb, cc, dd, ee, ff, gg, hh, ii, sum=0;
+    cin>>N;
+    for (a=9;a>=1;a--) {
+        for (b=9;b>=1;b--) {
+            for (c=9;c>=1;c--) {
+                for (d=9;d>b;d--) {
+                    for (e=9;e>c;e--) {
+                        for (f=9;f>a;f--) {
+                            for (g=9;g>=1;g--) {
+                                for (h=9;h>g;h--) {
+                                    for (i=9;i>f;i--) {
+                                        if ((a+b+d+f==N)&&(f+g+h+i==N)&&(i+e+c+a==N)&&(a+b+c+d+e+f+g+h+i==45)&&(a*b*c*d*e*f*g*h*i==362880)) {
+                                                                                                                         sum=sum+1;
+                                                                                                                         aa=a;
+                                                                                                                         bb=b;
+                                                                                                                         cc=c;
+                                                                                                                         dd=d;
+                                                                                                                         ee=e;
+                                                                                                                         ff=f;
+                                                                                                                         gg=g;
+                                                                                                                         hh=h;
+                                                                                                                         ii=i;
+                                                                                                                         }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    if (sum==0) cout<<"NO";
+    else if (sum!=0) cout<<sum<<endl<<aa<<endl<<bb<<" "<<cc<<endl<<dd<<" "<<ee<<endl<<ff<<" "<<gg<<" "<<hh<<" "<<ii;
+    return 0;
+}
+

@@ -1,0 +1,76 @@
+#include <stdio.h>
+int main()
+{
+	char a, x;
+	int n, z, d;
+	float m, b;
+	z = 0;    //状态 正数输入
+	d = 0;    //等于号未出现
+	n = 0;
+	m = 0;
+	b = 0;
+	a = getchar();
+	while (a != '
+')
+	{
+		if (a == '-')
+		{
+			if (z == 0)
+				m += n;
+			else
+				m -= n;
+			n = 0;
+			if (d == 0)
+				z = 1;
+			else
+				z = 0;
+		}
+		else if (a == '+')
+		{
+			if (z == 0)
+				m += n;
+			else
+				m -= n;
+			n = 0;
+			if (d == 0)
+				z = 0;
+			else
+				z = 1;
+		}
+		else if (a == '=')
+		{
+			if (z == 0)
+				m += n;
+			else
+				m -= n;
+			n = 0;
+			z = 1;
+			d = 1;
+		}
+		else if (a >= '0' && a <= '9')
+		{
+			n = n * 10 + a - '0';
+		}
+		else if (a >= 'a' && a <= 'z')
+		{
+			x = a;
+			if (n == 0) n = 1;
+			if (z == 0)
+				b -= n;
+			else
+				b += n;
+			n = 0;
+		}
+		a = getchar();
+	}
+	if (z == 0)
+		m += n;
+	else
+		m -= n;
+//	printf("m = %.3f
+b = %.3f
+", m, b);
+	printf("%c=%.3f
+", x, m / b);
+	return 0;
+}

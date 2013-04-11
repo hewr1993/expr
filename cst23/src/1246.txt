@@ -1,0 +1,212 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <ctime>
+using namespace std;
+
+#define MAXN 500100
+
+struct NodeT {
+	int data;
+	int sum;
+	NodeT *l, *r;
+	int key;
+} nodet[MAXN], *roott;
+int nt_tot;
+
+struct NodeS {
+	int data;
+	int lb, rb;
+	NodeS *l, *r;
+} nodes[1<<21], *roots[16];
+int ns_tot;
+
+int N;
+
+
+NodeT *NewT (int data)
+{
+	NodeT *p = &nodet[nt_tot++];
+	p->data = data;
+	p->sum = 1;
+	p->l = p->r = 0;
+	p->key = rand ();
+	return p;
+}
+
+NodeT *Merge (NodeT *x, NodeT *y)
+{
+	if (!x || !y) return x? x: y;
+	if (x->key < y->key)
+	{
+		x->r = Merge (x->r, y);
+		return x;
+	}
+	else
+	{
+		y->l = Merge (x, y->l);
+		return y;
+	}
+}
+
+void Split (NodeT *X, int data, NodeT *&L, NodeT *&R)
+{
+	if (!X)
+	{
+		L = 0;
+		R = 0;
+	}
+	else
+	{
+		if (X->data < data)
+		{
+			L = X;
+			Split (X->r, data, X->r, R);
+		}
+		else
+		{
+			R = X;
+			Split (X->l, data, L, X->l);
+		}
+	}
+}
+
+void InsertT (int data)
+{
+	NodeT *L, *R, *M, *t;
+	Split (roott, data, L, t);
+	Split (t, data+1, M, R);
+	if (M)
+		M->sum++;
+	else
+		M = NewT (data);
+	roott = Merge (Merge (L, M), R);
+}
+
+int DeleteT (int data)
+{
+	NodeT *L, *R, *M, *t;
+	Split (roott, data, L, t);
+	Split (t, data+1, M, R);
+	roott = Merge (L, R);
+	if (M)
+		return M->sum;
+	else
+		return 0;
+}
+
+
+NodeS *BuildS (int lb, int rb)
+{
+	NodeS *p = &nodes[ns_tot++];
+	p->lb = lb;
+	p->rb = rb;
+	p->data = 0;
+	if (lb == rb)
+		p->l = p->r = 0;
+	else
+	{
+		int mid = (lb+rb)>>1;
+		p->l = BuildS (lb, mid);
+		p->r = BuildS (mid+1, rb);
+	}
+	return p;
+}
+
+void InsertS (int data, int pos, NodeS *x)
+{
+	x->data += data;
+	if (x->lb == x->rb) return;
+	int mid = (x->lb+x->rb)>>1;
+	if (pos <= mid) InsertS (data, pos, x->l);
+	else InsertS (data, pos, x->r);
+}
+
+int SumS (int lb, int rb, NodeS *x)
+{
+	if (lb <= x->lb && x->rb <= rb)
+		return x->data;
+	int mid = (x->lb+x->rb)>>1;
+	int ret = 0;
+	if (lb <= mid) ret += SumS (lb, rb, x->l);
+	if (rb > mid) ret += SumS (lb, rb, x->r);
+	return ret;
+}
+
+
+void Init ()
+{
+	nt_tot = ns_tot = 0;
+	scanf ("%d", &N);
+	roott = 0;
+	memset (roots, 0, sizeof(roots));
+	for (int i = 0; i < 16; i++)
+		roots[i] = BuildS (0, (1<<(i+1))-1);
+	srand (time (0));
+}
+
+void Solve ()
+{
+	char cmd[10];
+	int x;
+	int delt = 0, p;
+	int pp;
+	while (N--)
+	{
+		scanf ("%s", cmd);
+		switch (cmd[0])
+		{
+			case 'I':
+				scanf ("%d", &p);
+				p -= delt;
+				InsertT (p);
+				for (int i = 0; i < 16; i++)
+				{
+					pp = p%(1<<(i+1));
+					InsertS (1, (pp<0?pp+(1<<(i+1)):pp), roots[i]);
+				}
+				break;
+			case 'D':
+				scanf ("%d", &p);
+				p -= delt;
+				x = DeleteT (p);
+				for (int i = 0; i < 16; i++)
+				{
+					pp = p%(1<<(i+1));
+					InsertS (-x, (pp<0?pp+(1<<(i+1)):pp), roots[i]);
+				}
+				break;
+			case 'A':
+				scanf ("%d", &p);
+				delt += p;
+				break;
+			case 'Q':
+				scanf ("%d", &p);
+				int l = 1<<p, r = (1<<(p+1))-1;
+				l -= delt; r -= delt;
+				l %= 1<<(p+1); r %= 1<<(p+1);
+				if (l < 0) l += 1<<(p+1);
+				if (r < 0) r += 1<<(p+1);
+				if (l <= r) printf ("%d
+", SumS (l, r, roots[p]));
+				else printf ("%d
+", SumS (0, r, roots[p])+SumS (l, (1<<(p+1))-1, roots[p]));
+				break;
+		}
+/*		if (!(N%10000))
+		{
+			printf ("%d	%d
+", N, clock ());
+		}*/
+	}
+}
+
+int main ()
+{
+	Init ();
+	Solve ();
+//	system ("pause");
+	return 0;
+}
+

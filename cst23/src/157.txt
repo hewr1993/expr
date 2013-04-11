@@ -1,0 +1,24 @@
+#include <iostream>
+
+using namespace std;
+
+// 给定一个字符串，将字符串中的每个字符转换成大写
+void toupper(char *st)
+{
+for(int i=0;i<=10010;i++)
+{
+if (st[i]>=97&&st[i]<=(97+26))
+st[i]-=32;
+}
+}
+
+char st[10010];
+
+int main()
+{
+	cin >> st;
+	toupper(st);
+	cout << st << endl;
+	return 0;
+}
+

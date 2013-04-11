@@ -1,0 +1,114 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int n,m,lens=0,len=0,lc;
+char s[1110000],c[1110000];
+int a[1110000],f[1110000],q[1110000];
+struct point{
+       int son[3],l,f;
+       void C()
+       {
+            son[0]=son[1]=son[2]=0;
+       }
+}e[3330000];
+void makeSAM()
+{
+     e[0].f=-1,e[0].C(),e[0].l=0;
+     int last=0;
+     for(int i=1,p,q,x;i<=lens;++i)
+     {
+             x=s[i]-'0';
+             e[++len].C(),e[len].l=i;
+             for( p=last;p>=0 && e[p].son[x]==0 ; p=e[p].f )  e[p].son[x]=len;
+             last=len;
+             if ( p==-1 ) e[len].f=0;
+             else {
+                  q=e[p].son[x];
+                  if ( e[q].l==e[p].l+1 ) e[len].f=q;
+                  else{
+                       e[++len]=e[q];
+                       e[len].l=e[p].l+1;
+                       e[q].f=e[len-1].f=len;
+                       for( ; p>=0 && e[p].son[x]==q ; p=e[p].f ) e[p].son[x]=len;                      
+                  }
+             }
+     }
+}
+int b[1110000];
+void G(const int x)
+{
+     f[0]=0,q[0]=0;
+     int h=1,t=0;
+     for(int i=1;i<=lc;++i)
+     {
+             f[i]=f[i-1]+1;
+             if ( a[i]>=x ) 
+             {
+                  if ( f[i]>q[i-a[i]]+i-a[i] ) f[i]=q[i-a[i]]+i-a[i];
+                  while ( h<=t && b[h]+a[i]<i ) ++h;
+                  if ( h<=t && f[b[h]]<f[i] ) f[i]=f[b[h]]; 
+             }
+             q[i]=min(q[i-1],f[i]-i);
+              if ( i>=x ) 
+            {
+             while ( h<=t && f[b[t]]>=f[i-x+1] ) --t;
+             b[++t]=i-x+1;
+}
+     }
+     
+     
+}
+void work()
+{
+     lc=strlen(c+1);
+     int now=0;
+     for( int i=1,x,l=0;i<=lc;++i)
+     {
+          x=c[i]-'0';
+          while ( now>=0 && e[now].son[x]==0 ) now=e[now].f;
+          if ( now>=0 ) 
+          {
+               if ( l>e[now].l ) l=e[now].l;
+               ++l;
+               now=e[now].son[x];
+          }else now=0,l=0; 
+          a[i]=l;
+     }
+     int K=lc/10;
+     int L=0,R=lc+1,mid;
+     while ( L+1<R )
+     {
+           mid=(L+R)>>1;
+           G(mid);
+           if ( f[lc]<=K ) L=mid;
+           else R=mid;
+     }
+     printf("%d
+",L);
+     
+}
+int main()
+{
+    scanf("%d%d",&n,&m);
+    for(int i=1;i<=m;++i)
+    {
+            scanf("%s",s+lens+1);
+            lens+=strlen(s+lens+1);
+            s[++lens]='2';     
+    }
+    makeSAM();
+    for(int i=1;i<=n;++i)
+    {
+            scanf("%s",c+1);
+            work();
+    }
+   // while ( 1 );
+    
+    
+    
+    return 0;
+}
+

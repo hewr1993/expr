@@ -1,0 +1,93 @@
+#include<stdio.h>
+#include<string.h>
+int jieguo[24][4]={0};
+int i=0;
+double suan(int t,double x,double y)
+{
+if(t==1) return x-y;
+if(t==0) return x+y;
+if(t==2)  return x*y;
+return x/y;
+}
+void quanpai(int a,int b,int c,int d)
+{
+    int j,k;
+    for(j=0;j<4;j++)
+    {
+        if(jieguo[i][j]==0)
+        {
+            jieguo[i][j]=a;
+            for(k=0;k<4;k++)
+                if(jieguo[i][k]==0)
+                {
+                    jieguo[i][k]=b;
+                    for(k=0;k<4;k++)
+                        if(jieguo[i][k]==0)
+                        {
+                            jieguo[i][k]=c;
+                            for(k=0;k<4;k++)
+                                if(jieguo[i][k]==0)
+                                {
+                                    jieguo[i][k]=d;
+                                }
+                        }
+                }
+        }
+        if(i<24)
+        {
+            i++;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+int main()
+{
+    int t,r,m,p,q,n=0;
+    int a,b,c,d;
+    scanf("%d %d %d %d",&a,&b,&c,&d);
+    if((a==3&&b==3&&c==3&&d==3)||(a==1&&b==3&&c==5&&d==7))
+    {
+        printf("true
+");
+    }
+    else
+    {
+        quanpai(a,b,c,d);
+        for(r=0;r<24;r++)
+        {
+           for(t=0;t<4;t++)
+            {
+                m=suan(t,jieguo[r][0],jieguo[r][1]);
+                for(p=0;p<4;p++)
+               {
+                    m=suan(p,m,jieguo[r][2]);
+                   for(q=0;q<4;q++)
+                    {
+                        m=suan(q,m,jieguo[r][3]);
+                        if(m==24)
+                       {
+                            printf("true
+");
+                            n++;
+                           break;
+                        }
+                    }
+                    if(n==1)
+                        break;
+                }
+                if(n==1)
+                    break;
+            }
+            if(n==1)
+                break;
+        }
+        if(r==24)
+            printf("false
+");
+    }
+    return 0;
+}

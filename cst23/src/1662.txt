@@ -1,0 +1,77 @@
+
+// Program  :  CTSC 2010 go
+
+#include <cstdio>
+
+using namespace std;
+
+double f[1<<18][63], p[21][21];
+int lg[1<<18];
+
+int main()
+  {
+    int s[3], t[3], n, i, j, k, t1, t2, tmp;
+    int full, cur, loc, last, next;
+    double val, ans = 0;
+    
+    scanf("%d", &n);
+    for (t1 = 0; t1 < 3; t1 ++)
+      for (t2 = t1 + 1; t2 < 3; t2 ++)
+        for (i = 0; i < n; i ++)
+          for (j = 0; j < n; j ++)
+            {
+              int loc1 = i * 3 + t1, loc2 = j * 3 + t2;
+              scanf("%lf", &p[loc1][loc2]);
+              p[loc2][loc1] = 1 - p[loc1][loc2];
+            }
+    
+    full = (1 << (3 * n - 3)) - 1;
+    for (lg[1] = 0, i = 2; i <= full; i ++)
+      lg[i] = lg[i-1] + ((i & -i) == i);
+    t[0] = t[1] = t[2] = 0;
+    for (i = 0; i < 3 * n - 3; i ++)
+      t[i%3] += 1 << i;
+    
+    for (i = 1; i <= full; i ++)
+      for (j = 0; j < n * 9; j ++)
+        {
+          f[i][j] = 0;
+          s[0] = i & t[0], s[1] = i & t[1], s[2] = i & t[2];
+          cur = j / 3, last = j % 3;
+          t1 = cur % 3, t2 = 3 - last - t1;
+          if (t1 == last || s[0] == 0) continue;
+          if (cur / 3 < n - 1 && ! (i & 1 << cur)) continue;
+          if (s[1] == 0 && s[2] == 0)
+            {
+              f[i][j] = 1;
+              continue;
+            }
+          if (s[t2] == 0) t2 = last;
+          if (t2 != 0) f[i][j] = 1e100;
+          for (tmp = s[t2]; tmp; tmp -= tmp & -tmp)
+            {
+              loc = lg[tmp&-tmp], next = i - (1 << loc);
+              val = p[cur][loc] * f[next][cur*3+t2];
+              if (next = i, cur / 3 < n - 1) next -= 1 << cur;
+              val += p[loc][cur] * f[next][loc*3+t1];
+              if (t2 == 0 && val > f[i][j]) f[i][j] = val;
+              if (t2 != 0 && val < f[i][j]) f[i][j] = val;
+            }
+        }
+    
+    for (i = 0; i < 3; i ++)
+      for (j = 0; j < 3; j ++)
+        if (i != j)
+          {
+            k = 3 - i - j;
+            val = p[(n-1)*3+i][(n-1)*3+j] * p[(n-1)*3+j][(n-1)*3+k] / 3;
+            val += p[(n-1)*3+i][(n-1)*3+j] * p[(n-1)*3+i][(n-1)*3+k] / 3;
+            ans += val * f[full][((n-1)*3+i)*3+j];
+          }
+    
+    printf("%.6lf
+", ans);
+    
+    return 0;
+  }
+

@@ -1,0 +1,285 @@
+//program 2157
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+
+using namespace std;
+
+struct Edge
+{
+  int Data,Weight;
+};
+
+struct AnsType
+{
+  int Sum,Max,Min;
+};
+
+AnsType operator +(AnsType A,AnsType B)
+{
+  return (AnsType){A.Sum+B.Sum,max(A.Max,B.Max),min(A.Min,B.Min)};
+}
+
+struct Node
+{
+  int Left,Right,Mid;
+  bool Flag;
+  AnsType Ans;
+  Node *Lc,*Rc;
+};
+
+const int inf=1000000000;
+
+vector<Edge> G[20000];
+int Queue[20000],Parent[20000],Size[20000],Up[20000],Depth[20000];
+int Pos[20000],Number[20000],Path[20000],End[20000];
+int DP[15][20000],Log[20000];
+bool Heavy[20000];
+Node *Tree[20000];
+
+Node *Build(int L,int R)
+{
+  Node *P=new Node;
+  P->Left=L;P->Right=R;P->Mid=(L+R)/2;P->Flag=false;
+  if(L==R)
+    P->Ans=(AnsType){Path[L],Path[L],Path[L]};
+  else
+    {
+      P->Lc=Build(L,P->Mid);
+      P->Rc=Build(P->Mid+1,R);
+      P->Ans=P->Lc->Ans+P->Rc->Ans;
+    }
+  return P;
+}
+
+void Check(Node *P)
+{
+  if(!P->Flag)return;
+  AnsType T=P->Ans;
+  P->Ans=(AnsType){-T.Sum,-T.Min,-T.Max};
+  if(P->Left<P->Right)
+    {
+      P->Lc->Flag=!P->Lc->Flag;
+      P->Rc->Flag=!P->Rc->Flag;
+    }
+  P->Flag=false;
+}
+
+void Update(Node *P,int X,int Y)
+{
+  Check(P);
+  if(P->Left==P->Right)
+    {
+      P->Ans=(AnsType){Y,Y,Y};
+      return;
+    }
+  if(X<=P->Mid)
+    Update(P->Lc,X,Y);
+  else
+    Update(P->Rc,X,Y);
+  Check(P->Lc);Check(P->Rc);
+  P->Ans=P->Lc->Ans+P->Rc->Ans;
+}
+
+void Cover(Node *P,int L,int R)
+{
+  Check(P);
+  if(P->Left==L&&P->Right==R)
+    {
+      P->Flag=true;
+      return;
+    }
+  if(R<=P->Mid)Cover(P->Lc,L,R);
+  else if(L>P->Mid)Cover(P->Rc,L,R);
+  else{Cover(P->Lc,L,P->Mid);Cover(P->Rc,P->Mid+1,R);}
+  Check(P->Lc);Check(P->Rc);
+  P->Ans=P->Lc->Ans+P->Rc->Ans;
+}
+
+AnsType Get(Node *P,int L,int R)
+{
+  Check(P);
+  if(P->Left==L&&P->Right==R)return P->Ans;
+  if(R<=P->Mid)return Get(P->Lc,L,R);
+  if(L>P->Mid)return Get(P->Rc,L,R);
+  return Get(P->Lc,L,P->Mid)+Get(P->Rc,P->Mid+1,R);
+}
+
+void BFS(int N)
+{
+  Queue[0]=0;Parent[0]=-1;
+  for(int F=0,R=1,V=0;R<N;V=Queue[++F])
+    for(int i=0;i<G[V].size();i++)
+      if(G[V][i].Data!=Parent[V])
+        {
+          int U=G[V][i].Data;if(U==Parent[V])continue;
+          Queue[R++]=U;
+          Parent[U]=V;
+          Up[U]=G[V][i].Weight;
+          Depth[U]=Depth[V]+1;
+        }
+  memset(Heavy,0,sizeof(Heavy));
+  for(int i=N-1;i>=0;i--)
+    {
+      int V=Queue[i],Max=-1,U=-1;Size[V]=1;
+      for(int j=0;j<G[V].size();j++)
+        if(G[V][j].Data!=Parent[V])
+          {
+            Size[V]+=Size[G[V][j].Data];
+            if(Size[G[V][j].Data]>Max)
+              {
+                Max=Size[G[V][j].Data];
+                U=G[V][j].Data;
+              }
+          }
+      if(U!=-1)Heavy[U]=true;
+    }
+  int Total=0;
+  for(int i=N-1;i>=0;i--)
+    {
+      int V=Queue[i];
+      if(G[V].size()>1||!Heavy[V])continue;
+      int Len=0;
+      while(Heavy[V])
+        {
+          Pos[V]=Len;
+          Path[Len++]=Up[V];
+          Number[V]=Total;
+          V=Parent[V];
+        }
+      int U=Queue[i];
+      while(U!=V){End[U]=V;U=Parent[U];}
+      Tree[Total++]=Build(0,Len-1);
+    }
+}
+
+void Calc_LCA(int N)
+{
+  for(int i=0;i<N;i++)DP[0][i]=Parent[i];
+  for(int i=1;i<15;i++)
+    for(int j=0;j<N;j++)
+      if(DP[i-1][j]==-1)
+        DP[i][j]=-1;
+      else
+        DP[i][j]=DP[i-1][DP[i-1][j]];
+  for(int i=0;i<15;i++)Log[1<<i]=i;
+}
+
+int LCA(int X,int Y)
+{
+  if(Depth[X]<Depth[Y])swap(X,Y);
+  int Diff=Depth[X]-Depth[Y];
+  while(Diff)
+    {
+      int P=Diff&-Diff;
+      X=DP[Log[P]][X];
+      Diff^=P;
+    }
+  if(X==Y)return X;
+  for(int i=14;i>=0;i--)
+    if(DP[i][X]!=DP[i][Y])
+      {X=DP[i][X];Y=DP[i][Y];}
+  return Parent[X];
+}
+
+void Change(int X,int Y)
+{
+  if(!Heavy[X])
+    Up[X]=Y;
+  else
+    Update(Tree[Number[X]],Pos[X],Y);
+}
+
+void Reverse(int X,int Y)
+{
+  while(X!=Y)
+    if(!Heavy[X])
+      {
+        Up[X]=-Up[X];
+        X=Parent[X];
+      }
+    else if(Depth[Y]>Depth[End[X]])
+      {
+        Cover(Tree[Number[X]],Pos[X],Pos[Y]-1);
+        X=Y;
+      }
+    else
+      {
+        Cover(Tree[Number[X]],Pos[X],Tree[Number[X]]->Right);
+        X=End[X];
+      }
+}
+
+AnsType Query(int X,int Y)
+{
+  AnsType Ans={0,-inf,inf};
+  while(X!=Y)
+    if(!Heavy[X])
+      {
+        Ans=Ans+(AnsType){Up[X],Up[X],Up[X]};
+        X=Parent[X];
+      }
+    else if(Depth[Y]>Depth[End[X]])
+      {
+        Ans=Ans+Get(Tree[Number[X]],Pos[X],Pos[Y]-1);
+        X=Y;
+      }
+    else
+      {
+        Ans=Ans+Get(Tree[Number[X]],Pos[X],Tree[Number[X]]->Right);
+        X=End[X];
+      }
+  return Ans;
+}
+
+int main()
+{
+  int N;scanf("%d",&N);
+  static pair<int,int> Data[20000];
+  for(int i=1;i<N;i++)
+    {
+      int X,Y,W;scanf("%d%d%d",&X,&Y,&W);
+      Data[i]=make_pair(X,Y);
+      G[X].push_back((Edge){Y,W});
+      G[Y].push_back((Edge){X,W});
+    }
+  BFS(N);
+  static int Node[20000];
+  for(int i=1;i<N;i++)
+    {
+      int X=Data[i].first,Y=Data[i].second;
+      if(X==Parent[Y])Node[i]=Y;else Node[i]=X;
+    }
+  Calc_LCA(N);
+  int M;scanf("%d",&M);
+  while(M--)
+    {
+      char c;while(c=getchar(),c<'A'||c>'Z');
+      string S;while(c>='A'&&c<='Z'){S+=c;c=getchar();}
+      int X,Y;scanf("%d%d",&X,&Y);
+      if(S=="C")
+        Change(Node[X],Y);
+      else
+        {
+          int Z=LCA(X,Y);
+          if(S=="N")
+            {Reverse(X,Z);Reverse(Y,Z);}
+          else
+            {
+              AnsType Ans=Query(X,Z)+Query(Y,Z);
+              if(S=="SUM")printf("%d
+",Ans.Sum);
+              if(S=="MAX")printf("%d
+",Ans.Max);
+              if(S=="MIN")printf("%d
+",Ans.Min);
+            }
+        }
+    }
+  return 0;
+}
+

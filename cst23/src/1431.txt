@@ -1,0 +1,85 @@
+//【题目分析】
+//    (1)如果后k位存在循环,那么最小循环长度L(k)一定是后k-1位循环的最小循环长度L(k-1)的整数倍。
+//    这样可以保证所枚举到的数一定是后k-1为循环节的倍数,而且可以大大减少枚举的数量
+//    (2)整数的每一位有10种可能,如果某个长度枚举10次仍然没有循环的话,则失败，否则成功。
+//     (3)数值太大，需要采用高精度计算，可优化。因为高精度计算中,计算后k位只需要保存后k位乘积的结果,而k范围较小,
+//在计算时若判断大于k位则跳出,这样,节约了一定时间,同时也可以节约空间(因为结果只需存k位).
+//如果10次中已经出现循环的数,则可以退出.
+#include<cstdlib>
+#include<iostream>
+#include<cstring>
+#define LEN 110
+using namespace std;
+
+char s[200];         // 输入串
+int k;               // 输入参数
+int result[LEN] ;        // 存放结果
+
+// 被乘数a,可有c1位，乘数b有b1位（b1可以为1，或大于1），积c有c1位。
+void M2AA(int a[], int b[], int b1, int c[],int c1) 
+
+{
+    int i,j;
+    for(i=0;i<c1;i++)     c[i]=0;
+    if (b1 > c1) b1 = c1; // 取乘数的有效位
+    for(i=0; i<b1; i++)  // 乘数
+    {
+        if (b[i])
+        {
+            for(j=0; j<c1-i; j++)  // 被乘数
+            {
+                c[i+j] = a[j]*b[i] + c[i+j];
+                c[i+j+1]= c[i+j+1] + c[j+i]/10;
+                c[i+j] = c[i+j]%10;
+            }
+        }
+    }
+}
+
+
+int main()
+{
+    int a[LEN],b[LEN],c[LEN],aa[LEN];
+    int i,j,tp,num,n;
+    cin>>s>>k;
+    n=strlen(s);
+    for(i=0;i<n;i++) 
+    a[n-i-1] = s[i] - '0';          // 将字符转换为数字保存在a数组中。
+    for (i=0; i<k; i++) aa[i] = a[i];    // 将原数保存在aa中
+    result[0]=1;     
+    for(i=0; i<k; i++)
+    {
+        for(j=0;j<=i;j++) b[j]=aa[j];         
+        tp=b[i];
+        num=0;
+        do
+        {
+            M2AA(a, b, i+1, c, i+1);
+            num++;
+            for(n=0; n<k; n++)  b[n]=c[n];
+        } 
+        while ((num<10) && (b[i]!=tp));
+        if(b[i]!=tp) 
+        {
+            cout<<-1<<endl;
+            return 0;
+        }
+        for(j=0;j<k;j++)            
+        b[j] = a[j];
+        for(j=0;j<num-1;j++) // 求a=a^num
+        {
+            M2AA(a, b, k, c, k);
+            for(n=0;n<LEN;n++)
+            a[n]=c[n];
+        }
+        M2AA(result, &num,1, c, LEN);
+        for(n=0; n<LEN; n++)          
+        result[n]=c[n];
+    }
+    for (i=LEN-1; result[i]==0; i--);   
+    for( ; i>=0 ; i--)
+    cout<<result[i];  
+    return 0;
+}
+
+

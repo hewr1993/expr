@@ -1,0 +1,54 @@
+#include<iostream>
+using namespace std;
+int a[100][100];char b[100][100][100];
+void f(int i,int j,int N)
+{int t,l,s;int k;k=a[i][j];l=0;
+for(t=1;t<=N;t=t+1)
+{if((k==-1)&&(a[i][t]!=-1)&&(a[t][j]!=-1))
+    {k=a[i][t]+a[t][j];a[i][j]=k;l=0;
+    while(b[i][t][l]!=0)
+    {b[i][j][l]=b[i][t][l];l++;}
+    s=l;l=0;
+    while(b[t][j][l+1]!=0)
+    {if(b[t][j][l+1]!=b[i][t][l-1])
+    {b[i][j][l+s]=b[t][j][l+1];}l++;}}l=0;
+}}
+
+int min(int i,int j,int N)
+{int t,l,s;int k;k=a[i][j];l=0;
+    for(t=1;t<=N;t=t+1)
+    {l=0;
+    if((k>(a[i][t]+a[t][j]))&&(a[i][t]!=-1)&&(a[t][j]!=-1))
+    {k=a[i][t]+a[t][j];l=0;
+    while(b[i][t][l]!=0)
+    {b[i][j][l]=b[i][t][l];
+    l++;}s=l;l=0;
+    while(b[t][j][l+1]!=0)
+    {b[i][j][l+s]=b[t][j][l+1];l++;}}l=0;}
+    
+    
+    return k;}
+
+int main()
+{int i,j,k,N,m,n;
+    cin>>N;
+for(i=1;i<=N;i=i+1)
+{for(j=1;j<=N;j=j+1)
+{cin>>a[i][j];
+for(k=0;k<=99;k=k+1){b[i][j][k]=0;}
+if(a[i][j]!=-1){b[i][j][0]=i+47;b[i][j][1]=' ';b[i][j][2]=j+47;}}}
+cin>>m>>n;
+for(k=1;k<=N;k=k+1)
+{for(i=1;i<=N;i=i+1)
+{for(j=1;j<=N;j=j+1)
+{f(m+1,n+1,N);}}}
+for(k=1;k<=N;k=k+1)
+{for(i=1;i<=N;i=i+1)
+{for(j=1;j<=N;j=j+1)
+{a[i][j]=min(i,j,N);}}}
+if(a[m+1][n+1]==-1){cout<<"unreachable";}
+else{cout<<a[m+1][n+1]<<endl;
+for(i=0;i<=99;i=i+1)
+{if((b[m+1][n+1][i]!=b[m+1][n+1][i-2])||(b[m+1][n+1][i]==' ')&&b[m+1][n+1][i+1]!=b[m+1][n+1][i-1]&&b[m+1][n+1][i-1]!=b[m+1][n+1][i-3]){cout<<b[m+1][n+1][i];}}
+}
+return 0;}

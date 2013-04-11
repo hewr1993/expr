@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+#include <list>
+#include <deque>
+#include <queue>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <string>
+#include <string.h>
+#include <bitset>
+#include <cmath>
+#include <cassert>
+#include <ext/hash_set>
+#include <ext/hash_map>
+using namespace std;
+using namespace __gnu_cxx;
+
+#define int64 long long
+#define real long double
+#define xx first
+#define yy second
+#define ff q.front()
+#define rr q.back()
+#define all(x) (x).begin(), (x).end()
+#define push_pair(x, y) push_back(make_pair(x, y))
+#define vci vector <int>
+#define vcs vector <string>
+#define vcd vector <double>
+#define vci64 vector <long long>
+#define eps (1e-9)
+#define ifn (1000000000L)
+#define maxint (2147483647)
+#define pi (3.14159265358979323846264338327950288419716939937510L)
+
+const int maxn = 30;
+const int maxm = maxn * maxn / 2;
+
+vector< bitset <maxn> > e, save[maxm];
+vector< pair<int, int> > d;
+vci a;
+
+int ans;
+
+void dfs(int i)
+{
+    if (i == d.size()) {++ans; return;}
+    int l = d[i].xx, r = d[i].yy;
+    if (e[l][r] || e[r][l]) {dfs(i + 1); return;}
+    save[i] = e;
+    for (int j = 0; j < e.size(); ++j)
+        if (e[j][l]) e[j] |= e[r];
+    dfs(i + 1); e = save[i];
+    for (int j = 0; j < e.size(); ++j)
+        if (e[j][r]) e[j] |= e[l];
+    dfs(i + 1); e = save[i];
+}
+
+int main()
+{
+    //freopen("world.in", "r", stdin);
+    //freopen("world.out", "w", stdout);
+
+    int s1, s2, s3;
+    cin >> s1 >> s2;
+    for (int i = 0; i < s1; ++i) {
+        cin >> s3;
+        for (int j = 0; j < s3; ++j) {
+            int k; cin >> k;
+            a.push_back(k);
+        }
+        for (int j = a.size() - s3; j < a.size(); ++j)
+            e.push_back((1 << a.size()) - (1 << j));
+    }
+    bool c[s2][s2];
+    for (int i = 0; i < s2; ++i)
+        for (int j = 0; j < s2; ++j)
+            cin >> c[i][j];
+    for (int i = 0; i < a.size(); ++i)
+        for (int j = i + 1; j < a.size(); ++j)
+            if (!e[i][j] && !e[j][i] && c[a[i]][a[j]])
+                d.push_pair(i, j);
+    dfs(0);
+    cout << ans << endl;
+    
+    return 0;
+}
+

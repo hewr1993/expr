@@ -1,0 +1,36 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int a,b;
+    cin>>a>>b;
+
+    for(int i=a;i<=b;i++)
+    {
+        cout<<i<<"=";
+        int j=2,k=i,key=1;
+        while(k>1)
+        {
+            for(int w=2;w<=k;w++)
+            {
+                if(k%w==0)
+                {
+                    k=k/w;
+                    if(key==1)
+                    {
+                        cout<<w;
+                        key=0;
+                    }
+                    else
+                    {
+                        cout<<"*"<<w;
+                    }
+                    break;
+                }
+            }
+        }
+        cout<<endl;
+    }
+    return 0;
+}
+

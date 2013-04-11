@@ -1,0 +1,42 @@
+#include <cstdio>
+#include<stdio.h> 
+#include <iostream>
+using namespace std;
+void qc (int* c, int left, int right)
+{
+     int r=left,t=right;
+     int flag=c[r];//标杆 
+           if (left>=right)  return;
+           while (r<t)
+            {
+            while (r<t && c[t]>=flag) --t;
+         c[r]=c[t];
+           while (r<t && c[r]<=flag) ++r;
+         c[t]=c[r];
+             }
+           c[r]=flag;
+           qc(c,left,r-1);
+           qc(c,r+1,right);
+}
+
+int main()
+{
+     int gh;
+      scanf("%d",&gh);
+     int n;
+     int c[12435];
+     int j;
+            for(n=0;n<gh;++n)
+                {
+                       scanf("%d",&c[n]);
+                           }
+               qc(c,0,gh-1);
+    
+            for(j=0;j<gh-1;++j)
+                {
+                       printf("%d ",c[j]);
+                            }
+           cout<<c[gh-1]<<endl;
+           
+}
+

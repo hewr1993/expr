@@ -1,0 +1,75 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+struct data
+{
+	int s, e;
+	data *next, *prev;
+	//start, end
+};
+void merge(const data *a, const data *b, data *c)
+{
+	//Merge a and b to c
+	c -> s = min(a -> s, b -> s);
+	c -> e = max(a -> e, b -> e);
+}
+bool isMergable(int s1, int e1, int s2, int e2)
+{
+	return ((s1 <= s2 && s2 <= e1 && e1 <= e2) ||
+			(s2 <= s1 && s1 <= e2 && e2 <= e1) ||
+			(s1 <= s2 && e2 <= e1) ||
+			(s2 <= s1 && e1 <= e2));
+}
+int main()
+{
+	data *p, *q = NULL, *r, *t;
+	//q: queue
+	bool flag = true;
+	int L, n, m, i, s, e;
+	cin >> L >> n >> m;
+	for(i = 1; i <= n + m; i++)
+	{
+		cin >> s >> e;
+		//insert [s, e]
+		p = new data;
+		p -> s = s;
+		p -> e = e;
+		p -> next = q;
+		p -> prev = NULL;
+		if(q != NULL)
+			q -> prev = p;
+		q = p;
+	}
+	r = q;
+	while(r != NULL)
+	{
+		p = r -> next;
+		flag = true;
+		while(p != NULL)
+		{
+			if(isMergable(p -> s, p -> e, r -> s, r -> e))
+			{
+				merge(p, r, r);
+				
+				p -> prev -> next = p -> next;
+				if(p -> next != NULL)
+					p -> next -> prev = p -> prev;
+				delete p;
+				flag = false;
+				break;
+			}
+			p = p -> next;
+		}
+		if(flag)
+			r = r -> next;
+	}
+	s = 0;
+	while(q != NULL)
+	{
+		s += q -> e - q -> s;
+		q = q -> next;
+	}
+	cout << L - s << endl;
+	return 0;
+}
+

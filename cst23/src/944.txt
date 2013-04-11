@@ -1,0 +1,36 @@
+#include <cstdio>
+#include <iostream>
+using namespace std;
+int n,m,i,j,k;
+double p[1001][11],ans;
+double f[1001][1001][11],s[1001][1001],mul[1001][1001][11];
+int main ()
+{
+    cin >> n >> m;
+    for (i=1;i<=n;i++)
+        for (j=1;j<=m;j++)
+            cin >> p[i][j];
+    for (k=1;k<=m;k++)  
+        for (i=1;i<=n;i++)
+        {
+            mul[i][i][k]=p[i][k];
+            for (j=i+1;j<=n;j++)
+                mul[i][j][k]=mul[i][j-1][k]*p[j][k];
+        }
+    s[0][0]=1;
+    for (i=1;i<=n;i++) s[0][i]=1;
+    for (i=1;i<=n;i++)
+    {
+        for (j=1;j<=n;j++)
+        for (k=1;k<=m;k++)
+        {
+            f[i][j][k]=s[i-1][j]*p[i][k];
+            if (i-j-1>=0) f[i][j][k]-=(s[i-j-1][j]-f[i-j-1][j][k])*mul[i-j][i][k];
+            s[i][j]+=f[i][j][k];
+        }
+    }
+    for (i=1;i<=n;i++)
+        ans+=(s[n][i]-s[n][i-1])*i;
+    printf("%.6f",ans);
+}
+

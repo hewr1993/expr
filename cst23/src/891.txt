@@ -1,0 +1,75 @@
+#include<stdio.h>
+int main()
+{
+    int year,num,day,i;
+    num=0;
+    scanf("%d",&year);
+    for(i=1998;i<=year-1;i++)
+    {
+        if((i%4==0)&&(i%100!=0))
+        {
+            num++;
+        }
+        else if(i%400==0)
+        {
+            num++;
+        }
+    }
+    day=(year-1998-num)*365+num*366;
+if((year%4==0)&&(year%100!=0))
+{
+    switch(day%7)
+    {
+case 0:printf("2
+");
+    break;
+case 1:printf("1
+");
+    break;
+case 2:printf("1
+");
+    break;
+case 3:printf("3
+");
+    break;
+case 4:printf("2
+");
+    break;
+case 5:printf("1
+");
+    break;
+case 6:printf("2
+");
+    break;
+    }
+}
+else
+{
+    switch(day%7)
+    {
+        case 0:printf("3
+");
+            break;
+        case 1:printf("1
+");
+            break;
+        case 2:printf("1
+");
+            break;
+        case 3:printf("2
+");
+            break;
+        case 4:printf("2
+");
+            break;
+        case 5:printf("2
+");
+            break;
+        case 6:printf("1
+");
+            break;
+
+    }
+}
+    return 0;
+}

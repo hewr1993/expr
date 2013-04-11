@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{   
+    char a;
+    a=getchar();
+  if(a=='A'||a=='a')
+  printf("* =");
+  else if(a=='B'||a=='b')
+  printf("= * * *"); 
+  else if(a=='C'||a=='c')
+  printf("= * = *"); 
+  else if(a=='D'||a=='d')
+  printf("= * *");
+   else if(a=='E'||a=='e')
+  printf("*");  
+  else if(a=='F'||a=='f')
+  printf("* * = *"); 
+  else if(a=='G'||a=='g')
+  printf("= = *"); 
+  else if(a=='H'||a=='h')
+  printf("* * * *"); 
+  else if(a=='I'||a=='i')
+  printf("* *"); 
+  else if(a=='J'||a=='j')
+  printf("* = = ="); 
+  else if(a=='K'||a=='k')
+  printf("= * ="); 
+  else if(a=='L'||a=='l')
+  printf("* = * *"); 
+  else if(a=='M'||a=='m')
+  printf("= ="); 
+  else if(a=='N'||a=='n')
+  printf("= *"); 
+  else if(a=='O'||a=='o')
+  printf("= = ="); 
+  else if(a=='P'||a=='p')
+  printf("* = = *"); 
+  else if(a=='Q'||a=='q')
+  printf("= = * ="); 
+  else if(a=='R'||a=='r')
+  printf("* = *"); 
+  else if(a=='S'||a=='s')
+  printf("* * *"); 
+  else if(a=='T'||a=='t')
+  printf("="); 
+  else if(a=='U'||a=='u')
+  printf("* * ="); 
+  else if(a=='V'||a=='v')
+  printf("* * * ="); 
+  else if(a=='W'||a=='w')
+  printf("* = ="); 
+  else if(a=='X'||a=='x')
+  printf("= * * ="); 
+  else if(a=='Y'||a=='y')
+  printf("= * = ="); 
+  else if(a=='Z'||a=='z')
+  printf("= = * *");                 
+  
+  while((a=getchar())!=-1)
+  {
+  if(a=='A'||a=='a')
+  printf(" * =");
+  else if(a=='B'||a=='b')
+  printf(" = * * *"); 
+  else if(a=='C'||a=='c')
+  printf(" = * = *"); 
+  else if(a=='D'||a=='d')
+  printf(" = * *");
+   else if(a=='E'||a=='e')
+  printf(" *");  
+  else if(a=='F'||a=='f')
+  printf(" * * = *"); 
+  else if(a=='G'||a=='g')
+  printf(" = = *"); 
+  else if(a=='H'||a=='h')
+  printf(" * * * *"); 
+  else if(a=='I'||a=='i')
+  printf(" * *"); 
+  else if(a=='J'||a=='j')
+  printf(" * = = ="); 
+  else if(a=='K'||a=='k')
+  printf(" = * ="); 
+  else if(a=='L'||a=='l')
+  printf(" * = * *"); 
+  else if(a=='M'||a=='m')
+  printf(" = ="); 
+  else if(a=='N'||a=='n')
+  printf(" = *"); 
+  else if(a=='O'||a=='o')
+  printf(" = = ="); 
+  else if(a=='P'||a=='p')
+  printf(" * = = *"); 
+  else if(a=='Q'||a=='q')
+  printf(" = = * ="); 
+  else if(a=='R'||a=='r')
+  printf(" * = *"); 
+  else if(a=='S'||a=='s')
+  printf(" * * *"); 
+  else if(a=='T'||a=='t')
+  printf(" ="); 
+  else if(a=='U'||a=='u')
+  printf(" * * ="); 
+  else if(a=='V'||a=='v')
+  printf(" * * * ="); 
+  else if(a=='W'||a=='w')
+  printf(" * = ="); 
+  else if(a=='X'||a=='x')
+  printf(" = * * ="); 
+  else if(a=='Y'||a=='y')
+  printf(" = * = ="); 
+  else if(a=='Z'||a=='z')
+  printf(" = = * *");                 
+  }
+  
+  //system("PAUSE");	
+  return 0;
+}
+

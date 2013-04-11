@@ -1,0 +1,27 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+using namespace std;
+int main()
+{
+	for(int a=165;a<=185;a++)
+	{
+		for(int b=165;b<=185;b++)
+		{
+			for(int c=165;c<=185;c++)
+			{
+				for(int d=165;d<=185;d++)
+				{
+					int t=a-b;
+					int te=abs(a-d);
+					int tem=(b+c);
+					int temp=a+b+c;
+					if( t>=5&&t<=10 && te>=2&&te<=12 && tem==350 && temp==d*3)
+						cout<<a<<" "<<b<<" "<<c<<" "<<d<<endl;
+				}
+			}
+		}
+	}
+	return 0;
+}

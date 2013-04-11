@@ -1,0 +1,39 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    long long t;
+    int H = 0,M = 0,S = 0;
+    cin >> t;
+    if(t==0)
+    {
+        cout<<H<<":"<<M<<":"<<S;
+    }
+    else if(t < 60)
+    {
+        S = t;
+        cout<<H<<":"<<M<<":"<<S;
+    }
+    else
+    {
+        while(1)
+        {
+            t = t - 60;
+            M++;
+            if(M >= 60)
+            {
+                M-=60;
+                H++;
+            }
+            if(t < 60)
+            {
+                S = t;
+                break;
+            }
+        }
+        cout<<H<<":"<<M<<":"<<S;
+    }
+    //system("pause");
+    return 0;
+}
+

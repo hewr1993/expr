@@ -1,0 +1,51 @@
+#include<stdio.h>
+//# include"zylib.h"
+typedef char* STRING;
+int main()
+{
+    /*变量定义，countryx为国家名，areax为相应国家面积，popx为相应国家人口，GDPx为相应国民生产总值。*/
+    STRING country1,country2,country3,country4,country5;
+    double area1,area2,area3,area4,area5;
+    double pop1,pop2,pop3,pop4,pop5;
+    double GDP1,GDP2,GDP3,GDP4,GDP5;
+    country1="China";
+    country2="Iceland";
+    country3="India";
+    country4="Madagascar";
+    country5="Maldive";
+    area1=960.00;
+    area2=10.30;
+    area3=297.47;
+    area4=62.70;
+    area5=0.0298;
+    pop1=129500.00;
+    pop2=27.57;
+    pop3=97000.00;
+    pop4=1635.00;
+    pop5=27.80;
+    GDP1=1080.00;
+    GDP2=8.20;
+    GDP3=264.80;
+    GDP4=3.60;
+    GDP5=0.23;
+    printf("-------------------------------------------------------
+");
+    printf("COUNTRY       AREA(10K km2)      POP(10K) GDP(Billion $)
+");
+    printf("-------------------------------------------------------
+");
+    printf("% -10.10s %16.2lf %13.2lf %12.2lf
+",country1,area1,pop1,GDP1);
+    printf("% -10.10s %16.2lf %13.2lf %12.2lf
+",country2,area2,pop2,GDP2);
+    printf("% -10.10s %16.2lf %13.2lf %12.2lf
+",country3,area3,pop3,GDP3);
+    printf("% -10.10s %16.2lf %13.2lf %12.2lf
+",country4,area4,pop4,GDP4);
+    printf("% -10.10s %16.4lf %13.2lf %12.2lf
+",country5,area5,pop5,GDP5);
+    printf("-------------------------------------------------------
+");
+    return 0;
+}
+

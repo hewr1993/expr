@@ -1,0 +1,9 @@
+#include <stdio.h>
+int main(){
+long long a,b;
+scanf("%I64d%I64d",&a,&b);
+printf("%I64d
+%.2lf",a*b,(double)a/b);
+return 0;
+}
+

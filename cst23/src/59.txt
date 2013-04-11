@@ -1,0 +1,17 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+int main()
+{
+    int banana=3,orange=2,grape=8;
+    int n_b,n_o,n_g;
+    
+    cin>>n_b>>n_o>>n_g;
+    cout<<3*n_b+2*n_o+8*n_g<<endl; 
+    
+     
+    system("pause");                         
+    return 0;
+} 
+

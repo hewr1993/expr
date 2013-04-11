@@ -1,0 +1,55 @@
+#include <iostream>
+using namespace std;
+
+long long int power(long long int a, long long int b,long long  int m)
+{
+	if (b >= 0)
+	{
+		if (b == 0)
+			return 1 % m;
+		else if (b == 1)
+			return a % m;
+		else if (b % 2 == 0)
+		{
+			long long int t = power(a, b / 2, m);
+			if (t > m / 2)
+				t = t - m;
+			return (t * t % m + m) % m;
+		}
+		else
+		{
+			long long int t = power(a, b - 1, m);
+			if (t > m / 2)
+				t = t - m;
+			return (t * (a % m) % m + m) % m;
+		}
+	}
+}
+
+long long int cal(long long int x, long long int n, long long int m)
+{
+	if (n == 1)
+	   return 1 % m;
+	else if (n % 2 == 0)
+		return cal(x, n / 2, m) * (1 + power(x, n / 2, m)) % m;
+	else
+		return (cal(x, n - 1, m) + power(x, n - 1, m)) % m;
+
+}
+
+int main()
+{
+    int T;
+	cin >> T;
+	long long int a[100];
+	int i;
+	for (i = 0; i < T; ++i)
+	{
+		long long int x, n, m;
+		cin >> x >> n >> m;
+		a[i] = cal(x, n, m);
+	}
+	for (i = 0; i < T; ++i)
+		cout << a[i] << endl;
+	return 0;
+}

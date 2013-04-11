@@ -1,0 +1,16 @@
+#include <iostream> 
+#include <cmath>
+using namespace std;
+int main()
+{
+	unsigned int num=0;
+	int p=0;
+	cin>>num;
+	p=num%2;
+	if (p==0)
+	{cout<<"even"<<endl;}
+	else 
+	{cout<<"odd"<<endl;}
+	return 0;
+}
+

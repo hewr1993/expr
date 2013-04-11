@@ -1,0 +1,86 @@
+
+#include <cstdio>
+#include <cstring>
+
+
+const int	size=44000;
+
+int	f[size][9],h[size],fa[size],a[9],b[9],e[9];
+bool	v[8][8][8][8][8][8][8];
+char	ans[size];
+int	i,j,temp;
+
+
+inline void change(int c)
+{
+	for (j=1;j<9;++j) b[j]=a[j];
+	
+	if (c==0)
+	{
+		for (j=1;j<5;++j)
+		{
+			temp=b[j]; b[j]=b[j+4]; b[j+4]=temp;
+		}
+	} else
+	if (c==1)
+	{
+		temp=b[4]; for (j=4;j>1;--j) b[j]=b[j-1]; b[1]=temp;
+		temp=b[8]; for (j=8;j>5;--j) b[j]=b[j-1]; b[5]=temp;
+	} else
+	{
+		temp=b[2]; b[2]=b[6]; b[6]=b[7]; b[7]=b[3]; b[3]=temp;
+	}
+}
+
+
+int main()
+{
+///	freopen("msquare.in","r",stdin);
+///	freopen("msquare.out","w",stdout);
+	
+	for (i=1;i<5;++i) scanf("%d",&e[i]);
+	for (i=1;i<5;++i) scanf("%d",&e[9-i]);
+	for (i=1;i<9;++i) if (e[i]==8) e[i]=0;
+	
+	memset(v,1,sizeof(v));
+	for (i=1;i<5;++i) f[1][i]=i;
+	for (i=1;i<5;++i) f[1][i+4]=9-i; f[1][5]=0;
+	v[1][2][3][4][0][7][6]=0;
+	
+	int	fi=1,la=1;
+	bool	suc=0,flag;
+	for (;fi<=la && !suc;++fi)
+	{
+		for (i=1;i<9;++i) a[i]=f[fi][i];
+		flag=1;
+		for (i=1;i<9 && flag;++i) if (a[i]!=e[i]) flag=0;
+		if (flag) 
+		suc=flag;
+		for (i=0;i<3 && !suc;++i)
+		{
+			change(i);
+			if (!v[b[1]][b[2]][b[3]][b[4]][b[5]][b[6]][b[7]]) continue;
+			v[b[1]][b[2]][b[3]][b[4]][b[5]][b[6]][b[7]]=0;
+			h[++la]=i;
+			for (j=1;j<9;++j) f[la][j]=b[j];
+			fa[la]=fi;
+		}
+	}
+	i=fi-1; j=0;
+	for (;i>1;i=fa[i])
+	if (h[i]==0) ans[++j]='A'; else
+	if (h[i]==1) ans[++j]='B'; else
+	if (h[i]==2) ans[++j]='C';
+	
+	printf("%d
+",j); if (j==0) printf("
+");
+	for (i=j;i>0;--i)
+	if ((j-i+1)%60==0) printf("%c
+",ans[i]); else printf("%c",ans[i]);
+	if (j%60!=0) printf("
+");
+	
+	return 0;
+}
+

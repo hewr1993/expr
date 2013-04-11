@@ -1,0 +1,78 @@
+//By Lin
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<iostream>
+#define maxn 100005
+using namespace std;
+typedef long long LL; 
+
+int		root[maxn],L[maxn],c[maxn],n,que[maxn],m,cnt;
+
+struct	Node{
+	int key,l,r,size; 
+	LL	sum; 
+}tree[maxn];
+
+struct	Edge{
+	int to; 
+	Edge *next; 
+}*mat[maxn],edges[maxn]; 
+void	link(int x, int to )
+{
+	edges[cnt].to = to; 
+	edges[cnt].next = mat[x]; 
+	mat[x] = &edges[cnt++];
+}
+
+int		Meger(int a ,int b ) 
+{
+	if ( a == 0 ) return b; 
+	if ( b == 0 ) return a; 
+	if ( tree[a].key < tree[b].key ) swap( a , b );
+	tree[a].r = Meger( tree[a].r , b ); 
+	if ( tree[tree[a].l].size < tree[tree[a].r].size ) swap( tree[a].l , tree[a].r ); 
+	tree[a].size = tree[tree[a].l].size + tree[tree[a].r].size + 1; 
+	tree[a].sum = tree[tree[a].l].sum + tree[tree[a].r].sum + tree[a].key; 
+	return a; 
+}
+
+int		main()
+{
+	int x , y; 
+	scanf("%d%d", &n , &m );
+	for (int i = 1; i<=n; i++) {
+		scanf("%d%d%d", &x , &c[i] , &L[i] );
+		link( x , i ); 
+	}
+	int g = 0 , h = 0; 
+	que[h++] = 0; 
+	while ( g < h ) {
+		int i = que[g++]; 
+		for ( Edge *p = mat[i]; p ; p = p->next ) que[h++] = p->to; 
+	}
+	cnt = 0; 
+	LL ans = 0; 
+	for (int j = n; j>=1; j--) {
+		int i = que[j];
+		if ( c[i] <= m ) 
+		{
+			root[i] = ++cnt; 
+			tree[cnt].sum = tree[cnt].key = c[i];
+			tree[cnt].size = 1; 
+			tree[cnt].l = tree[cnt].r = 0;
+		}
+		else root[i] = 0; 
+
+		for (Edge *p = mat[i]; p ; p = p->next ) {
+			int to = p->to; 
+			root[i] = Meger( root[i] , root[to] );
+			while ( tree[root[i]].sum >m ) 
+				root[i] = Meger( tree[root[i]].l , tree[root[i]].r );
+		}
+		ans = max( (LL)tree[root[i]].size * L[i] , ans ); 
+	}
+	cout<<ans<<endl;
+	return 0; 
+}
+

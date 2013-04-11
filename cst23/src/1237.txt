@@ -1,0 +1,70 @@
+var x,y,w,vn,en,suc,f:array[0..400000] of longint;
+	d,vd:array[0..20000] of longint;
+	p,ans,n,m,i,s,t,l:longint;
+procedure ae(a,b,c:longint);
+begin
+	inc(p);en[p]:=vn[a];vn[a]:=p;suc[p]:=b;f[p]:=c;
+end;
+procedure qs(l,r:longint);
+var i,j,t,m:longint;
+begin
+	i:=l;j:=r;
+	m:=w[(l+r) div 2];
+		repeat
+			while w[i]<m do inc(i);
+			while w[j]>m do dec(j);
+				if i<=j then 
+					begin
+						t:=x[i];x[i]:=x[j];x[j]:=t;
+						t:=y[i];y[i]:=y[j];y[j]:=t;
+						t:=w[i];w[i]:=w[j];w[j]:=t;
+						inc(i);dec(j);
+					end;
+		until i>j;
+	if i<r then qs(i,r);
+	if j>l then qs(l,j);
+end;
+function dfs(u,flow:longint):longint;
+var p,v,tmp:longint;
+begin
+	if u=t then exit(flow);
+	p:=vn[u];dfs:=0;
+		while p<>0 do
+			begin
+				v:=suc[p];
+					if (d[v]=d[u]-1) and (f[p]>0) then
+						begin
+							tmp:=dfs(v,1);
+							inc(dfs,tmp);
+							dec(f[p],tmp);
+							if p mod 2=0 then inc(f[p-1],tmp) else inc(f[p+1],tmp);
+							if dfs=flow then exit;
+						end;
+				p:=en[p];
+			end;
+	if d[s]=n then exit;
+	dec(vd[d[u]]);
+	if vd[d[u]]=0 then begin d[s]:=n;exit;end;
+	inc(d[u]);inc(vd[d[u]]);
+end;
+begin
+	readln(n,m);
+	for i:=1 to m do
+		read(x[i],y[i],w[i]);
+	qs(1,m);	
+	readln(s,t,l);
+	for i:=1 to m do
+		if w[i]>=l then break else begin ae(x[i],y[i],1);ae(y[i],x[i],1);end;
+	vd[0]:=n;
+	while d[s]<n do
+		inc(ans,dfs(s,maxlongint));
+	for i:=1 to n do
+		begin d[i]:=0;vd[i]:=0;vn[i]:=0;end;
+	p:=0;
+	for i:=m downto 1 do
+		if w[i]<=l then break else begin ae(x[i],y[i],1);ae(y[i],x[i],1);end;
+	vd[0]:=n;
+	while d[s]<n do
+		inc(ans,dfs(s,maxlongint));
+	writeln(ans);
+end.

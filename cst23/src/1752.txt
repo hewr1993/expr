@@ -1,0 +1,68 @@
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <list>
+#include <deque>
+#include <queue>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <string>
+#include <string.h>
+#include <cmath>
+#include <cassert>
+#include <ext/hash_set>
+#include <ext/hash_map>
+using namespace std;
+using namespace __gnu_cxx;
+
+#define int64 long long
+#define real long double
+#define xx first
+#define yy second
+#define ff q.front()
+#define rr q.back()
+#define all(x) (x).begin(), (x).end()
+#define push_pair(x, y) push_back(make_pair(x, y))
+#define vci vector <int>
+#define vcs vector <string>
+#define vcd vector <double>
+#define vci64 vector <long long>
+#define eps (1e-9L)
+#define ifn (1000000000L)
+#define maxint (2147483647)
+#define pi (3.14159265358979323846264338327950288419716939937510L)
+
+int a[1005], b[1005], f[1005], g[1005];
+int n, s1, s2 = maxint;
+
+int main()
+{
+    scanf("%d", &n);
+    for (int i = 1; i <= n; ++i)
+        scanf("%d", &a[i]);
+    a[++n] = 1;
+    while (a[++s1] != 1) --n;
+    memmove(&a[1], &a[s1], n << 2);
+    while (a[n] == 1) --n;
+    for (int i = 1; i <= n; ++i) {
+        b[i] = b[i - 1] + (a[i] == 1);
+        f[i] = f[i - 1] + 1;
+        if (a[i] == 2) f[i] += 2;
+        g[i] = g[i - 1] + 1;
+        if (a[i] == 3) g[i] += 2;
+        f[i] = min(f[i], g[i] + b[i]);
+        g[i] = min(g[i], f[i] + b[i]);
+    }
+    bool v2 = 0, v3 = 0;
+    for (int i = n; i >= 0 && !(v2 && v3); --i) {
+        if (a[i] == 2) v2 = true;
+        if (a[i] == 3) v3 = true;
+        s2 = min(s2,f[i] + b[i] + (n - i) * 2);
+        s2 = min(s2,g[i] + b[i] + (n - i) * 2);
+    }
+    printf("%d", s1 + s2 - 1);
+    
+    return 0;
+}
+

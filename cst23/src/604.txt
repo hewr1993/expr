@@ -1,0 +1,28 @@
+#include <stdio.h>
+int main()
+{
+	int n,m,i,z,x,c,v,k,t;
+    scanf("%d%d",&n,&m);
+	for(i=1;i<=n;++i)
+	{
+		k=2*i-1;
+		t=2*n-k;
+		for(z=(n-i-1);z>=0;--z)
+
+			printf(" ");
+
+		for(x=1;x<=k;++x)
+
+			printf("*");
+
+		for(c=1;c<=m+n-1;++c)
+
+			printf(" ");
+
+		for(v=1;v<=t;++v)
+			printf("*");
+		printf("
+");
+	}
+	return 0;
+}

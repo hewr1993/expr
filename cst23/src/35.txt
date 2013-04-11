@@ -1,0 +1,358 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+using namespace std;
+const int maxn=1505;
+int map[maxn][maxn];
+int s[maxn][maxn];
+int k_tot[maxn][maxn];
+int k_lu[maxn][maxn];
+int k_ru[maxn][maxn];
+int k_ld[maxn][maxn];
+int k_rd[maxn][maxn];
+int ans;
+int n,m,k;
+void init()
+{
+    scanf("%d%d%d",&n,&m,&k);
+    for (int i=1;i<=n;i++)
+        for (int j=1;j<=m;j++)
+            scanf("%d",&map[i][j]);
+    for (int i=1;i<=n;i++)
+        for (int j=1;j<=m;j++)
+            s[i][j]=s[i][j-1]+s[i-1][j]-s[i-1][j-1]+map[i][j];
+    for (int i=1;i<=n-k+1;i++)
+        for (int j=1;j<=m-k+1;j++)
+            k_tot[i][j]=s[i+k-1][j+k-1]-s[i+k-1][j-1]-s[i-1][j+k-1]+s[i-1][j-1];
+}
+void work()
+{
+    for (int i=k;i<=n;i++)
+        for (int j=k;j<=m;j++)
+        {
+            k_lu[i][j]=max(k_lu[i-1][j],k_lu[i][j-1]);
+            k_lu[i][j]=max(k_lu[i][j],k_tot[i-k+1][j-k+1]);
+        }
+    for (int i=k;i<=n;i++)
+        for (int j=m-k+1;j>=1;j--)
+        {
+            k_ru[i][j]=max(k_ru[i-1][j],k_ru[i][j+1]);
+            k_ru[i][j]=max(k_ru[i][j],k_tot[i-k+1][j]);
+        }
+    for (int i=n-k+1;i>=1;i--)
+        for (int j=k;j<=m;j++)
+        {
+            k_ld[i][j]=max(k_ld[i+1][j],k_ld[i][j-1]);
+            k_ld[i][j]=max(k_ld[i][j],k_tot[i][j-k+1]);
+        }
+    for (int i=n-k+1;i>=1;i--)
+        for (int j=m-k+1;j>=1;j--)
+        {
+            k_rd[i][j]=max(k_rd[i+1][j],k_rd[i][j+1]);
+            k_rd[i][j]=max(k_rd[i][j],k_tot[i][j]);
+        }
+}
+void print()
+{
+    //左中右 
+    for (int i=1;i+k-1<=n;i++)
+        for (int j=k;j+k<=m;j++)
+            ans=max(ans,k_tot[i][j]+k_ld[1][j-1]+k_rd[1][j+k]);
+    //上中下 
+    for (int i=k;i+k<=n;i++)
+        for (int j=1;j+k-1<=m;j++)
+            ans=max(ans,k_tot[i][j]+k_ru[i-1][1]+k_rd[i+k][1]);
+    //上+左右 
+    for (int i=k;i+k-1<=n;i++)
+        for (int j=k;j+k-1<=m;j++)
+            ans=max(ans,k_ru[i][1]+k_ld[i+1][j]+k_rd[i+1][j+1]);
+    //下+左右 
+    for (int i=k;i+k-1<=n;i++)
+        for (int j=1;j+k-1<=m;j++)
+            ans=max(ans,k_rd[i][1]+k_lu[i-1][j]+k_ru[i-1][j+1]);
+    //左+上下 
+    for (int i=k;i+k-1<=n;i++)
+        for (int j=1;j+k-1<=m;j++)
+            ans=max(ans,k_ld[1][j]+k_ru[i][j+1]+k_rd[i+1][j+1]);
+    //右+上下
+    for (int i=k;i+k-1<=n;i++)
+        for (int j=1;j+k-1<=m;j++)
+            ans=max(ans,k_rd[1][j]+k_lu[i][j-1]+k_ld[i+1][j-1]);
+    printf("%d
+",ans);
+}
+int main()
+{
+    init();
+    work();
+    print();
+    return 0;
+}
+/*treap
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<vector>
+#include<algorithm>
+using namespace std;
+const int maxn=10005;
+struct Tnode
+{
+	int key,weight;
+	int lch,rch;
+	int s;
+};
+Tnode a[maxn];
+int n,m;
+int ans;
+int root[maxn];
+int sum[maxn];
+vector<int> son[maxn];
+vector<int> len[maxn];
+vector<int> q;
+	
+
+void update(int root)
+{
+	a[root].s=a[a[root].lch].s+a[a[root].rch].s+1;
+}
+void L_rotate(int &root)
+{
+	int tmp=a[root].rch;
+	a[root].rch=a[tmp].lch;
+	a[tmp].lch=root;
+	update(root);
+	root=tmp;
+}
+void R_rotate(int &root)
+{
+	int tmp=a[root].lch;
+	a[root].lch=a[tmp].rch;
+	a[tmp].rch=root;
+	update(root);
+	root=tmp;
+}
+void insert(int &root,int k)
+{
+	if (root==0)
+	{
+		root=k;
+		a[k].lch=a[k].rch=0;
+		a[k].weight=rand();
+		a[k].s=1;
+		return;
+	}
+	else
+	{
+		if (a[k].key<a[root].key)
+		{
+			insert(a[root].lch,k);
+			if (a[root].weight>a[k].weight)
+				R_rotate(root);
+		}
+		else
+		{
+			insert(a[root].rch,k);
+			if (a[root].weight>a[k].weight)
+				L_rotate(root);
+		}
+		update(root);
+	}
+}
+int get_num(int &root,int x)
+{
+	if (root==0)
+		return 0;
+	if (a[root].key<=x)
+		return a[a[root].lch].s+1+get_num(a[root].rch,x);
+	else
+		return get_num(a[root].lch,x);
+}
+void init()
+{
+	int x,y,z;
+	for (int i=1;i<n;i++)
+	{
+		scanf("%d%d%d",&x,&y,&z);
+		son[x].push_back(y);
+		son[y].push_back(x);
+		len[x].push_back(z);
+		len[y].push_back(z);
+	}
+	
+}
+void dfs(int now,int fa)
+{
+	q.push_back(now);
+	for (int i=0;i<son[now].size();i++)
+		if (son[now][i]!=fa)
+			dfs(son[now][i],now);
+}
+void calc(int k,int fa)
+{
+	
+}
+void work()
+{
+	calc(1,-1);
+	cout<<ans<<endl;
+}
+int main()
+{
+	while (1)
+	{
+		scanf("%d%d",&n,&m);
+		if (n==0)
+			break;
+		for (int i=0;i<maxn;i++)
+		{
+			son[i].clear();
+			len[i].clear();
+		}
+		ans=0;
+		memset(root,0,sizeof(root));
+		memset(sum,0,sizeof(sum));
+		init();
+		work();
+	}
+	return 0;
+}
+*/
+/*Dinic
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<vector>
+#include<algorithm>
+using namespace std;
+const int maxm=600005;
+const int maxn=60005;
+const int ERROR=200000000;
+int n,m,s,t;
+struct Tedge
+{
+	int u,v;
+	int c;
+	int ne;
+} ;
+Tedge e[ maxm ] ;
+int back,maxflow;
+int lst[maxn];
+int prev[maxn];
+int dis[maxn];
+int num=1;
+int sum=0;
+int q[maxn];
+
+void add_edge(int u,int v,int c)
+{
+	num++;
+	e[num].u=u;
+	e[num].v=v;
+	e[num].c=c;
+	e[num].ne=lst[u];
+	lst[u]=num;
+	num++;
+	e[num].u=v;
+	e[num].v=u;
+	e[num].c=0;
+	e[num].ne=lst[v];
+	lst[v]=num;
+}
+void init()
+{
+	scanf("%d%d",&n,&m);
+	s=n+m+1;
+	t=n+m+2;
+	int x,y,z;
+	for (int i=1;i<=n;i++)
+	{
+		scanf("%d",&x);
+		add_edge(m+i,t,x);
+	}
+	for (int i=1;i<=m;i++)
+	{
+		scanf("%d%d%d",&x,&y,&z);
+		add_edge(s,i,z);
+		add_edge(i,m+x,ERROR);
+		add_edge(i,m+y,ERROR);
+		sum+=z;
+	}
+}
+bool BFS()
+{
+	int head=0;
+	int tail=1;
+	memset(dis,-1,sizeof(dis));
+	dis[s]=0;
+	q[1]=s;
+	while (head<tail)
+	{
+		head++;
+		int now=q[head];
+		for (int i=lst[now];i>0;i=e[i].ne)
+			if (dis[e[i].v]==-1 && e[i].c>0)
+			{
+				dis[e[i].v]=dis[now]+1;
+				tail++;
+				q[tail]=e[i].v;
+			}
+	}
+	back=t;
+	return dis[t]>-1;
+}
+void Push()
+{
+	int flow=1<<30;
+	for (int i=t;i!=s;i=e[prev[i]].u)
+		flow=min(flow,e[prev[i]].c);
+	maxflow+=flow;
+	for (int i=t;i!=s;i=e[prev[i]].u)
+	{
+		e[prev[i]].c-=flow;
+		if (e[prev[i]].c==0)
+			back=e[prev[i]].u;
+		e[prev[i]^1].c+=flow;
+		
+	}
+	
+}
+void Dinic(int now)
+{
+	if (now==t)
+	{
+		Push();
+		return;
+	}
+	for (int i=lst[now];i>0;i=e[i].ne)
+		if (dis[now]+1==dis[e[i].v] && e[i].c>0)
+		{
+			prev[e[i].v]=i;
+			Dinic(e[i].v);
+			if (dis[now]>dis[back])
+				return;
+			back=t;
+		}
+	dis[now]=-1;
+}
+void work()
+{
+	while (BFS())
+		Dinic(s);
+	printf("%d
+",sum-maxflow);
+}
+int main()
+{
+	init();
+	work();
+	return 0;
+}
+*/
+/*
+
+*/
+

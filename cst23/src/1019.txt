@@ -1,0 +1,121 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+int bitch(char a[100])
+{
+ if(strlen(a)>32)return 0;
+ else return 1;
+}
+int shit(char a[32])
+{
+ int i;
+ for(i=0;i<strlen(a);i++)
+ {
+   if((a[i]>57||a[i]<48)&&a[i]<65)
+   {
+    return 0;
+    break;
+   }
+   else if(a[i]>90&&a[i]!=95&&a[i]<97)
+   {
+    return 0;
+    break;
+   }
+   else if(a[i]>122)
+   {
+    return 0;
+    break;
+   }
+ }
+ return 1;
+}
+int jerk(char a[32])
+{
+ if(a[0]>=65&&a[0]<=90)return 1;
+ else if(a[0]==95)return 1;
+ else if(a[0]>=97&&a[0]<=122)return 1;
+ else return 0;
+}
+int fuck(char a[32])
+{
+ if(strcmp(a,"auto")==0)return 0;                   
+ else if(strcmp(a,"break")==0)return 0;
+ else if(strcmp(a,"case")==0)return 0;
+ else if(strcmp(a,"char")==0)return 0;
+ else if(strcmp(a,"const")==0)return 0; 
+ else if(strcmp(a,"continue")==0)return 0;
+ else if(strcmp(a,"default")==0)return 0;
+ else if(strcmp(a,"do")==0)return 0;
+ else if(strcmp(a,"double")==0)return 0;
+ else if(strcmp(a,"else")==0)return 0;
+ else if(strcmp(a,"enum")==0)return 0;
+ else if(strcmp(a,"extern")==0)return 0;
+ else if(strcmp(a,"float")==0)return 0;
+ else if(strcmp(a,"for")==0)return 0;
+ else if(strcmp(a,"goto")==0)return 0;
+ else if(strcmp(a,"if")==0)return 0;
+ else if(strcmp(a,"int")==0)return 0;
+ else if(strcmp(a,"long")==0)return 0;
+ else if(strcmp(a,"register")==0)return 0;
+ else if(strcmp(a,"return")==0)return 0;
+ else if(strcmp(a,"short")==0)return 0;
+ else if(strcmp(a,"signed")==0)return 0;
+ else if(strcmp(a,"sizeof")==0)return 0;
+ else if(strcmp(a,"static")==0)return 0;
+ else if(strcmp(a,"struct")==0)return 0;
+ else if(strcmp(a,"switch")==0)return 0;
+ else if(strcmp(a,"typedef")==0)return 0;
+ else if(strcmp(a,"union")==0)return 0;
+ else if(strcmp(a,"unsigned")==0)return 0;
+ else if(strcmp(a,"void")==0)return 0;
+ else if(strcmp(a,"volatile")==0)return 0;
+ else if(strcmp(a,"while")==0)return 0;
+ else return 1;
+}
+int main()
+{
+ char a[100];
+ int f,g=1;
+ gets(a);
+ f=bitch(a);
+ g=g*f;
+ if(g==0)
+ {
+  printf("no
+");
+  system("pause");
+  return 0;
+ }
+ f=shit(a);
+ g=g*f;
+ if(g==0)
+ {
+  printf("no
+");
+  system("pause");
+  return 0;
+ }
+ f=jerk(a);
+ g=g*f;
+ if(g==0)
+ {
+  printf("no
+");
+  system("pause");
+  return 0;
+ }
+ f=fuck(a);
+ g=g*f;
+ if(g==0)
+ {
+  printf("no
+");
+  system("pause");
+  return 0;
+ }
+ printf("yes
+");
+ system("pause");
+ return 0;
+}
+

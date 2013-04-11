@@ -1,0 +1,39 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <map>
+#include <set>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
+using namespace std;
+
+typedef long long int64;
+typedef unsigned long long qword;
+template <class T> T abs_val(T x) { return x > 0 ? x : -x; }
+template <class T> T sqr(T x) { return x*x; }
+template <class T> T gcd(T a, T b) { return b == 0 ? a : gcd(b, a%b); }
+#define fillchar(a, x) memset(a, x, sizeof(a))
+#define forn(i, n) for (int i = 0; i < (int)(n); ++ i)
+#define forint(i, s, t) for (int i = (int)(s); i <= (int)(t); ++ i)
+#define forintdown(i, s, t) for (int i = (int)(s); i >= (int)(t); -- i)
+
+const int64 LIMIT = (int64)1E8;
+const double EULER = 0.577215664901532860606512090082402431;
+
+int main() {
+	int64 N;
+	double W, ans = 0.0;
+	cin >> N >> W;
+	if (N < LIMIT) {
+		forint (i, 1, N)
+			ans += 1.0 / (double)i;
+	} else {
+		ans = EULER + log((double)N);
+	}
+	ans = ans * W * 0.5 - 1E-6;
+	int64 ans_n = (int64)ans;
+	cout << ans_n << endl;
+	return 0;
+}

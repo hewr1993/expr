@@ -1,0 +1,53 @@
+/*A1101. 格子位置
+问题描述
+　　输入三个自然数N，i，j （1<=i<=N，1<=j<=N），输出在一个N*N格的棋盘中，
+	与格子（i，j）同行、同列、同一对角线的所有格子的位置。
+	输入格式
+　　输入共三行，分别输入自然数N，i，j。其中保证N<=24且1<=i<=N，1<=j<=N。
+输出格式
+　　输出共四行。第一行为与格子（i，j）同行的所有格子的位置，
+	第二行为与格子（i，j）同列的所有格子的位置，第三行为从左上到右下对角线上
+	的格子的位置，第四行为从左下到右上对角线上的格子的位置。*/
+	
+#include<iostream>
+#include<cstdlib>
+using namespace std;
+
+int main()
+{
+	int n,x,y;
+	cin>>n>>x>>y;//xy即ij 
+	for(int i=1;i<=n;i++)
+		cout<<"("<<x<<","<<i<<")";
+	cout<<endl;
+	for(int i=1;i<=n;i++)
+		cout<<"("<<i<<","<<y<<")";
+	cout<<endl;
+	if(x<=y)
+	{
+		for(int i=1,j=y-x+1;j<=n;i++,j++)
+			cout<<"("<<i<<","<<j<<")";
+		cout<<endl;
+	}
+	else
+	{
+		for(int j=1,i=x-y+1;i<=n;i++,j++)
+			cout<<"("<<i<<","<<j<<")";
+		cout<<endl;
+	}
+	if(x+y>n)
+	{
+		for(int j=x+y-n,i=n;j<=n;i--,j++)
+			cout<<"("<<i<<","<<j<<")";
+		cout<<endl;
+	}
+	else
+	{
+		for(int i=x+y-1,j=1;i>=1;j++,i--)
+			cout<<"("<<i<<","<<j<<")";
+		cout<<endl;
+	}
+	system("pause");
+	return 0;
+}
+

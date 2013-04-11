@@ -1,0 +1,18 @@
+#include<iostream>
+
+using namespace std;
+int main()
+{
+    int a,b,c,d,e,f;
+    int x=0,y=0;
+    cin>>a>>b>>c>>d>>e>>f;
+    int d1=0,d2=0,d0=0;
+    d0=a*e-b*d;
+    d1=c*e-b*f;
+    d2=a*f-c*d;
+    x=d1/d0;
+    y=d2/d0;
+    
+    cout<<x<<" "<<y;
+    return 0;
+}    

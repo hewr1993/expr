@@ -1,0 +1,66 @@
+#include <cstdio>
+#include <cstdlib>
+int n,m;
+int rail[2000];
+int pack[2000];
+int sum[2000];
+int bag[2000];
+int tot;
+int res;
+int l,r,mid;
+int cmp(const void *a,const void *b){
+    return *(int *)a-*(int *)b;
+}
+int CMP(const void *a,const void *b){
+    return *(int *)b-*(int *)a;
+}
+bool dfs(int d,int a){
+     if (d==0) return true;
+     if (res>tot-sum[mid]) return false;
+     for (int i=a;i<=n;i++){
+         if (bag[i]>=rail[d]){
+                             bag[i]-=rail[d];
+                             if (bag[i]<rail[1]) res+=bag[i];
+                             if (rail[d]==rail[d-1]){
+                                 if (dfs(d-1,i)) return true;
+                             }else if (dfs(d-1,1)) return true;
+                             if (bag[i]<rail[1]) res-=bag[i];
+                             bag[i]+=rail[d];
+         }
+     }
+     return false;
+}
+int main(){
+    scanf("%d",&n);
+    for (int i=1;i<=n;i++){
+        scanf("%d",&pack[i]);
+        tot+=pack[i];
+    }
+    scanf("%d",&m);
+    for (int i=1;i<=m;i++){
+        scanf("%d",&rail[i]);
+    }
+    qsort(pack+1,n,sizeof(int),cmp);
+    qsort(rail+1,m,sizeof(int),cmp);
+    for (int i=1;i<=m;i++){
+        sum[i]=sum[i-1]+rail[i];
+    }
+    l=0,r=m;
+    while (sum[r]>tot) r--;
+    mid=(l + r) >> 1;
+    while (l<=r){
+          for (int i=1;i<=n;i++) bag[i]=pack[i];
+          res=0;
+          if (dfs(mid,1)){
+                          l=mid+1;
+                          mid=(l + r) >> 1;
+          }else{
+                r=mid-1;
+                mid=(l + r) >> 1;
+          }
+    }
+    int ans=mid;
+    printf("%d
+",ans);
+    return 0;
+}

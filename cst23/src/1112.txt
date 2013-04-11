@@ -1,0 +1,93 @@
+#include <cmath>
+#include <queue>
+#include <cstdio>
+#include <iomanip>
+#include <cstring>
+#include <utility>
+#include <iostream>
+
+#define CS					const static
+#define Rep(i,l,r)				for(int i = (l) ; i <= (r) ; i++)
+#define RepC(i,l,r)				for(int i = (l) , _ = (r) ; i <= _ ; i++)
+#define RepD(i,l,r)				for(int i = (l) ; i >= (r) ; i--)
+#define RepN(x,y,k)				for(int k = (x) ; k ; k = y[k])
+#define INOUT(x,y)				freopen(x,"r",stdin) , freopen(y,"w",stdout)
+#define MP(x,y)					make_pair(x,y)
+#define PII					pair <int , int>
+#define FI					first
+#define SE					second
+#define LL					long long
+#define LB					long double
+
+using namespace std ;
+
+inline int RD()		{int x ; scanf("%d",&x) ; return x ;}
+inline int RD(int & x)	{return x = RD() ;}
+inline int RD(int & x,int & y)	{RD(x) ; RD(y) ;}
+inline int RD(int & x,int & y,int & z)	{RD(x,y) ; RD(z) ;}
+
+#define f(x,y)					f[x][y+10]
+
+CS int N = 2010 , M = 20010 ;
+
+struct EDGE
+{
+	int H,W,y;
+}edge[M] ;
+
+bool vis[M][20] ;
+int f[M][20] ;
+
+int head[N] , nxt[M] ;
+
+int n,m,c,tot ;
+
+void INS(int x,int y,int H,int W)
+{
+	edge[++tot].y = y ; edge[tot].H = H ; edge[tot].W = W ; nxt[tot] = head[x] ; head[x] = tot ;
+	edge[++tot].y = x ; edge[tot].H = H ; edge[tot].W = W ; nxt[tot] = head[y] ; head[y] = tot ;
+}
+
+int main()
+{
+	RD(n,m,c) ;
+
+	int u,v,H,W ; Rep(i,1,m)
+	{
+		RD(u,v) ;  RD(H,W) ;
+		INS(u,v,H,W) ;
+	}
+
+	memset(f,63,sizeof(f)) ;
+	f[0][0] = 0 ; vis[0][0] = true ; int ans = 2147483647 ;
+	queue <PII> q ;
+
+	for(q.push(MP(0,0)) ; !q.empty() ; q.pop())
+	{
+		PII nd = q.front() ;
+
+		int x = nd.FI , y = nd.SE ; vis[x][y] = false ;
+		int ux = edge[x].y , uH = edge[x].H + y ;
+
+		RepN(head[ux],nxt,k)
+			RepC(i,-(c>>1),(c>>1))
+			{
+				int h = edge[k].H , cost ;
+				if(h+i <= uH)
+					cost = f[x][y] + i * i + edge[k].W ;
+				else	cost = f[x][y] + i * i + edge[k].W + (h+i-uH) * c ;
+
+				if(f[k][i] > cost)
+				{
+					f[k][i] = cost ;
+					if(edge[k].y==n-1)	ans = min(ans , cost) ;
+					if(!vis[k][i])	q.push(MP(k,i)) , vis[k][i] = true ;
+				}
+			}
+	}
+
+	cout << ans << endl ;
+
+	return 0;
+}
+

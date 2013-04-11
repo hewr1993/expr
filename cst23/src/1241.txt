@@ -1,0 +1,199 @@
+#include<cstdio>
+#include<iostream>
+#include<vector>
+#include<set>
+#include<map>
+#include<utility>
+
+using namespace std;
+
+const int MaxN=12010;
+const int MaxDeep=15;
+
+int N;
+int c[MaxN];
+vector<pair<int,int> > v[MaxN];
+
+int pre_root[MaxN],depth[MaxN];
+vector<int> son[MaxN];
+map<int,multiset<int> > tree[MaxN];
+
+int used[MaxN],have[MaxN],most[MaxN],pre[MaxN];
+int head,tail,Q[MaxN];
+map<int,multiset<int> > heap[MaxDeep][MaxN];
+int dis[MaxDeep][MaxN],from[MaxDeep][MaxN];
+
+multiset<int> anspile;
+
+void build(int deep,int x,int last_root)
+{
+	used[Q[head=tail=1]=x]=1;
+	pre[x]=0;
+	while (head<=tail)
+	{
+		int now=Q[head++];
+		have[now]=1;
+		most[now]=0;
+		for (vector<pair<int,int> >::iterator it=v[now].begin();it!=v[now].end();++it)
+			if (!used[it->first])
+			{
+				used[Q[++tail]=it->first]=1;
+				pre[it->first]=now;
+			}
+	}
+	int root=Q[tail];
+	for (int k=tail;k>=1;--k)
+	{
+		int i=Q[k];
+		have[pre[i]]+=have[i];
+		most[pre[i]]=max(most[pre[i]],have[i]);
+		most[i]=max(most[i],tail-most[i]);
+		if (most[root]>most[i]) root=i;
+		used[i]=0;
+	}
+	used[root]=1;
+	pre_root[root]=last_root;
+	depth[root]=deep;
+	tree[root][c[root]].insert(0);
+	for (vector<pair<int,int> >::iterator it=v[root].begin();it!=v[root].end();++it)
+		if (!used[it->first])
+		{
+			son[root].push_back(it->first);
+			used[Q[head=tail=1]=it->first]=1;
+			dis[deep][it->first]=it->second;
+			while (head<=tail)
+			{
+				int now=Q[head++];
+				heap[deep][it->first][c[now]].insert(dis[deep][now]);
+				from[deep][now]=it->first;
+				for (vector<pair<int,int> >::iterator p=v[now].begin();p!=v[now].end();++p)
+					if (!used[p->first])
+					{
+						used[Q[++tail]=p->first]=1;
+						dis[deep][p->first]=dis[deep][now]+p->second;
+					}
+			}
+			for (int k=1;k<=tail;++k) used[Q[k]]=0;
+			for (map<int,multiset<int> >::iterator p=heap[deep][it->first].begin();p!=heap[deep][it->first].end();++p)
+				tree[root][p->first].insert(*p->second.begin());
+		}
+	for (map<int,multiset<int> >::iterator it=tree[root].begin();it!=tree[root].end();++it)
+		if (it->second.size()>=2)
+		{
+			multiset<int>::iterator p=it->second.begin();
+			int value=*p;
+			++p;
+			value+=*p;
+			anspile.insert(value);
+		}
+	for (vector<int>::iterator it=son[root].begin();it!=son[root].end();++it)
+		build(deep+1,*it,root);
+}
+
+void init()
+{
+	cin>>N;
+	for (int i=1;i<=N;++i)
+		scanf("%d",&c[i]);
+	for (int i=1;i<N;++i)
+	{
+		int x,y,w;
+		scanf("%d%d%d",&x,&y,&w);
+		v[x].push_back(make_pair(y,w));
+		v[y].push_back(make_pair(x,w));
+	}
+	build(1,1,0);
+}
+
+void erase(int deep,int root,int x)
+{
+	if (tree[root][c[x]].size()>=2)
+	{
+		multiset<int>::iterator it=tree[root][c[x]].begin();
+		int value=*it;
+		++it;
+		value+=*it;
+		anspile.erase(anspile.lower_bound(value));
+	}
+	if (root==x)
+		tree[root][c[x]].erase(0);
+	else
+	{
+		tree[root][c[x]].erase(tree[root][c[x]].lower_bound(*heap[deep][from[deep][x]][c[x]].begin()));
+		heap[deep][from[deep][x]][c[x]].erase(heap[deep][from[deep][x]][c[x]].lower_bound(dis[deep][x]));
+		if (!heap[deep][from[deep][x]][c[x]].empty())
+			tree[root][c[x]].insert(*heap[deep][from[deep][x]][c[x]].begin());
+	}
+	if (tree[root][c[x]].size()>=2)
+	{
+		multiset<int>::iterator it=tree[root][c[x]].begin();
+		int value=*it;
+		++it;
+		value+=*it;
+		anspile.insert(value);
+	}
+	if (deep>1) erase(deep-1,pre_root[root],x);
+}
+
+void insert(int deep,int root,int x)
+{
+	if (tree[root][c[x]].size()>=2)
+	{
+		multiset<int>::iterator it=tree[root][c[x]].begin();
+		int value=*it;
+		++it;
+		value+=*it;
+		anspile.erase(anspile.lower_bound(value));
+	}
+	if (root==x)
+		tree[root][c[x]].insert(0);
+	else
+	{
+		if (tree[root][c[x]].empty()||heap[deep][from[deep][x]][c[x]].empty())
+		{
+			tree[root][c[x]].insert(dis[deep][x]);
+			heap[deep][from[deep][x]][c[x]].insert(dis[deep][x]);
+		}
+		else
+		{
+			tree[root][c[x]].erase(tree[root][c[x]].lower_bound(*heap[deep][from[deep][x]][c[x]].begin()));
+			heap[deep][from[deep][x]][c[x]].insert(dis[deep][x]);
+			tree[root][c[x]].insert(*heap[deep][from[deep][x]][c[x]].begin());
+		}
+	}
+	if (tree[root][c[x]].size()>=2)
+	{
+		multiset<int>::iterator it=tree[root][c[x]].begin();
+		int value=*it;
+		++it;
+		value+=*it;
+		anspile.insert(value);
+	}
+	if (deep>1) insert(deep-1,pre_root[root],x);
+}
+
+void work()
+{
+	printf("%d
+",*anspile.begin());
+	int T;
+	cin>>T;
+	while (T--)
+	{
+		int x,y;
+		scanf("%d%d",&x,&y);
+		erase(depth[x],x,x);
+		c[x]=y;
+		insert(depth[x],x,x);
+		printf("%d
+",*anspile.begin());
+	}
+}
+
+int main()
+{
+	init();
+	work();
+	return 0;
+}
+

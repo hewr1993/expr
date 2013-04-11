@@ -1,0 +1,43 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+using namespace std;
+int a[20000],b[20000],c[20000];
+int cmp(const void *x,const void *y)
+{
+	int *px=(int *)x;
+	int *py=(int *)y;
+	return (*px)-(*py);
+}
+
+int main()
+{
+	int n;
+	cin>>n;
+	for(int i=0;i<n;i++)
+		cin>>a[i];
+	int nb=0;
+	int nc=0;	
+	for(int i=0;i<n;i++)
+	{
+		if(a[i]%2!=0)
+		{
+			b[nb]=a[i];
+			nb++;
+		}
+		else
+		{
+			c[nc]=a[i];
+			nc++;
+		}
+	}
+	qsort(b,nb,sizeof(b[0]),cmp);
+	qsort(c,nc,sizeof(c[0]),cmp);
+	for(int i=0;i<nb;i++)
+		cout<<b[i]<<" ";
+	for(int i=0;i<nc;i++)
+		cout<<c[i]<<" ";
+	cout<<endl;
+	return 0;
+}

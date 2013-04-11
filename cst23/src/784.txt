@@ -1,0 +1,19 @@
+#include <iostream>
+#include <algorithm>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <fstream>
+
+using namespace std;
+
+void process()
+{
+	ifstream fin("hello.txt");
+int a;
+fin>>a;
+int x=a*a;
+cout<<x<<endl;
+
+}
+

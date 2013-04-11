@@ -1,0 +1,37 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+main()
+{
+       char  s1[1000],s2[1000];
+       int  a[101],b[101],c[1000];
+       memset (s1,0,sizeof(s1));
+       memset (s2,0,sizeof(s2));
+       memset (a,0,sizeof(a));
+       memset (b,0,sizeof(b));
+       memset (c,0,sizeof(c));
+       cin>>s1>>s2;
+       int  i,j=0;
+       for(i=strlen(s1)-1;i>=0;i--,j++)  a[j]=s1[i]-'0';
+       for(i=strlen(s2)-1,j=0;i>=0;i--,j++) b[j]=s2[i]-'0'; 
+       
+    //   for(j=0;j<=max(strlen(s1),strlen(s2))-1;j++)
+    ///   { cout<<a[j];                                                   }
+    //               cout<<endl;
+    //                                            for(j=0;j<=max(strlen(s1),strlen(s2))-1;j++)
+      // {       cout<<b[j];                                               }
+  //     cout<<endl;
+  
+  
+       for(i=0;i<max(strlen(s1),strlen(s2));i++)
+       {
+         c[i]=a[i]+b[i]+c[i]; 
+         c[i+1]=c[i]/10;
+         c[i] %= 10; 
+        }
+        //i-=2;//
+        if (c[i]==0)i--; 
+        for(i;i>=0;i--)  cout<<c[i];
+   //     system("pause");
+      }
+

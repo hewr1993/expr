@@ -1,0 +1,551 @@
+<?php
+	echo html_entity_decode("Program Weight;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("{$APPTYPE CONSOLE}");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("Const
+");
+	echo html_entity_decode("  MaxN=410;
+");
+	echo html_entity_decode("  MaxM=200;
+");
+	echo html_entity_decode("  MaxNum=100000000;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("Type
+");
+	echo html_entity_decode("  TLinkPo=^TLinkNode;
+");
+	echo html_entity_decode("  TLinkNode=Record
+");
+	echo html_entity_decode("    X,Now,Max:Longint;
+");
+	echo html_entity_decode("    Next,Other:TLinkPo;
+");
+	echo html_entity_decode("  End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("Var
+");
+	echo html_entity_decode("  G                     :Array[0..MaxM] Of TLinkPo;
+");
+	echo html_entity_decode("  V,W                   :Array[0..MaxN,1..2] Of Longint;
+");
+	echo html_entity_decode("  D                     :Array[0..MaxM] of Longint;
+");
+	echo html_entity_decode("  Ans                   :Array[0..MaxN,1..2] Of Longint;
+");
+	echo html_entity_decode("  N,M                   :Longint;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("  Function TryIt:Boolean;
+");
+	echo html_entity_decode("  Var
+");
+	echo html_entity_decode("    E,H                 :Array[0..MaxM] Of Longint;
+");
+	echo html_entity_decode("    Cu                  :Array[0..MaxM] Of TLinkPo;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("    Procedure GenGraph;
+");
+	echo html_entity_decode("    Var
+");
+	echo html_entity_decode("      I                 :Longint;
+");
+	echo html_entity_decode("      S                 :Array[0..MaxM] Of Longint;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("      Procedure NewLine(X,Y,Max:Longint);
+");
+	echo html_entity_decode("      Var
+");
+	echo html_entity_decode("        P               :TlinkPo;
+");
+	echo html_entity_decode("      Begin
+");
+	echo html_entity_decode("        New(P);
+");
+	echo html_entity_decode("        P^.X:=Y;
+");
+	echo html_entity_decode("        P^.Max:=Max;
+");
+	echo html_entity_decode("        P^.Now:=0;
+");
+	echo html_entity_decode("        P^.Next:=G[X];
+");
+	echo html_entity_decode("        G[X]:=P;
+");
+	echo html_entity_decode("        New(P);
+");
+	echo html_entity_decode("        P^.X:=X;
+");
+	echo html_entity_decode("        P^.Max:=0;
+");
+	echo html_entity_decode("        P^.Now:=0;
+");
+	echo html_entity_decode("        P^.Next:=G[Y];
+");
+	echo html_entity_decode("        G[Y]:=P;
+");
+	echo html_entity_decode("        G[X]^.Other:=G[Y];
+");
+	echo html_entity_decode("        G[Y]^.Other:=G[X];
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("    Begin
+");
+	echo html_entity_decode("      For I:=0 To M+3 Do
+");
+	echo html_entity_decode("        G[I]:=Nil;
+");
+	echo html_entity_decode("      Fillchar(S,Sizeof(S),0);
+");
+	echo html_entity_decode("      For I:=1 To M Do Begin
+");
+	echo html_entity_decode("        S[I]:=-D[I];
+");
+	echo html_entity_decode("        If D[I]&gt;0 Then
+");
+	echo html_entity_decode("          Inc(S[M+2],D[I])
+");
+	echo html_entity_decode("        Else
+");
+	echo html_entity_decode("          Inc(S[M+1],D[I]);
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("      For I:=1 To N Do Begin
+");
+	echo html_entity_decode("        Inc(S[W[I,1]],V[I,1]);
+");
+	echo html_entity_decode("        Dec(S[W[I,2]],V[I,1]);
+");
+	echo html_entity_decode("        NewLine(W[I,2],W[I,1],V[I,2]-V[I,1]);
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("      NewLine(M+2,M+1,MaxNum);
+");
+	echo html_entity_decode("      For I:=1 To M+2 Do
+");
+	echo html_entity_decode("        If S[I]&gt;0 Then
+");
+	echo html_entity_decode("          NewLine(0,I,S[I])
+");
+	echo html_entity_decode("        Else
+");
+	echo html_entity_decode("          NewLine(I,M+3,-S[I]);
+");
+	echo html_entity_decode("    End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("    Procedure DoneFlow;
+");
+	echo html_entity_decode("    Type
+");
+	echo html_entity_decode("      TLink2Po=^TLink2Node;
+");
+	echo html_entity_decode("      TLink2Node=Record
+");
+	echo html_entity_decode("        X:Longint;
+");
+	echo html_entity_decode("        Next:TLink2Po;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("    Var
+");
+	echo html_entity_decode("      Head,R,P                  :TLink2Po;
+");
+	echo html_entity_decode("      I,Old                     :Longint;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("      Procedure Flow_Init;
+");
+	echo html_entity_decode("      Var
+");
+	echo html_entity_decode("        P                       :TLinkPo;
+");
+	echo html_entity_decode("        D,I                     :Longint;
+");
+	echo html_entity_decode("      Begin
+");
+	echo html_entity_decode("        Fillchar(E,Sizeof(E),0);
+");
+	echo html_entity_decode("        Fillchar(H,Sizeof(H),0);
+");
+	echo html_entity_decode("        H[0]:=M+4;
+");
+	echo html_entity_decode("        P:=G[0];
+");
+	echo html_entity_decode("        While P&lt;&gt;Nil Do Begin
+");
+	echo html_entity_decode("          D:=P^.Max-P^.Now;
+");
+	echo html_entity_decode("          Inc(E[P^.X],D);
+");
+	echo html_entity_decode("          Dec(E[0],D);
+");
+	echo html_entity_decode("          Inc(P^.Now,D);
+");
+	echo html_entity_decode("          Dec(P^.Other^.Now,D);
+");
+	echo html_entity_decode("          P:=P^.Next;
+");
+	echo html_entity_decode("        End;
+");
+	echo html_entity_decode("        For I:=0 To M+3 Do
+");
+	echo html_entity_decode("          Cu[I]:=G[I];
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("      Procedure Charge(U:Longint);
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("        Procedure Relabel(U:Longint);
+");
+	echo html_entity_decode("        Var
+");
+	echo html_entity_decode("          P                     :TLinkPo;
+");
+	echo html_entity_decode("          Min                   :Longint;
+");
+	echo html_entity_decode("        Begin
+");
+	echo html_entity_decode("          Min:=MaxNum;
+");
+	echo html_entity_decode("          P:=G[U];
+");
+	echo html_entity_decode("          While P&lt;&gt;Nil Do Begin
+");
+	echo html_entity_decode("            If (P^.Max-P^.Now&gt;0) And (Min&gt;H[P^.X]) Then
+");
+	echo html_entity_decode("              Min:=H[P^.X];
+");
+	echo html_entity_decode("            P:=P^.Next;
+");
+	echo html_entity_decode("          End;
+");
+	echo html_entity_decode("          H[U]:=Min+1;
+");
+	echo html_entity_decode("          Cu[U]:=G[U];
+");
+	echo html_entity_decode("        End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("        Procedure Push(U,V:Longint;Var P:TLinkPo);
+");
+	echo html_entity_decode("        Var
+");
+	echo html_entity_decode("          D                     :Longint;
+");
+	echo html_entity_decode("        Begin
+");
+	echo html_entity_decode("          D:=E[U];
+");
+	echo html_entity_decode("          If P^.Max-P^.Now&lt;D Then D:=P^.Max-P^.Now;
+");
+	echo html_entity_decode("          Inc(E[V],D);
+");
+	echo html_entity_decode("          Dec(E[U],D);
+");
+	echo html_entity_decode("          Inc(P^.Now,D);
+");
+	echo html_entity_decode("          Dec(P^.Other^.Now,D);
+");
+	echo html_entity_decode("        End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("      Begin
+");
+	echo html_entity_decode("        While E[U]&gt;0 Do Begin
+");
+	echo html_entity_decode("          If Cu[U]=Nil Then Begin
+");
+	echo html_entity_decode("            Relabel(U);
+");
+	echo html_entity_decode("            Continue;
+");
+	echo html_entity_decode("          End
+");
+	echo html_entity_decode("          Else If (Cu[U]^.Max&gt;Cu[U]^.Now) And (H[U]=H[Cu[U]^.X]+1) Then
+");
+	echo html_entity_decode("            Push(U,Cu[U]^.X,Cu[U]);
+");
+	echo html_entity_decode("          Cu[U]:=Cu[U]^.Next;
+");
+	echo html_entity_decode("        End;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("    Begin
+");
+	echo html_entity_decode("      Flow_Init;
+");
+	echo html_entity_decode("      New(Head);Head^.Next:=Nil;P:=Head;
+");
+	echo html_entity_decode("      For I:=1 To M+2 Do Begin
+");
+	echo html_entity_decode("        New(P^.Next);
+");
+	echo html_entity_decode("        P:=P^.Next;
+");
+	echo html_entity_decode("        P^.X:=I;
+");
+	echo html_entity_decode("        P^.Next:=Nil;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("      P:=Head;R:=P;
+");
+	echo html_entity_decode("      While P^.Next&lt;&gt;Nil Do Begin
+");
+	echo html_entity_decode("        P:=P^.Next;
+");
+	echo html_entity_decode("        Old:=H[P^.X];
+");
+	echo html_entity_decode("        Charge(P^.X);
+");
+	echo html_entity_decode("        If Old&lt;&gt;H[P^.X] Then Begin
+");
+	echo html_entity_decode("          R^.Next:=P^.Next;
+");
+	echo html_entity_decode("          P^.Next:=Head^.Next;
+");
+	echo html_entity_decode("          Head^.Next:=P;
+");
+	echo html_entity_decode("        End;
+");
+	echo html_entity_decode("        R:=P;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("    End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("    Function Check:Boolean;
+");
+	echo html_entity_decode("    Var
+");
+	echo html_entity_decode("      P                 :TLinkPo;
+");
+	echo html_entity_decode("    Begin
+");
+	echo html_entity_decode("      Check:=True;
+");
+	echo html_entity_decode("      P:=G[0];
+");
+	echo html_entity_decode("      While P&lt;&gt;Nil Do Begin
+");
+	echo html_entity_decode("        If P^.Max&lt;&gt;P^.Now Then Begin
+");
+	echo html_entity_decode("          Check:=False;
+");
+	echo html_entity_decode("          Exit;
+");
+	echo html_entity_decode("        End;
+");
+	echo html_entity_decode("        P:=P^.Next;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("    End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("  Begin
+");
+	echo html_entity_decode("    GenGraph;
+");
+	echo html_entity_decode("    DoneFlow;
+");
+	echo html_entity_decode("    TryIt:=Check;
+");
+	echo html_entity_decode("  End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("  Procedure Init;
+");
+	echo html_entity_decode("  Var
+");
+	echo html_entity_decode("    I,J,A,B,X           :Longint;
+");
+	echo html_entity_decode("  Begin
+");
+	echo html_entity_decode("    Readln(N,M);
+");
+	echo html_entity_decode("    For I:=1 To N Do
+");
+	echo html_entity_decode("      Read(V[I,1],V[I,2]);
+");
+	echo html_entity_decode("    Readln;
+");
+	echo html_entity_decode("    For I:=1 To N Do Begin
+");
+	echo html_entity_decode("      W[I,1]:=M+2;W[I,2]:=M+1;
+");
+	echo html_entity_decode("    End;
+");
+	echo html_entity_decode("    For I:=1 To M Do Begin
+");
+	echo html_entity_decode("      Read(A,B,D[I]);
+");
+	echo html_entity_decode("      For J:=1 To A Do Begin
+");
+	echo html_entity_decode("        Read(X);
+");
+	echo html_entity_decode("        W[X,1]:=I;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("      For J:=1 To B Do Begin
+");
+	echo html_entity_decode("        Read(X);
+");
+	echo html_entity_decode("        W[X,2]:=I;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("      Readln;
+");
+	echo html_entity_decode("    End;
+");
+	echo html_entity_decode("  End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("  Procedure Work;
+");
+	echo html_entity_decode("  Var
+");
+	echo html_entity_decode("    I                           :Longint;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("    Function Find(I,L,R,Mode:Longint):Longint;
+");
+	echo html_entity_decode("    Var
+");
+	echo html_entity_decode("      Mid,Temp                  :Longint;
+");
+	echo html_entity_decode("      B                         :Boolean;
+");
+	echo html_entity_decode("    Begin
+");
+	echo html_entity_decode("      If L=R Then Begin
+");
+	echo html_entity_decode("        Find:=L;
+");
+	echo html_entity_decode("        Exit;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("      Mid:=(L+R+Mode) Shr 1;
+");
+	echo html_entity_decode("      If Mode=1 Then Begin
+");
+	echo html_entity_decode("        Temp:=V[I,2];
+");
+	echo html_entity_decode("        V[I,2]:=Mid;
+");
+	echo html_entity_decode("        B:=TryIt;
+");
+	echo html_entity_decode("        V[I,2]:=Temp;
+");
+	echo html_entity_decode("        If B Then Find:=Find(I,L,Mid-1,Mode) Else Find:=Find(I,Mid,R,Mode);
+");
+	echo html_entity_decode("      End
+");
+	echo html_entity_decode("      Else Begin
+");
+	echo html_entity_decode("        Temp:=V[I,1];
+");
+	echo html_entity_decode("        V[I,1]:=Mid;
+");
+	echo html_entity_decode("        B:=TryIt;
+");
+	echo html_entity_decode("        V[I,1]:=Temp;
+");
+	echo html_entity_decode("        If B Then Find:=Find(I,Mid+1,R,Mode) Else Find:=Find(I,L,Mid,Mode);
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("    End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("  Begin
+");
+	echo html_entity_decode("    For I:=1 To N Do Begin
+");
+	echo html_entity_decode("      Ans[I,1]:=Find(I,V[I,1]-1,V[I,2],1)+1;
+");
+	echo html_entity_decode("      Ans[I,2]:=Find(I,V[I,1],V[I,2]+1,0)-1;
+");
+	echo html_entity_decode("      If Ans[I,1]&gt;Ans[I,2] Then Begin
+");
+	echo html_entity_decode("        Writeln(-1);
+");
+	echo html_entity_decode("        Halt;
+");
+	echo html_entity_decode("      End;
+");
+	echo html_entity_decode("    End;
+");
+	echo html_entity_decode("  End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("  Procedure Out;
+");
+	echo html_entity_decode("  Var
+");
+	echo html_entity_decode("    I                           :Longint;
+");
+	echo html_entity_decode("  Begin
+");
+	echo html_entity_decode("    For I:=1 To N Do
+");
+	echo html_entity_decode("      Write(Ans[I,1],' ',Ans[I,2],' ');
+");
+	echo html_entity_decode("    Writeln;
+");
+	echo html_entity_decode("  End;
+");
+	echo html_entity_decode("
+");
+	echo html_entity_decode("Begin
+");
+	echo html_entity_decode("  Init;
+");
+	echo html_entity_decode("  Work;
+");
+	echo html_entity_decode("  Out;
+");
+	echo html_entity_decode("End.
+");
+?>

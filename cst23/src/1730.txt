@@ -1,0 +1,71 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <iostream>
+#include <ctime>
+#include <cmath>
+#define ll long long
+using namespace std;
+const int Maxn=60;
+const int Maxm=(1<<16)+100;
+const int mo=1000000007;
+int f[Maxn][Maxm];
+int g1[Maxm],g2[Maxm],g[Maxm];
+int a[Maxn],r[Maxn];
+int cnt[Maxm];
+int n,d;
+void Init()
+{
+	scanf("%d%d",&n,&d);
+	for (int i=0;i<n;++i)
+		scanf("%d",&a[i]);
+	sort(a,a+n);
+	for (int i=0;i<n;++i)
+		for (r[i]=i;r[i]+1<n&&a[r[i]+1]-a[i]<=d;++r[i]);
+	cnt[0]=0;
+	for (int i=1;i<Maxm;++i)
+		cnt[i]=cnt[i^(i&(-i))]+1;
+}
+void Work()
+{
+	memset(f,0,sizeof(f));
+	f[n-1][0]=1;
+	for (int i=n-2;i>=0;--i)
+	{
+		//Prepare
+		int delt=r[i+1]-r[i];
+		int len2=r[i+1]-i;
+		int len=r[i]-i;
+		int oo=((1<<delt)-1)<< len;
+		for(int j=0;j<1<<len;++j)g1[j]=g[j]=f[i+1][j|oo];
+		for(int j=0;j<1<<len;++j)g2[j]=(ll)g[j]*cnt[j]%mo;
+		for(int j=0,u=1;j<len;++j,u<<=1)
+			for (int k=0;k<1 << len;++k)
+				if (k&u)
+				{
+					g1[k]+=g1[k^u];
+					g2[k]+=g2[k^u];
+					if (g1[k]>=mo)g1[k]-=mo;
+					if (g2[k]>=mo)g2[k]-=mo;
+				}
+		//Main
+		for (int j=0;j<1<<len;++j)
+		{
+			int cost=(ll)cnt[j]*g1[j]%mo-g2[j];
+			if(cost<0)cost+=mo;
+			g[j]+=cost;
+			if(g[j]>=mo)g[j]-=mo;
+		}
+		for (int j=0;j<1<<len;++j)
+			f[i][j<<1]=g[j];
+	}
+	int len=r[0]+1;
+	printf("%d
+",f[0][(1<<len)-2]);
+}	
+int main()
+{
+	Init();
+	Work();
+	return 0;
+}

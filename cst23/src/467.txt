@@ -1,0 +1,41 @@
+//*******************************************************
+//*Name of the programme:D4943
+//*Author:Hu Jinming 2012011301
+//*Date:2012-10-27
+//*Time:20:31:25
+//*Main function:to finish the homework
+//*******************************************************
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n;
+    int a[15000] = {0};
+    cin >> n;
+    
+    for (int i = 1;i < n + 1;i++)
+    a[i] = i;
+    
+    int rem = n;
+    int t = 0;
+    
+    for(int z = 0;z < 99999;z = z)
+    {
+            z++;
+            if (z>n) z = 1;
+            if (rem == 1) break;
+            
+            if (a[z] != 0) t++;
+            if (a[z] == 0) continue;
+            if (t % 3 == 0) {a[z] = 0; rem--;}
+            
+    }
+    
+    for (int i = 1;i <= n;i++)
+    if (a[i] != 0) cout << a[i];
+    
+    //system("pause");
+    return false;
+}
+

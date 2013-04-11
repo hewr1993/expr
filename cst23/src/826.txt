@@ -1,0 +1,16 @@
+#include<stdio.h>
+int main()
+{
+    printf(" X | X | X 
+");
+    printf("---+---+---
+");
+    printf("   |   |   
+");
+    printf("---+---+---
+");
+    printf(" O | O | O 
+");
+    return 0;
+}
+

@@ -1,0 +1,89 @@
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <algorithm>
+#include <ctime>
+#include <set>
+#define maxG 300000
+using namespace std;
+
+int m,n,j,k,l,i,o,p,__t,ans;
+long long _x,_y,_p,_r,x,y,discrese[maxG];
+int tot_dis,L[maxG],op,ed;
+bool could[maxG];
+
+char ch;
+void read(long long &a){
+	for (ch = getchar();(ch < '0' || ch > '9') && (ch != '-');ch = getchar());
+	if (ch == '-') a = 0,__t = -1; else a = ch - '0',__t = 1;
+	for (ch = getchar();ch >= '0' && ch <= '9';ch = getchar()) a = a * 10 + ch - '0';
+	a *= __t;
+}
+
+struct data{
+	long long R,power,name;
+	
+	data (int r,int p,int n){
+		R = r;
+		power = p;
+		name = n;
+	}
+};
+
+struct goods{
+	long long dis,mass,power,r;
+} G[maxG];
+
+
+bool operator <(data a,data b){
+	if (a.power != b.power) return a.power < b.power; else
+	return a.name < b.name;
+}
+
+set <data> M[maxG];
+
+bool cmp(goods a,goods b){
+	return a.dis < b.dis;
+}
+
+int main(){
+	read(_x),read(_y),read(_p),read(_r);
+	scanf("%d",&m);
+	for (int i = 1;i <= m;i ++){
+		read(x),read(y);
+		G[i].dis = (x - _x) * (x - _x) + (y - _y) * (y - _y);
+		discrese[++ tot_dis] = G[i].dis;
+		read(G[i].mass);
+		read(G[i].power);
+		read(G[i].r);
+	}
+	sort(discrese + 1,discrese + 1 + tot_dis);
+	tot_dis = unique(discrese + 1,discrese + 1 + tot_dis) - discrese - 1;
+	for (int i = 1;i <= m;i ++){
+		G[i].dis = lower_bound(discrese + 1,discrese + 1 + tot_dis,G[i].dis) - discrese;
+		for (int temp = G[i].dis;temp <= tot_dis;temp += (temp & (-temp)))
+			M[temp].insert(data(G[i].r,G[i].mass,i));
+	}
+	G[0].r = _r; G[0].power = _p;
+	for (L[op = ed = 1] = 0;ed <= op;ed ++){
+		long long nowr = upper_bound(discrese + 1,discrese + 1 + tot_dis,G[L[ed]].r * G[L[ed]].r) - discrese - 1;
+		long long nowp = G[L[ed]].power;
+		for (int temp = nowr;temp > 0;temp -= (temp & (-temp))){
+			for (;;){
+				set<data>::iterator now = M[temp].upper_bound(data(0,nowp,m + 1));
+				if (now == M[temp].begin()) break;
+				now --;
+				if (!could[(*now).name]){
+					ans ++;
+					L[++ op] = (*now).name;
+				}
+				could[(*now).name] = 1;
+				M[temp].erase(now);
+			}
+		}
+	}
+	printf("%d
+",ans);
+}
+

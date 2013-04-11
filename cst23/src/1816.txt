@@ -1,0 +1,210 @@
+#include <cstdio>
+#include <cassert>
+
+const int MOD = 10007;
+const int NODE_MAX = 30010;
+int INV[MOD];
+
+int pow_mod(int a, int n) {
+	int res = n & 1 ? a : 1;
+	for ( n >>= 1; n; n >>= 1 ) {
+		a = a * a % MOD;
+		if ( n & 1 )
+			res = res * a % MOD;
+	}
+	return res;
+}
+
+struct DisjointSet {
+	int f[NODE_MAX];
+	int find(int x) { return f[x] == x ? x : f[x] = find(f[x]); }
+	void merge(int x, int y) { f[find(x)] = y; }
+	void init(int n) {
+		for ( int i = 0; i < n; i ++ ) f[i] = i;
+	}
+} DS;
+
+struct Node {
+	int sk, sb, k, b;
+	Node *l, *r, *f, *spf;
+	void upd() {
+		if ( l ) 
+			sk = k * l->sk % MOD, sb = (k * l->sb + b) % MOD;
+		else
+			sk = k, sb = b;
+		if ( r )
+			sk = r->sk * sk % MOD, sb = (r->sk * sb + r->sb) % MOD;
+	}
+} node[NODE_MAX];
+
+void zag(Node *x) {
+	Node *y = x->f, *z = y->f;
+	x->f = z;
+	if ( z ) {
+		if ( y == z->l ) z->l = x;
+		else if ( y == z->r ) z->r = x;
+	}
+	y->l = x->r;
+	if ( x->r )
+		x->r->f = y;
+	y->f = x, x->r = y;
+	y->upd();
+}
+
+void zig(Node *x) {
+	Node *y = x->f, *z = y->f;
+	x->f = z;
+	if ( z ) {
+		if ( y == z->l ) z->l = x;
+		else if ( y == z->r ) z->r = x;
+	}
+	y->r = x->l;
+	if ( x->l )
+		x->l->f = y;
+	y->f = x, x->l = y;
+	y->upd();
+}
+
+void splay(Node *x) {
+	while ( x->f && (x == x->f->l || x == x->f->r) ) {
+		Node *y = x->f, *z = y->f;
+		if ( !z || (y != z->l && y != z->r) ) {
+			if ( x == y->l ) zag(x);
+			else zig(x);
+		} else {
+			if ( y == z->l ) {
+				if ( x == y->l ) zag(y), zag(x);
+				else zig(x), zag(x);
+			} else {
+				if ( x == y->r ) zig(y), zig(x);
+				else zag(x), zig(x);
+			}
+		}
+	}
+	x->upd();
+}
+
+Node *expose(Node *x) {
+	Node *y = NULL;
+	while ( x ) {
+		splay(x);
+		x->r = y;
+		x->upd();
+		y = x;
+		x = x->f;
+	}
+	return y;
+}
+
+Node *get_root(Node *x) {
+	expose(x); splay(x);
+	Node *p = x;
+	while ( p->l ) p = p->l;
+	return p;
+}
+
+Node *left_most(Node *x) {
+	while ( x->l ) x = x->l;
+	return x;
+}
+
+Node *right_most(Node *x) {
+	while ( x->r ) x = x->r;
+	return x;
+}
+
+int ask(int i) {
+	Node *c = node + i,
+		 *r = get_root(c),
+		 *s = r->spf;
+	expose(s); splay(s);
+	if ( 1 - s->sk == 0 )
+		return s->sb == 0 ? -2 : -1;
+	int xs = s->sb * INV[1 - s->sk < 0 ? 1 - s->sk + MOD : 1 - s->sk] % MOD;
+	expose(c); splay(c);
+	return (c->sk * xs + c->sb) % MOD;
+}
+
+void change(int a, int k, int p, int b) {
+	Node *c = node + a,
+		 *r = get_root(c), *r2 = get_root(node + p),
+		 *s = r->spf;
+	c->k = k, c->b = b;
+	expose(s);
+	splay(c);
+	if ( c == r ) {
+		if ( r == r2 )
+			c->spf = node + p, c->f = NULL;
+		else
+			c->f = node + p, c->spf = NULL;
+		c->upd();
+	} else {
+		if ( left_most(c) == r ) {
+			expose(c); splay(c);
+			if ( c->l )
+				c->l->f = NULL, c->l = NULL;
+			if ( r == r2 )
+				c->spf = node + p, c->f = NULL;
+			else
+				c->f = node + p, c->spf = NULL;
+			c->upd();
+			expose(r);
+			assert(s != r);
+			r->f = s;
+			r->spf = NULL;
+		} else {
+			expose(c); splay(c);
+			if ( c->l )
+				c->l->f = NULL, c->l = NULL;
+			c->upd();
+			expose(node + p); splay(c);
+			if ( right_most(c) == node + p )
+				c->spf = node + p;
+			else
+				c->f = node + p;
+		}
+	}
+}
+
+int main() {
+	int N, Q;
+
+	for ( int x = 0; x < MOD; x ++ )
+		INV[x] = pow_mod(x, MOD - 2);
+
+	scanf("%d", &N);
+	DS.init(N);
+	for ( int i = 0; i < N; i ++ ) {
+		int fa;
+		scanf("%d%d%d", &node[i].k, &fa, &node[i].b);
+		fa --;
+		if ( DS.find(fa) == DS.find(i) ) {
+			node[i].f = NULL;
+			node[i].spf = node + fa;
+		} else {
+			node[i].f = node + fa;
+			node[i].spf = NULL;
+			DS.merge(fa, i);
+		}
+		node[i].l = node[i].r = NULL;
+		node[i].upd();
+	}
+
+	scanf("%d", &Q);
+	while ( Q -- ) {
+		static char typ[5];
+		scanf("%s", typ);
+		if ( typ[0] == 'A' ) {
+			int x;
+			scanf("%d", &x);
+			x --;
+			printf("%d
+", ask(x));
+		} else {
+			int a, k, p, b;
+			scanf("%d%d%d%d", &a, &k, &p, &b);
+			a --, p --;
+			change(a, k, p, b);
+		}
+	}
+}

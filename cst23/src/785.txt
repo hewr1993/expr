@@ -1,0 +1,33 @@
+#include <cstdlib>
+#include <cstdio>
+#include <iostream>
+#include <cstring>
+#include <string>
+
+using namespace std;
+
+// 给定表达式expr，返回表达式的计算结果。
+int calc(char *expr)
+{
+	int w,s;
+	char c;
+	sscanf(expr,"%d%c%d",&s,&c,&w);
+	if(c=='+')
+		return s+w;
+	else if(c=='-')
+		return s-w;
+	else 
+		return s*w;
+	
+}
+
+char expr[1024];
+
+int main()
+{
+	cin >> expr;
+	int result = calc(expr);
+	cout << result << endl;
+	return 0;
+}
+

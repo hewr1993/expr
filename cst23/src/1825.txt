@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+void qsort(int* f, int l, int r)
+{
+    if(l > r)return;
+    int i=l, j=r;
+    int sb= f[i];
+    while(i<j)
+    {
+        while(i<j&&f[j]>=sb) j--;
+        f[i] = f[j];
+        while(i<j&&f[i]<sb) i++;
+        f[j] = f[i];
+    }
+    f[i] = sb;
+    qsort(f, l, i-1);
+    qsort(f, i+1, r);
+}
+int main()
+{
+ int n,w;
+ scanf("%d%d
+",&n,&w);
+ int x[10001];
+ int y[10001];
+ double z[10001]={0}; 
+ int i,j;
+ for(i=1;i<=n;i++)
+ {
+  scanf("%d %d",&x[i],&y[i]);
+  z[i]=double (y[i])/double (x[i]); 
+ }
+ double t; 
+ for(i=0;i<=n;i++)
+ {
+  for(j=i+1;j<=n;j++)
+  {
+   if(z[i]>z[j])
+   {
+    t=x[i];x[i]=x[j];x[j]=t;
+    t=y[i];y[i]=y[j];y[j]=t;
+    t=z[i];z[i]=z[j];z[j]=t;
+   }      
+  }
+ }
+ //qsort (a,1,n);
+ //qsort (y,1,n);
+ //qsort (x,1,n);
+ double s=0; 
+ while(w>0&&n!=0)
+ {
+  if(w>=x[n])
+  {
+   w=w-x[n];
+   s=s+y[n];
+   n--;
+   continue;    
+  }
+  if(w<x[n])
+  {
+   s=s+double(w)/double(x[n])*double(y[n]);
+   break;    
+  }      
+ }
+ printf("%.1f",s);
+ return 0;
+}

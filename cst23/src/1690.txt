@@ -1,0 +1,53 @@
+#include<iostream>
+#include<cstdlib>
+#include<cstdio>
+#include<cmath>
+#include<cstring>
+using namespace std;
+struct node{
+    char c;
+    node* lch;
+    node* rch;
+    node(char _c)
+    {
+        c = _c;
+        lch = rch = NULL;
+    }
+};
+const int MAXL = 1000;
+char f[MAXL] = {},m[MAXL] = {},lr[MAXL] ={};
+int k=0;
+
+node* buildtree(char f[],char m[],int l)
+{
+        if (!l)
+            return NULL;
+    node* troot = new node(f[0]);
+    if(l == 1)
+        return troot;
+    int p;
+    for(int i = 0;i < l;i++)
+        if(m[i] == f[0])
+            p = i;
+    troot->lch = buildtree(f+1,m,p);
+    troot->rch = buildtree(f+1+p,m+1+p,l-p-1);
+    return troot;
+}
+
+void lrvis(node* n)
+{
+    if(n->lch)
+        lrvis(n->lch);
+    if(n->rch)
+        lrvis(n->rch);
+    cout << n->c;   
+}
+
+int main()
+{
+    cin >> f >> m;
+    int l=strlen(f);
+    node *root = buildtree(f,m,l);
+    lrvis(root);
+    return 0;
+}

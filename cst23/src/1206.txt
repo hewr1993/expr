@@ -1,0 +1,16 @@
+#include <cstdio>
+int main ( )
+{
+	int i, j;
+	long long ans;
+	char c;
+	
+	for( i = j = ans = 0; ( c = getchar( ) ) != '
+'; ++i )
+		if( c != ' ' )
+			ans += i - j++;
+	printf( "%I64d
+", ans );
+	return 0;
+}
+

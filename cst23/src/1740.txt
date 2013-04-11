@@ -1,0 +1,58 @@
+program t3;
+type
+	gj=array [0..100001] of longint;
+const
+	maxn=20123;
+var
+	ans,n,i,j,k:longint;
+	ch:char;
+	root:gj;
+	pow:array [0..101] of longint;
+
+procedure swap (var a,b:longint);
+begin
+	if a=b then exit;
+	a:=a xor b;
+	b:=a xor b;
+	a:=a xor b;
+end;
+
+function calc (l,r:longint):longint;
+var
+	i,k:longint;
+begin
+	k:=0;
+	for i:=r downto l do
+		k:=(k*10+root[i]) mod maxn;
+	exit(k);
+end;
+
+
+begin
+	while not eoln do
+		begin
+			read(ch);
+			inc(n);
+			root[n]:=ord(ch)-48;
+		end;
+	readln;
+	for i:=1 to n div 2 do
+		swap(root[n-i+1],root[i]);
+	pow[0]:=1;
+	for i:=1 to n do
+		pow[i]:=pow[i-1]*10 mod maxn;
+	ans:=0;
+	root[0]:=n;
+        for i:=1 to n do
+		begin
+			if root[i]>=2 then
+				if root[i]=2 then ans:=(ans+calc(1,i-1)+1) mod maxn
+						     else ans:=(ans+pow[i-1]) mod maxn;
+			if root[i]>=1 then
+				if root[i]=1 then ans:=(ans+calc(1,i-1)+1) mod maxn
+							 else ans:=(ans+pow[i-1]) mod maxn;
+            ans:=(ans+2*calc(i+1,n)*pow[i-1]) mod maxn;
+		end;
+	writeln(ans);
+end.
+

@@ -1,0 +1,91 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+const int N=2000;
+int rb,cnt;
+ll res;
+struct line
+{
+   ll a,b,c;
+   line(){}line(ll aa,ll bb,ll cc):a(aa),b(bb),c(cc){}
+   ll val(ll x){return (a*x+b)/c;}
+   double dval(ll x){return (double)(a*x+b)/c;}
+   bool cmp(const line&q,ll x)
+   {
+      return (x*q.c*a+q.c*b-x*c*q.a-c*q.b==c*q.c)||((x*q.c*a+q.c*b-x*c*q.a-c*q.b>c*q.c)^(c<0)^(q.c<0));
+   }
+}l[N*2];
+ll calc(ll a,ll b,ll c,ll rc)
+{
+   if(c<0) a=-a,b=-b,c=-c;
+   if(a<0) b=a*rc+b,a=-a;
+   if(c==0)return 0;
+   if(rc<0)return 0;
+   ll res=(a/c*rc)*(rc+1)/2+b/c*(rc+1);
+   a%=c;b%=c;
+   ll t=calc(c,(a*rc+b)%c,a,(a*rc+b)/c-1);
+   return res+t+rc+1;
+}
+bool cmp(const line&p,const line&q)
+{
+   return (0.5*p.a+p.b)/p.c>(0.5*q.a+q.b)/q.c;
+}
+void make()
+{
+   int i;
+   sort(l+1,l+cnt+1,cmp);
+   for(i=1;i<=cnt;i++) if(l[i].c<0) l[i].a=-l[i].a,l[i].b=-l[i].b,l[i].c=-l[i].c;
+   for(i=1;i<cnt;i+=2)
+   {
+      int lc=0,rc=rb;
+      line l1=l[i],l2=line(l[i+1].a,l[i+1].b+l[i+1].c-1,l[i+1].c);
+      if(min(l[i].dval(0),l[i].dval(1))<max(l[i+1].dval(0),l[i+1].dval(1))+1)
+      {
+         int lll=0,rrr=rb;
+         while(lll<rrr)
+         {
+            int mi=lll+rrr>>1;
+            if(min(l[i].dval(mi),l[i].dval(mi+1))>=max(l[i+1].dval(mi),l[i+1].dval(mi+1))+0.999999999) rrr=mi;
+            else lll=mi+1;
+         }
+         lc=lll;
+      }
+      else if(min(l[i].dval(rb-1),l[i].dval(rb))<max(l[i+1].dval(rb-1),l[i+1].dval(rb))+1)
+      {
+         int lll=-1,rrr=rb-1;
+         while(lll<rrr)
+         {
+            int mi=(lll+rrr>>1)+1;
+            if(min(l[i].dval(mi),l[i].dval(mi+1))>=max(l[i+1].dval(mi),l[i+1].dval(mi+1))+0.999999999) lll=mi;
+            else rrr=mi-1;
+         }
+         rc=lll+1;
+      }
+      if(lc<rc)
+         res+=calc(l1.a,l1.b+l1.a*lc,l1.c,rc-lc)-max(l1.val(lc),l1.val(rc))
+             -calc(l2.a,l2.b+l2.a*lc,l2.c,rc-lc)+min(l2.val(lc),l2.val(rc));
+   }
+}
+int main()
+{
+   int n,i,j,k;
+   int x[N],y[N],xl[N];
+   for(scanf("%d",&n),i=1;i<=n;i++) scanf("%d%d",x+i,y+i),xl[i]=x[i];
+   x[n+1]=x[1],y[n+1]=y[1];
+   sort(xl+1,xl+n+1);
+   for(j=1;j<n;j++)
+      if(xl[j]!=xl[j+1])
+      {
+         cnt=0;
+         rb=xl[j+1]-xl[j];
+         for(i=1;i<=n;i++)
+            if((x[i]<=xl[j]&&x[i+1]>=xl[j+1])||(x[i]>=xl[j+1]&&x[i+1]<=xl[j]))
+              l[++cnt]=line(y[i]-y[i+1],(ll)x[i]*y[i+1]-(ll)y[i]*x[i+1]+ll(y[i]-y[i+1])*xl[j],x[i]-x[i+1]);
+         make();
+      }
+   printf("%I64d",res);
+   return 0;
+}

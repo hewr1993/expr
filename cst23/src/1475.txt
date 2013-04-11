@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cstdio>
+#include <fstream>
+#include <cmath>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+int main()
+{
+    int i,n,t;
+    bool f=false;
+    cin >> n;
+    if (n==0) {cout << 0;return 0;}
+    if (n<0) {cout << "-";n=-n;}
+    while (n!=0)
+    { 
+        t=n%10;
+        if (t!=0) f=true;
+        if (f==true) cout << t;
+        n=n/10;
+    }
+    return 0;
+}

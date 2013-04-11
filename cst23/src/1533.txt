@@ -1,0 +1,73 @@
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+typedef long long LL;
+const int MAX=600000+10;
+const int NUM=20;
+
+int N;
+int fac[MAX][NUM],len[MAX];
+
+int dfs(int* q,int len,int u,int now,int b,int flag)
+{
+	if(u==len+1)return flag*b/now;
+	return dfs(q,len,u+1,now,b,flag)+dfs(q,len,u+1,now*q[u],b,flag*-1);
+}
+
+int main()
+{
+	int p,q,i,j;
+	scanf("%d",&N);
+	for(i=2;i<MAX;++i)
+		if(!len[i])
+		{
+			fac[i][++len[i]]=i;
+			for(j=2;j*i<MAX;++j)
+				fac[i*j][++len[i*j]]=i;
+		}
+	/*
+	d=k*(x+y)
+	x+y互质
+	k*(x+y)*y<=N
+	k<=N/((x+y)*y)
+	p=y,q=x+y
+	p>=2 q<=2*p-1;
+	gcd(p,q)=1;
+	[[N/p]/q]
+	*/
+	LL ans=0;
+	for(p=2;(long long)p*p<=N;++p)
+	{
+		int T=(int)sqrt((double(1<<len[p])*(N/p))/len[p]);
+		T=min(max(T,p+1),2*p-1);
+		for(q=p+1;q<T;++q)
+		{
+			int flag=1;
+			for(i=1;i<=len[p];++i)
+				if(q%fac[p][i]==0)
+				{
+					flag=0;
+					break;
+				}
+			if(!flag)continue;
+			ans+=N/(p*q);
+		}
+		int second=(N/p)/T,first=(N/p)/(2*p-1);
+		for(i=first;i<=second;++i)
+		{
+			if(!i)continue;
+			int l=(N/p)/(i+1)+1,r=(N/p)/i;
+			l=max(l,T);r=min(r,2*p-1);
+			int num=dfs(fac[p],len[p],1,1,r,1)-dfs(fac[p],len[p],1,1,l-1,1);
+			ans+=num*i;
+		}
+	}
+	cout<<ans<<endl;
+	return 0;
+}
+

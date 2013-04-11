@@ -1,0 +1,194 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+template<class T> inline void gmax(T &a, T b){if (a < b) a = b;}
+const int inf = ~0u>>1;
+const int maxn = 100000 + 10;
+
+struct arc
+{
+	int e;
+	arc *pre;
+	arc(){}
+	arc(int e, arc *pre) : e(e), pre(pre){}
+}*head[maxn], mem[maxn], *sp = mem;
+
+inline void addarc(int x, int y)
+{
+	head[x] = new (sp++) arc(y, head[x]);
+}
+
+int v[maxn];
+int f[maxn], g[maxn], h[maxn], l[maxn], top, lt;
+int ans;
+int flag = 0, leave = 0;
+/*
+void dfs(int x, int vp, int mx)
+{
+//cout << x << endl;
+	if (flag)
+	{
+		while (lt > 0 && mx >= g[lt]) lt--;
+		if (lt+1 <= top) gmax(f[x], h[lt+1] + v[x] -mx);
+		if (lt > 0) gmax(f[x], v[x] + l[lt]);
+	}
+	else
+	    f[x] = v[x];
+	    
+//cout << top << endl;
+cout << x << ' ' << mx << ' ' << f[x] << endl;
+
+	if (!head[x])
+	{
+		top = 1;
+		g[1] = vp;
+		h[1] = f[x];
+		flag++;
+	}
+	else
+	{
+        bool fl = true;
+		for (arc *p = head[x]; p; p = p->pre)
+		{
+			if (fl)
+				dfs(p->e, v[x], max(v[x], mx)), fl = false;
+			else
+				dfs(p->e, v[x], v[x]);
+				
+			if (p->pre)
+			{
+				for (int i = top-1; i >= 1; i--) gmax(g[i], g[i+1]);
+				l[1] = h[1] - g[1];
+				for (int i = 2 ;  i <= top; i++) l[i] = max(h[i] - g[i], l[i-1]);
+				for (int i = top-1; i >= 1; i--) gmax(h[i], h[i+1]);
+				lt = top;
+			}
+			else
+			{
+				++top;
+				g[top] = vp;
+				h[top] = f[x];
+			}
+		}
+	}
+	if (flag == leave) gmax(ans, f[x]);
+}
+*/
+struct stk_type
+{
+	int mark;
+	int x, vp, mx;
+	bool fl;
+	arc *p;
+	stk_type(){}
+	stk_type(int mark, int x, int vp, int mx, bool fl, arc *p)
+		: mark(mark), x(x), vp(vp), mx(mx), fl(fl), p(p){}
+};
+stk_type dfs_stack[maxn];
+int tp;
+void DFS()
+{
+	bool fl;
+	int x = 1, vp = 0, mx = 0;
+    arc *p;
+
+loop_begin:;
+
+	if (flag)
+	{
+		while (lt > 0 && mx >= g[lt]) lt--;
+		if (lt+1 <= top) gmax(f[x], h[lt+1] + v[x] -mx);
+		if (lt > 0) gmax(f[x], v[x] + l[lt]);
+	}
+	else
+	    f[x] = v[x];
+	if (!head[x])
+	{
+		top = 1;
+		g[1] = vp;
+		h[1] = f[x];
+		flag++;
+	}
+	else
+	{
+		fl = true;
+		for (p = head[x]; p; p = p->pre)
+		{
+			if (fl)
+			{
+				dfs_stack[++tp] = stk_type(1, x, vp, mx, fl, p);
+				vp = v[x];
+				mx = max(v[x], mx);
+				x = p->e;
+				goto loop_begin;
+				loop1:;
+				fl = false;
+			}
+			else
+			{
+                dfs_stack[++tp] = stk_type(2, x, vp, mx, fl, p);
+				vp = v[x];
+				mx = v[x];
+				x = p->e;
+				goto loop_begin;
+				loop2:;
+			}
+
+			if (p->pre)
+			{
+				for (int i = top-1; i >= 1; i--) gmax(g[i], g[i+1]);
+				l[1] = h[1] - g[1];
+				for (int i = 2 ;  i <= top; i++) l[i] = max(h[i] - g[i], l[i-1]);
+				for (int i = top-1; i >= 1; i--) gmax(h[i], h[i+1]);
+				lt = top;
+			}
+			else
+			{
+				++top;
+				g[top] = vp;
+				h[top] = f[x];
+			}
+		}
+	}
+	if (flag == leave) gmax(ans, f[x]);
+
+	if (tp == 0) return;
+
+	int tt = dfs_stack[tp].mark;
+	fl = dfs_stack[tp].fl;
+	p = dfs_stack[tp].p;
+	x = dfs_stack[tp].x;
+	vp = dfs_stack[tp].vp;
+	mx = dfs_stack[tp].mx;
+	tp--;
+	if (tt == 1) goto loop1;
+	else goto loop2;
+}
+
+int n, x, t;
+int main()
+{
+	//freopen("tree.in", "r", stdin);
+	//freopen("tree.out", "w", stdout);
+	
+	memset(f, 0x8f, sizeof(f));
+	
+	scanf("%d", &n);
+	for (int i = 1; i <= n; i++)
+	{
+		scanf("%d", v + i);
+		scanf("%d", &t);
+		if (t == 0) leave++;
+		for (int j = 1; j <= t; j++)
+		    scanf("%d", &x), addarc(i, x);
+	}
+	//dfs(1, 0, 0);
+	DFS();
+	cout << ans << endl;
+	
+	//fclose(stdin); fclose(stdout);
+	return 0;
+}

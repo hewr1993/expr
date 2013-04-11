@@ -1,0 +1,281 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int kMaxN = 20000, kMaxM = 50;
+const int kX = 65536, kY = ~0U >> 1;
+int n, m, A, B, Q, c;
+int jump[kMaxN], lb[kMaxN], rb[kMaxN], dep[kMaxN], pre[kMaxN];
+
+int GenInt() {
+	A = ((A ^ B) + (B / kX) + (B * kX)) & kY;
+	B = ((A ^ B) + (A / kX) + (A * kX)) & kY;
+	return (A ^ B) % Q;
+}
+
+struct Info {
+	int w[kMaxM + 1];
+	Info() {
+		memset(w, 0, sizeof(w));
+	}
+	Info(int x) {
+		memset(w, 0, sizeof(w));
+	}
+	void clear() {
+		memset(w, 0, sizeof(w));
+	}
+	void get() {
+		for (int i = 1; i <= m; ++ i) w[i] = GenInt();
+		sort(w + 1, w + m + 1);
+	}
+} bag[kMaxN];
+
+struct AInfo : public Info {
+	AInfo() : Info() {}
+	AInfo(int x) : Info(x) {}
+	AInfo(const Info &t) {
+		memcpy(w, t.w, sizeof(t.w));
+	}
+};
+
+AInfo operator + (const AInfo &a, const AInfo &b) {
+	AInfo res;
+	for (int i = 0; i <= m; ++ i)
+		for (int j = 0; j <= i; ++ j)
+			res.w[i] = max(res.w[i], a.w[j] + b.w[i - j]);
+	return res;
+}
+
+struct BInfo : public Info {
+	BInfo() : Info() {}
+	BInfo(int x) : Info(x) {}
+	BInfo(const Info &t) {
+		memcpy(w, t.w, sizeof(t.w));
+	}
+};
+
+BInfo operator + (const BInfo &a, const BInfo &b) {
+	BInfo res;
+	for (int i = 0; i <= m; ++ i)
+		res.w[i] = max(a.w[i], b.w[i]);
+	return res;
+}
+
+template<class NodeType>
+NodeType *NodeAlloc(int l, int r, NodeType * &node_idx) {
+	NodeType *res = node_idx ++;
+	res->info.clear(), res->l = l, res->r = r;
+	res->son[0] = res->son[1] = NULL;
+	return res;
+}
+
+template<class NodeType>
+void Update(NodeType *pos) {
+	pos->info = pos->son[0]->info + pos->son[1]->info;
+}
+
+template<class NodeType, class InfoType>
+NodeType *BuildTree(int l, int r, InfoType *arr, NodeType * &node_idx) {
+	NodeType *res = NodeAlloc<NodeType>(l, r, node_idx);
+	if (l == r) res->info = arr[l];
+	else {
+		int mid = (l + r) >> 1;
+		res->son[0] = BuildTree(l, mid, arr, node_idx);
+		res->son[1] = BuildTree(mid + 1, r, arr, node_idx);
+		Update<NodeType>(res);
+	}
+	return res;
+}
+
+template<class NodeType, class InfoType>
+void ChangeOnPoint(int x, const InfoType &p, NodeType *pos) {
+	if (x > pos->r || x < pos->l) return;
+	if (x <= pos->l && x >= pos->r) {
+		pos->info = p;
+		return;
+	}
+	int mid = (pos->l + pos->r) >> 1;
+	if (x <= mid) ChangeOnPoint(x, p, pos->son[0]);
+	if (x > mid) ChangeOnPoint(x, p, pos->son[1]);
+	Update<NodeType>(pos);
+}
+
+template<class NodeType, class InfoType>
+InfoType AskOnRange(int l, int r, NodeType *pos) {
+	if (l > pos->r || r < pos->l) return InfoType(0);
+	if (l <= pos->l && r >= pos->r) return pos->info;
+	int mid = (pos->l + pos->r) >> 1;
+	return (l <= mid ? AskOnRange<NodeType, InfoType>(l, r, pos->son[0]) : InfoType(0)) + (r > mid ? AskOnRange<NodeType, InfoType>(l, r, pos->son[1]) : InfoType(0));
+}
+
+struct Node {
+	int l, r;
+};
+
+struct ANode : public Node {
+	AInfo info;
+	ANode *son[2];
+} node_pool_a[kMaxN * 2 - 1], *node_idx_a = node_pool_a, *root_a = NULL;
+
+struct BNode : public Node {
+	BInfo info;
+	BNode *son[2];
+} node_pool_b[kMaxN * 2 - 1], *node_idx_b = node_pool_b, *root_b[kMaxN];
+
+namespace pre_work {
+	int sz[kMaxN], hvst[kMaxN];
+	int q[kMaxN], qh, qt, buf_idx;
+	AInfo rec_a[kMaxN];
+	BInfo rec_b[kMaxN];
+
+	struct Graph {
+		static const int kMaxV = kMaxN, kMaxE = kMaxN - 1;
+		int cnt, begin[kMaxV], end[kMaxE], next[kMaxE];
+		Graph() : cnt(0) {
+			memset(begin, -1, sizeof(begin));
+		}
+		void add_edge(int u, int v) {
+			next[cnt] = begin[u];
+			begin[u] = cnt;
+			end[cnt ++] = v;
+		}
+	} gr;
+
+	void ChainSplit() {
+		qh = qt = 0;
+		q[qt ++] = 0;
+		while (qh < qt) {
+			int u = q[qh ++];
+			for (int now = gr.begin[u], v; now != -1; now = gr.next[now]) {
+				dep[v = gr.end[now]] = dep[u] + 1;
+				q[qt ++] = v;
+			}
+		}
+		memset(hvst, -1, sizeof(hvst));
+		for (int i = n - 1; i >= 0; -- i) {
+			int u = q[i];
+			++ sz[u];
+			if (pre[u] != -1) {
+				if (hvst[pre[u]] == -1 || sz[u] > sz[hvst[pre[u]]])
+					hvst[pre[u]] = u;
+				sz[pre[u]] += sz[u];
+			}
+		}
+		memset(root_b, 0, sizeof(root_b));
+		for (int i = n - 1; i >= 0; -- i) {
+			int u = q[i];
+			if (root_b[u]) continue;
+			rec_b[dep[u]] = bag[u];
+			int p = pre[u];
+			while (p != -1 && hvst[p] == u) {
+				rec_b[dep[p]] = bag[p];
+				u = p, p = pre[p];
+			}
+			BNode *res = BuildTree<BNode, BInfo>(dep[u], dep[q[i]], rec_b, node_idx_b);
+			for (int j = q[i]; j != p; j = pre[j]) {
+				root_b[j] = res;
+				jump[j] = p;
+			}
+		}
+	}
+
+	void Dfs(int u) {
+		static int stack[kMaxN], stop, start[kMaxN];
+		stop = 0;
+		stack[stop ++] = u;
+		rec_a[buf_idx ++] = bag[u];
+		lb[u] = buf_idx - 1;
+		start[u] = gr.begin[u];
+		while (stop) {
+			u = stack[stop - 1];
+			bool exi = false;
+			for (int &now = start[u], v; now != -1; now = gr.next[now]) {
+				exi = true;
+				v = gr.end[now];
+				rec_a[buf_idx ++] = bag[v];
+				lb[v] = buf_idx - 1;
+				start[v] = gr.begin[v];
+				stack[stop ++] = v;
+				now = gr.next[now];
+				break;
+			}
+			if (!exi) {
+				rb[u] = buf_idx - 1;
+				-- stop;
+			}
+		}
+	}
+
+	void GetDfsSeq() {
+		buf_idx = 0;
+		Dfs(0);
+		root_a = BuildTree<ANode, AInfo>(0, n - 1, rec_a, node_idx_a);
+	}
+
+	void Main() {
+		for (int i = 1; i < n; ++ i) {
+			scanf("%d", &pre[i]);
+			gr.add_edge(-- pre[i], i);
+		}	
+		pre[0] = -1;
+		for (int i = 0; i < n; ++ i) bag[i].get();
+		ChainSplit();
+		GetDfsSeq();	
+	}
+}
+
+BInfo Query(int u, int p) {
+	BInfo res;
+	for ( ; root_b[u] != root_b[p]; u = jump[u])
+		res = res + AskOnRange<BNode, BInfo>(0, dep[u], root_b[u]);
+	res = res + AskOnRange<BNode, BInfo>(dep[p], dep[u], root_b[u]);
+	return res;
+}
+
+int Lca(int u, int v) {
+	while (root_b[u] != root_b[v]) {
+		int x = jump[u], y = jump[v];
+		if (y != -1)
+			if (x == -1 || dep[x] < dep[y])
+				swap(x, y), swap(u, v);
+		u = x;
+	}
+	if (dep[u] > dep[v]) swap(u, v);
+	return u;
+}
+
+int main() {
+	scanf("%d%d%d%d%d", &n, &m, &A, &B, &Q);
+	pre_work::Main();
+	scanf("%d", &c);
+	for (int cmd, u, v; c --; ) {
+		scanf("%d%d", &cmd, &u);
+		if (cmd == 0) {
+			-- u;
+			bag[u].get();
+			ChangeOnPoint<ANode, AInfo>(lb[u], bag[u], root_a);
+			ChangeOnPoint<BNode, BInfo>(dep[u], bag[u], root_b[u]);
+		}
+		else {
+			scanf("%d", &v);
+			-- u, -- v;
+			AInfo info_a = AskOnRange<ANode, AInfo>(lb[u], rb[u], root_a);
+			if (u == v) printf("%d
+", info_a.w[m]);
+			else {
+				int p = Lca(pre[u], v);
+				BInfo info_b = Query(pre[u], p) + Query(v, p);
+				int res = 0;
+				for (int i = 0; i <= m; ++ i)
+					res = max(res, info_a.w[i] + info_b.w[m - i]);
+				printf("%d
+", res);
+			}
+		}
+	}
+	return 0;
+}
+

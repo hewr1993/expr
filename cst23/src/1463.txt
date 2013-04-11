@@ -1,0 +1,206 @@
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+using namespace std;
+const int MAXV = 2000000000;
+const int PRIME = 4650;
+const int SIZE = 32;
+
+int pa0[SIZE], pa1[SIZE], pb0[SIZE], pb1[SIZE];
+int qa0[SIZE], qa1[SIZE], qb0[SIZE], qb1[SIZE];
+int a[SIZE], lla[SIZE], hla[SIZE]; // low limit, high limit
+int b[SIZE], llb[SIZE], hlb[SIZE];
+int prime[PRIME], m;
+
+bool is_prime(int x)
+{
+	int i, l = sqrt(x);
+	for (i = 2; i <= l; i++)
+		if (x % i == 0)
+			return false;
+	return true;
+}
+
+void init()
+{
+	int i, l = sqrt(MAXV);
+	for (i = 2; i <= l; i++)
+		if (is_prime(i))
+			prime[++m] = i;
+}
+
+int fact(int p[], int q[], int x)
+{
+	int i = 1, j = 0;
+	while (x > 1 && i <= m)
+		if (x % prime[i] == 0)
+		{
+			x /= prime[i];
+			if (p[j] < prime[i])
+			{
+				j++;
+				p[j] = prime[i];
+				q[j] = 0;
+			}
+			q[j]++;
+		}
+		else
+			i++;
+
+	if (x > 1)
+	{
+		j++;
+		p[j] = x;
+		q[j] = 1;
+	}
+
+	return j;
+}
+
+int calc_a0a1(int la0, int la1)
+{
+	int i = 1, j = 1, k = 0;
+	while (i <= la0 && j <= la1)
+		if (pa0[i] < pa1[j])
+		{
+			a[++k] = pa0[i++];
+			lla[k] = hla[k] = 0;
+		}
+		else
+		{
+			a[++k] = pa0[i];
+			if (qa0[i] == qa1[j])
+				lla[k] = qa0[i];
+			else
+				lla[k] = hla[k] = qa1[j];
+			i++, j++;
+		}
+	
+	while (i <= la0)
+	{
+		a[++k] = pa0[i++];
+		lla[k] = hla[k] = 0;
+	}
+	return k;
+}
+
+int calc_b0b1(int lb0, int lb1)
+{
+	int i = 1, j = 1, k = 0;
+	while (i <= lb1 && j <= lb0)
+		if (pb1[i] < pb0[j])
+		{
+			b[++k] = pb1[i];
+			llb[k] = hlb[k] = qb1[i++];
+		}
+		else
+		{
+			b[++k] = pb1[i];
+			if (qb1[i] == qb0[j])
+				hlb[k] = qb1[i];
+			else
+				llb[k] = hlb[k] = qb1[i];
+			i++, j++;
+		}
+	
+	while (i <= lb1)
+	{
+		b[++k] = pb1[i];
+		llb[k] = hlb[k] = qb1[i++];
+	}
+	return k;
+}
+
+int calc_result(int la, int lb)
+{
+	int i = 1, j = 1, h, l, result = 1;
+	
+	while (i <= la && j <= lb)
+		if (a[i] == b[j])
+		{
+			l = max(lla[i], llb[j]);
+			h = min(hla[i], hlb[j]);
+			if (l > h)
+				return 0;
+			result *= h - l + 1;
+			i++, j++;
+		}
+		else if (a[i] < b[j])
+		{
+			if (lla[i] == hla[i] && lla[i] != 0)
+				return 0;
+			i++;
+		}
+		else
+		{
+			if (llb[j] != hlb[j])
+				result *= hlb[j] + 1;
+			j++;
+		}
+
+	while (i <= la)
+	{
+		if (lla[i] == hla[i] && lla[i] != 0)
+			return 0;
+		i++;
+	}
+	
+	while (j <= lb)
+	{
+		if (llb[j] != hlb[j])
+			result *= hlb[j] + 1;
+		j++;
+	}
+
+	return result;
+}
+
+int solve(int a0, int a1, int b0, int b1)
+{
+	int la0, la1, lb0, lb1;
+	int la, lb;
+	
+	memset(pa0, 0, sizeof(pa0));
+	memset(pa1, 0, sizeof(pa1));
+	memset(pb0, 0, sizeof(pb0));
+	memset(pb1, 0, sizeof(pb1));
+	memset(lla, 0, sizeof(lla));
+	memset(llb, 0, sizeof(llb));
+	memset(hla, 1, sizeof(hla));
+	memset(hlb, 1, sizeof(hlb));
+
+	la0 = fact(pa0, qa0, a0);
+	la1 = fact(pa1, qa1, a1);
+	lb0 = fact(pb0, qb0, b0);
+	lb1 = fact(pb1, qb1, b1);
+
+	la = calc_a0a1(la0, la1);
+	lb = calc_b0b1(lb0, lb1);
+
+/*	for (int i = 1; i <= la; i++)
+		cout << a[i] << " low:" << lla[i] << " high:" << hla[i] << endl;
+	
+	for (int i = 1; i <= lb; i++)
+		cout << b[i] << " low:" << llb[i] << " high:" << hlb[i] << endl;*/
+	
+	return calc_result(la, lb);
+}
+
+int main()
+{
+	int n, i, a0, a1, b0, b1;
+
+	init();
+
+	cin >> n;
+	for (i = 1; i <= n; i++)
+	{
+		cin >> a0 >> a1 >> b0 >> b1;
+		cout << solve(a0, a1, b0, b1) << endl;
+	}
+	
+	return 0;
+}
+
+

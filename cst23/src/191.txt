@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <fstream>
+int bqueen(int n, int m, int per,int r,int l,int* b,int &tot)
+{
+    int pos,s,ban;
+    ban = (1 << n) - 1;
+    ban = ban & (b[m]);
+    pos = ban & per & r & l;
+    if ((pos == 0)&&(m == n+1)) 
+    tot++ ;
+    if (pos == 0) return 0;
+    while (pos > 0)
+    {
+          s = pos & (-pos);
+          bqueen(n, m+1, per - s, (1 << (n-1))+((r - s) >> 1), (((l - s) << 1)&((1 << n) - 1))+1, b, tot);
+          pos = pos - s;
+    }
+    return 0;  
+}
+int wqueen(int n, int m, int per,int r,int l,int* b,int &tot)
+{
+    int pos,s,ban;
+    ban = (1 << n) - 1;
+    ban = ban & (b[m]);
+    pos = ban & per & r & l;
+    if ((pos == 0)&&(m == n+1)) bqueen(n,1,(1<<n)-1,(1<<n)-1,(1<<n)-1,b,tot);
+    if (pos == 0) return 0;
+    while (pos > 0)
+    {
+          s = pos & (-pos);
+          b[m] -= s;
+          wqueen(n, m+1, per - s, (1 << (n-1))+((r - s) >> 1), (((l - s) << 1)&((1 << n) - 1))+1, b, tot);
+          b[m] += s;
+          pos = pos - s;
+    }
+    return 0;    
+}
+using namespace std;
+int main()
+{
+    int n,m,tot=0;
+    int a[10000],b[100];
+    memset(b,0,sizeof(b));
+    cin >> n;
+    for (int i=1; i<=n; i++)
+        for (int j=1; j<=n; j++)
+        {
+            cin >> a[(i-1)*n+j];
+            b[i] += a[(i-1)*n+j] << (j-1);
+        }
+    m = (1 << n) - 1;
+    wqueen(n,1,m,m,m,b,tot);
+    cout << tot;
+    return 0;
+}
+

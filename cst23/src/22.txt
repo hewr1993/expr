@@ -1,0 +1,16 @@
+#include<iostream>
+using namespace std;
+
+int main(){
+	int i,j,k;
+	for(i=7;i<10;i++){
+		for(j=7;j<10;j++){
+			for(k=7;k<10;k++){
+				if(i*j*k==504){
+					cout << i << j << k << endl;
+				}
+			}
+		}
+	}
+	return 0;
+}

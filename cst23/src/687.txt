@@ -1,0 +1,51 @@
+#include <cstdio>
+#define NMax 1000
+#define MOD 10007
+using namespace std;
+int N,K;
+int dp[NMax][NMax];
+int sN,t;
+int dfs(int k,int u){
+	if (dp[k][u]!=-1)return dp[k][u];
+	if (k==0)return dp[k][u]=(u==0);
+	if (k+k<u || u>N)return dp[k][u]=0;
+	int ret=0;
+	if (N-u>=2)ret=(ret+dfs(k-1,u+2)*((((N-u)*(N-u-1))>>1)%MOD))%MOD;
+	if (N-u && u)ret=(ret+dfs(k-1,u)*(((N-u)*u)%MOD))%MOD;
+	if (u>=2)ret=(ret+dfs(k-1,u-2)*(((u*(u-1))>>1)%MOD))%MOD;
+	if (k>=2)ret=(ret-
+			dfs(k-2,u)*
+			(((sN-k+2) *(k-1))%MOD)
+			)%MOD;
+	if (ret<0)ret+=MOD;
+	return dp[k][u]=ret;
+}
+int ExtEuler(int a,int b,int c){
+	if (!a)return -1;
+	if (b%a==0)return b/a;
+	return (c*ExtEuler(c%a,a-b%a,a)+b)/a;
+}
+int main()
+{
+	static int cnt[NMax];
+	int M;
+	scanf("%d%d%d",&N,&M,&K);
+	sN=((N*(N-1))>>1)%MOD;
+	for (int i=0;i<N;i++)cnt[i]=0;
+	for (int i=0;i<M;i++){
+		int x,y;
+		scanf("%d%d",&x,&y);x--;y--;
+		cnt[x]^=1;cnt[y]^=1;
+	}
+	int u=0;
+	for (int i=0;i<N;i++)u+=cnt[i];
+	for (int i=0;i<=K;i++)for (int j=0;j<=N;j++)dp[i][j]=-1;
+	int w=dfs(K,u);
+	int s=1;
+	for (int i=1;i<=K;i++)s=(s*i)%MOD;
+	w=ExtEuler(s,w,MOD);
+	printf("%d
+",w);
+	return 0;
+}
+

@@ -1,0 +1,98 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int a,b,c,d,i,min1=10000,min2=10000,min3=10000,min4=10000,min5=10000;
+    cin>>a>>b>>c>>d;
+    int h[4],q[4],j[4],k[4],l[4];
+    
+    h[0]=a/2;
+    h[1]=b;
+    h[2]=min1;
+    h[3]=d/2;
+    for (i=0;i<=3;i++)
+        if(min1>=h[i])
+    {
+        min1=h[i];
+        }
+    if(min1==10000)
+    {
+        min1=0;
+        }   
+    a=a-2*min1;
+    b=b-min1;
+    d=d-2*min1;
+    
+    q[0]=a;
+    q[1]=b;
+    q[2]=c;
+    q[3]=d;
+    for (i=0;i<=3;i++)
+    
+        if(min2>=q[i])
+    {
+        min2=q[i];
+        }
+    if(min2==10000)
+    {
+        min2=0;
+        }
+        
+    a=a-min2;
+    b=b-min2;
+    c=c-min2;
+    d=d-min2;
+    
+    j[0]=min3;
+    j[1]=min3;
+    j[2]=c/2;
+    j[3]=d;
+    for (i=0;i<=3;i++)
+    
+        if(min3>=j[i])
+    {
+        min3=j[i];
+        }
+    if(min3==10000)
+    {
+        min3=0;
+        }
+        
+    c=c-2*min3;
+    d=d-min3;
+    
+    k[0]=min4;
+    k[1]=b/3;
+    k[2]=min4;
+    k[3]=min4;
+    for (i=0;i<=3;i++)
+    
+        if(min4>=k[i])
+    {
+        min4=k[i];
+        }
+    if(min4==10000)
+    {
+        min4=0;
+        }
+        
+    b=b-3*min4;
+    
+    l[0]=a;
+    l[1]=min5;
+    l[2]=min5;
+    l[3]=d;
+    for (i=0;i<=3;i++)
+    
+        if(min5>=l[i])
+    {
+        min5=l[i];
+        }
+    if(min5==10000)
+    {
+        min5=0;
+        }
+        
+        cout<<min1<<endl<<min2<<endl<<min3<<endl<<min4<<endl<<min5<<endl;
+    return 0;
+    }

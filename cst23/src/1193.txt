@@ -1,0 +1,36 @@
+#include<iostream>
+using namespace std;
+int m,n,tmp;
+bool key,a[505][505]={};
+bool next(int x,int y,int k,bool ki){
+    for(int ni=1;ni<=k;ni++){
+        if( ( a[x+k-1][y+ni-1]!=ki )||( a[x+ni-1][y+k-1]!=ki ) ) return 0;
+    }
+    return 1;
+}
+int fmax(int x,int y){
+    int k=1;
+    while( ((x+k)<=m)&&((y+k)<=n) ){
+        if( next(x,y,k+1,key) ) k++;
+        else return k;
+    }
+    return k;
+}
+int main(){
+    int max=0;
+    cin>>m>>n;
+    for(int mi=1;mi<=m;mi++){
+        for(int mj=1;mj<=n;mj++){
+            cin>>a[mi][mj];
+        }
+    }
+    for(int mi=1;mi<=m-1;mi++){
+        for(int mj=1;mj<=n-1;mj++){
+            key=a[mi][mj];
+            tmp=fmax(mi,mj);
+            if ( max<tmp ) max=tmp;
+        }
+    }
+    cout<<max*max<<endl;
+    return 0;
+}

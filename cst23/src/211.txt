@@ -1,0 +1,12 @@
+struct dataStruct {
+	int a;
+	int b;
+};
+
+// 获取错误的数据，将你认为错误的数据的a放到v.a中，b放到v.b中。
+void getData(dataStruct & v)
+{
+v.a = 69998;
+v.b = 34999;
+}
+

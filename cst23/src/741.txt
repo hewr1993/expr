@@ -1,0 +1,18 @@
+struct dataStruct {
+	int n1;
+	int n2;
+};
+
+dataStruct getData()
+{
+	int i,k=1;
+    dataStruct a;
+	for(i=1;i<=31;i++)
+	{
+		k=k*2;
+	}
+    a.n1=0;
+    a.n2=-k;
+    return a;
+}
+

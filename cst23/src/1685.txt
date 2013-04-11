@@ -1,0 +1,389 @@
+#include <algorithm>
+#include <cstdio>
+#include <vector>
+#include <deque>
+#include <cmath>
+ 
+using namespace std;
+ 
+struct point2D {
+        double x, y;
+        point2D(double _x = 0, double _y = 0) : x(_x), y(_y) {}
+        point2D operator + (const point2D &o) const {
+                return point2D(x + o.x, y + o.y);
+        }
+        point2D operator - (const point2D &o) const {
+                return point2D(x - o.x, y - o.y);
+        }
+};
+ 
+struct line {
+        point2D p1, p2;
+        line(point2D _p1 = point2D(), point2D _p2 = point2D()) : p1(_p1), p2(_p2) {}
+};
+ 
+struct point3D {
+        double x, y, z;
+        point3D(double _x = 0, double _y = 0, double _z = 0) : x(_x), y(_y), z(_z) {}
+        point3D operator + (const point3D &o) const {
+                return point3D(x + o.x, y + o.y, z + o.z);
+        }
+        point3D operator - (const point3D &o) const {
+                return point3D(x - o.x, y - o.y, z - o.z);
+        }
+        point3D operator * (double lambda) const {
+                return point3D(x * lambda, y * lambda, z * lambda);
+        }
+};
+ 
+vector< vector<point3D> > surface, plane;
+vector< vector< vector<point3D> > > list;
+vector<point3D> vertex;
+ 
+int sign(double x) {
+        if (fabs(x) < 1e-8) return 0;
+        return (x > 0) ? 1 : -1;
+}
+ 
+double cross(point2D a, point2D b) {
+        return a.x * b.y - a.y * b.x;
+}
+ 
+double scalar(point2D a, point2D b) {
+        return a.x * b.x + a.y * b.y;
+}
+ 
+point2D getIntersection(const line &a, const line &b) {
+        double a1 = a.p1.y - a.p2.y, b1 = a.p2.x - a.p1.x;
+        double c1 = a.p1.x * a.p2.y - a.p1.y * a.p2.x;
+        double a2 = b.p1.y - b.p2.y, b2 = b.p2.x - b.p1.x;
+        double c2 = b.p1.x * b.p2.y - b.p1.y * b.p2.x;
+        double t = a1 * b2 - a2 * b1;
+        return point2D((c2 * b1 - c1 * b2) / t, (c1 * a2 - c2 * a1) / t);
+}
+ 
+double scalar(point3D a, point3D b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+ 
+double dist(point3D a, point3D b) {
+        return sqrt(scalar(a - b, a - b));
+}
+ 
+double determinant3D(point3D a, point3D b, point3D c) {
+        double res = 0;
+        res += a.x * (b.y * c.z - b.z * c.y);
+        res -= a.y * (b.x * c.z - b.z * c.x);
+        res += a.z * (b.x * c.y - b.y * c.x);
+        return res;
+}
+ 
+point3D getIntersection(point3D t1, point3D t2, vector<point3D> plane) {
+        point3D o = plane[0], a = plane[1] - o, b = plane[2] - o;
+        double det = determinant3D(a, b, t2 - t1);
+        double x = determinant3D(t1 - o, b, t2 - t1) / det;
+        double y = determinant3D(a, t1 - o, t2 - t1) / det;
+        double t = determinant3D(a, b, t1 - o) / det;
+        return t1 - (t2 - t1) * t;
+}
+ 
+bool checkCollinear(point3D a, point3D b, point3D c) {
+        return sign(dist(a, b) * dist(a, c) - scalar(b - a, c - a)) == 0;
+}
+ 
+vector<point3D> getPlane(vector<point3D> surface) {
+        int n = surface.size();
+        for (int i = 0; i < n; i ++)
+                for (int j = i + 1; j < n; j ++)
+                        for (int k = j + 1; k < n; k ++)
+                                if (! checkCollinear(surface[i], surface[j], surface[k])) {
+                                        vector<point3D> res(3);
+                                        res[0] = surface[i];
+                                        res[1] = surface[j];
+                                        res[2] = surface[k];
+                                        return res;
+                                }
+}
+ 
+bool checkConvex(line a, line b, line c) {
+        point2D p = getIntersection(a, b);
+        return sign(cross(c.p2 - c.p1, p - c.p1)) > 0;
+}
+ 
+bool cmp(const line &a, const line &b) {
+        point2D v1(a.p2.x - a.p1.x, a.p2.y - a.p1.y);
+        point2D v2(b.p2.x - b.p1.x, b.p2.y - b.p1.y);
+        bool flag1 = sign(v1.y) > 0 || sign(v1.y) == 0 && sign(v1.x) > 0;
+        bool flag2 = sign(v2.y) > 0 || sign(v2.y) == 0 && sign(v2.x) > 0;
+        if (flag1 != flag2) return flag1;
+        int t = sign(cross(a.p2 - a.p1, b.p2 - b.p1));
+        if (t != 0) return t > 0;
+        return sign(cross(a.p2 - a.p1, b.p1 - a.p1)) < 0;
+}
+ 
+vector<point2D> deleteCollinear(vector<point2D> data) {
+        vector<point2D> res;
+        for (int i = 0; i < data.size(); i ++) {
+                while (res.size() >= 2) {
+                        int s = res.size();
+                        if (sign(cross(res[s-1] - res[s-2], data[i] - res[s-1])) > 0) break;
+                        res.pop_back();
+                }
+                res.push_back(data[i]);
+        }
+        while (res.size() > 2) {
+                int s = res.size();
+                if (sign(cross(res[0] - res[s-1], res[1] - res[0])) > 0) break;
+                res.pop_back();
+        }
+        return res;
+}
+ 
+vector<point3D> getCommonArea(vector<point3D> _A, vector<point3D> _B, vector<point3D> plane) {
+        int n = _A.size(), m = _B.size();
+        vector<point2D> A(n), B(m);
+        point3D o = plane[0], a = plane[1] - o, b = plane[2] - o;
+        point3D t(a.y * b.z - a.z * b.y, a.x * b.z - a.z * b.x, a.x * b.y - a.y * b.x);
+        int check;
+        if (sign(scalar(t, point3D(0, 0, 1))) != 0) {
+                check = 0;
+                for (int i = 0; i < n; i ++) A[i] = point2D(_A[i].x, _A[i].y);
+                for (int i = 0; i < m; i ++) B[i] = point2D(_B[i].x, _B[i].y);
+        } else if (sign(scalar(t, point3D(0, 1, 0))) != 0) {
+                check = 1;
+                for (int i = 0; i < n; i ++) A[i] = point2D(_A[i].x, _A[i].z);
+                for (int i = 0; i < m; i ++) B[i] = point2D(_B[i].x, _B[i].z);
+        } else {
+                check = 2;
+                for (int i = 0; i < n; i ++) A[i] = point2D(_A[i].y, _A[i].z);
+                for (int i = 0; i < m; i ++) B[i] = point2D(_B[i].y, _B[i].z);
+        }
+        bool flag1 = false;
+        for (int i = 0; i < n; i ++)
+                if (sign(cross(A[(i + 1) % n] - A[i], A[(i + 2) % n] - A[(i + 1) % n])) < 0) {
+                        flag1 = true;
+                        break;
+                }
+        if (flag1) for (int i = 0; i * 2 < n; i ++) swap(A[i], A[n-i-1]);
+        bool flag2 = false;
+        for (int i = 0; i < m; i ++)
+                if (sign(cross(B[(i + 1) % m] - B[i], B[(i + 2) % m] - B[(i + 1) % m])) < 0) {
+                        flag2 = true;
+                        break;
+                }
+        if (flag2) for (int i = 0; i * 2 < m; i ++) swap(B[i], B[m-i-1]);
+        A = deleteCollinear(A);
+        B = deleteCollinear(B);
+        vector<point3D> convex;
+        if (A.size() < 3 || B.size() < 3) return convex;
+        vector<line> L;
+        for (int i = 0; i < A.size(); i ++) L.push_back(line(A[i], A[(i + 1) % A.size()]));
+        for (int i = 0; i < B.size(); i ++) L.push_back(line(B[i], B[(i + 1) % B.size()]));
+        sort(L.begin(), L.end(), cmp);
+        deque<line> Q;
+        for (int i = 0; i < L.size(); i ++) {
+                if (i > 0 && sign(cross(L[i-1].p2 - L[i-1].p1, L[i].p2 - L[i].p1)) == 0) continue;
+                while (Q.size() >= 2 && ! checkConvex(Q[Q.size()-2], Q.back(), L[i])) Q.pop_back();
+                while (Q.size() >= 2 && ! checkConvex(Q[0], Q[1], L[i])) Q.pop_front();
+                Q.push_back(L[i]);
+        }
+        while (Q.size() >= 2 && ! checkConvex(Q[Q.size()-2], Q.back(), Q[0])) Q.pop_back();
+        while (Q.size() >= 2 && ! checkConvex(Q[0], Q[1], Q.back())) Q.pop_front();
+        if (Q.size() < 3) return convex;
+        for (int i = 0; i < Q.size(); i ++) {
+                point2D p = getIntersection(Q[i], Q[(i + 1) % Q.size()]);
+                if (check == 0) {
+                        double a1 = a.x, b1 = b.x, c1 = o.x - p.x;
+                        double a2 = a.y, b2 = b.y, c2 = o.y - p.y;
+                        double t = a1 * b2 - a2 * b1;
+                        double t1 = (c2 * b1 - c1 * b2) / t, t2 = (c1 * a2 - c2 * a1) / t;
+                        convex.push_back(point3D(p.x, p.y, t1 * a.z + t2 * b.z + o.z));
+                }
+                if (check == 1) {
+                        double a1 = a.x, b1 = b.x, c1 = o.x - p.x;
+                        double a2 = a.z, b2 = b.z, c2 = o.z - p.y;
+                        double t = a1 * b2 - a2 * b1;
+                        double t1 = (c2 * b1 - c1 * b2) / t, t2 = (c1 * a2 - c2 * a1) / t;
+                        convex.push_back(point3D(p.x, t1 * a.y + t2 * b.y + o.y, p.y));
+                }
+                if (check == 2) {
+                        double a1 = a.y, b1 = b.y, c1 = o.y - p.x;
+                        double a2 = a.z, b2 = b.z, c2 = o.z - p.y;
+                        double t = a1 * b2 - a2 * b1;
+                        double t1 = (c2 * b1 - c1 * b2) / t, t2 = (c1 * a2 - c2 * a1) / t;
+                        convex.push_back(point3D(t1 * a.x + t2 * b.x + o.x, p.x, p.y));
+                }
+        }
+        return convex;
+}
+ 
+double getUnionArea(vector< vector<point3D> > _list, vector<point3D> plane) {
+        int n = _list.size();
+        vector< vector<point2D> > list(n);
+        point3D o = plane[0], a = plane[1] - o, b = plane[2] - o;
+        point3D t(a.y * b.z - a.z * b.y, a.x * b.z - a.z * b.x, a.x * b.y - a.y * b.x);
+        double ratio;
+        if (sign(scalar(t, point3D(0, 0, 1))) != 0) {
+                ratio = scalar(t, point3D(0, 0, 1)) / dist(t, point3D(0, 0, 0));
+                for (int i = 0; i < n; i ++)
+                        for (int j = 0; j < _list[i].size(); j ++)
+                                list[i].push_back(point2D(_list[i][j].x, _list[i][j].y));
+        } else if (sign(scalar(t, point3D(0, 1, 0))) != 0) {
+                ratio = scalar(t, point3D(0, 1, 0)) / dist(t, point3D(0, 0, 0));
+                for (int i = 0; i < n; i ++)
+                        for (int j = 0; j < _list[i].size(); j ++)
+                                list[i].push_back(point2D(_list[i][j].x, _list[i][j].z));
+        } else {
+                ratio = scalar(t, point3D(1, 0, 0)) / dist(t, point3D(0, 0, 0));
+                for (int i = 0; i < n; i ++)
+                        for (int j = 0; j < _list[i].size(); j ++)
+                                list[i].push_back(point2D(_list[i][j].y, _list[i][j].z));
+        }
+        for (int i = 0; i < n; i ++) {
+                bool flag = false;
+                int m = list[i].size();
+                for (int j = 0; j < m; j ++) {
+                        point2D p1 = list[i][j], p2 = list[i][(j + 1) % m], p3 = list[i][(j + 2) % m];
+                        if (sign(cross(p2 - p1, p3 - p2)) < 0) {
+                                flag = true;
+                                break;
+                        }
+                }
+                if (! flag) continue;
+                for (int j = 0; j * 2 < m; j ++) swap(list[i][j], list[i][m-j-1]);
+        }
+        double ans = 0;
+        for (int i = 0; i < n; i ++) {
+                int m1 = list[i].size();
+                for (int j = 0; j < m1; j ++) {
+                        point2D p1 = list[i][j], p2 = list[i][(j + 1) % m1];
+                        vector< pair<double, int> > L;
+                        for (int k = 0; k < n; k ++) {
+                                if (i == k) continue;
+                                int m2 = list[k].size();
+                                double l = -1, r = -1;
+                                bool flag = false;
+                                for (int w = 0; w < m2; w ++) {
+                                        point2D p3 = list[k][w], p4 = list[k][(w + 1) % m2];
+                                        if (sign(cross(p2 - p1, p4 - p3)) == 0) {
+                                                if (sign(cross(p2 - p1, p3 - p1)) == 0 && sign(scalar(p2 - p1, p4 - p3)) > 0)
+                                                        if (sign(scalar(p3 - p2, p2 - p1)) < 0 && sign(scalar(p1 - p4, p2 - p1)) < 0)
+                                                                flag = true;
+                                                continue;
+                                        }
+                                        int check = 0;
+                                        if (sign(cross(p1 - p3, p2 - p3)) == 1 && sign(cross(p1 - p4, p2 - p4)) <= 0) check = 1;
+                                        if (sign(cross(p1 - p3, p2 - p3)) <= 0 && sign(cross(p1 - p4, p2 - p4)) == 1) check = 2;
+                                        if (check == 0) continue;
+                                        double a1 = p1.y - p2.y, b1 = p2.x - p1.x;
+                                        double c1 = p1.x * p2.y - p1.y * p2.x;
+                                        double a2 = p3.y - p4.y, b2 = p4.x - p3.x;
+                                        double c2 = p3.x * p4.y - p3.y * p4.x;
+                                        double t = a1 * b2 - a2 * b1, lambda;
+                                        point2D p((c2 * b1 - c1 * b2) / t, (c1 * a2 - c2 * a1) / t);
+                                        if (sign(p1.x - p2.x) == 0)
+                                                lambda = (p.y - p1.y) / (p2.y - p1.y);
+                                        else
+                                                lambda = (p.x - p1.x) / (p2.x - p1.x);
+                                        if (lambda < 0) lambda = 0;
+                                        if (lambda > 1) lambda = 1;
+                                        if (check == 1) l = lambda; else r = lambda;
+                                }
+                                if (l > -1 && (! flag || k < i)) {
+                                        L.push_back(make_pair(l, -1));
+                                        L.push_back(make_pair(r, 1));
+                                }
+                        }
+                        sort(L.begin(), L.end());
+                        double last = 0, sum = 0;
+                        int tot = 0;
+                        for (int k = 0; k < L.size(); k ++) {
+                                if (tot == 0) sum += L[k].first - last;
+                                tot += L[k].second;
+                                last = L[k].first;
+                        }
+                        sum += 1 - last;
+                        ans += sum * cross(p1, p2) / 2;
+                }
+        }
+        return fabs(ans / ratio);
+}
+ 
+void reflect(vector<point3D> polygon, point3D d, int times) {
+        if (times == 0) return;
+        for (int i = 0; i < surface.size(); i ++) {
+                point3D o = plane[i][0], a = plane[i][1] - o, b = plane[i][2] - o;
+                double det = determinant3D(a, b, d);
+                if (sign(det) == 0) continue;
+                vector<point3D> shadow(polygon.size());
+                vector<int> check(polygon.size());
+                bool flag = true;
+                for (int j = 0; j < polygon.size(); j ++) {
+                        double x = determinant3D(polygon[j] - o, b, d) / det;
+                        double y = determinant3D(a, polygon[j] - o, d) / det;
+                        double t = determinant3D(a, b, polygon[j] - o) / det;
+                        check[j] = sign(t) <= 0;
+                        if (check[j] == 0) flag = false;
+                        shadow[j] = polygon[j] - d * t;
+                }
+                if (! flag) {
+                        vector<point3D> _shadow, plane = getPlane(polygon);
+                        int n = shadow.size();
+                        for (int j = 0; j < n; j ++) {
+                                if (check[j] == 0 && check[(j + 1) % n] == 1)
+                                        _shadow.push_back(getIntersection(shadow[j], shadow[(j + 1) % n], plane));
+                                if (check[j] == 1) _shadow.push_back(shadow[j]);
+                                if (check[j] == 1 && check[(j + 1) % n] == 0)
+                                        _shadow.push_back(getIntersection(shadow[j], shadow[(j + 1) % n], plane));
+                        }
+                        shadow = _shadow;
+                }
+                if (shadow.size() == 0) continue;
+                shadow = getCommonArea(shadow, surface[i], plane[i]);
+                if (shadow.size() == 0) continue;
+                list[i].push_back(shadow);
+                point3D n(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+                reflect(shadow, d - n * (2 * scalar(d, n) / scalar(n, n)), times - 1);
+        }
+}
+ 
+int main() {
+        //freopen("box.in", "r", stdin);
+        //freopen("box.out", "w", stdout);
+        
+        int n, m, k;
+        scanf("%d%d%d", &n, &m, &k);
+        vertex.resize(n);
+        for (int i = 0; i < n; i ++)
+                scanf("%lf%lf%lf", &vertex[i].x, &vertex[i].y, &vertex[i].z);
+        surface.resize(m);
+        for (int i = 0; i < m; i ++) {
+                int t;
+                scanf("%d", &t);
+                surface[i].resize(t);
+                for (int j = 0; j < t; j ++) {
+                        int p;
+                        scanf("%d", &p);
+                        surface[i][j] = vertex[p-1];
+                }
+        }
+        vector<point3D> triangle(3);
+        point3D d;
+        scanf("%lf%lf%lf", &triangle[0].x, &triangle[0].y, &triangle[0].z);
+        scanf("%lf%lf%lf", &triangle[1].x, &triangle[1].y, &triangle[1].z);
+        scanf("%lf%lf%lf", &triangle[2].x, &triangle[2].y, &triangle[2].z);
+        scanf("%lf%lf%lf", &d.x, &d.y, &d.z);
+        
+        plane.resize(m);
+        for (int i = 0; i < m; i ++) plane[i] = getPlane(surface[i]);
+        list.resize(m);
+        reflect(triangle, d, k);
+        
+        double ans = 0;
+        for (int i = 0; i < m; i ++)
+                ans += getUnionArea(list[i], plane[i]);
+        printf("%.2lf
+", ans);
+        
+        return 0;
+}

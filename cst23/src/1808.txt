@@ -1,0 +1,85 @@
+(*
+	Problem: IOI 2006 Deciphering the mayan writing (writing)
+	Author: Amber
+	Method: Count
+	Complexity: O(|S|)
+	Date: 2006-9-2
+	State: Accepted
+*)
+program IOI_2006_Writing(Input, Output);
+const
+	InputFile = 'writing.in';
+	OutputFile = 'writing.out';
+	MaxM = 3000;
+	BufferSize = 1 shl 20;
+type
+	TIndex = Longint;
+	TCount = array [Char] of TIndex;
+	TDeque = array [1..MaxM] of Char;
+	TBuffer = array [1..BufferSize] of Char;
+var
+	N, M: TIndex;
+	Deque: TDeque;
+	Count: TCount;
+	Delta: TIndex;
+	Answer: TIndex;
+	Buffer: TBuffer;
+
+procedure Main;
+var
+	i: TIndex;
+	Ptr: TIndex;
+	Ch: Char;
+begin
+	FillChar(Count, SizeOf(Count), 0);
+	Delta := 0;
+
+	Readln(M, N);
+	for i := 1 to M do
+	begin
+		Read(Ch);
+		Dec(Delta, Abs(Count[Ch]));
+		Dec(Count[Ch]);
+		Inc(Delta, Abs(Count[Ch]));
+	end;
+	Readln;
+
+	Ptr := 1;
+	for i := 1 to M - 1 do
+	begin
+		Read(Ch);
+		
+		Deque[Ptr] := Ch;
+		Inc(Ptr);
+		if Ptr = M + 1 then Ptr := 1;
+
+		Dec(Delta, Abs(Count[Ch]));
+		Inc(Count[Ch]);
+		Inc(Delta, Abs(Count[Ch]));
+	end;
+	
+	Answer := 0;
+	for i := M to N do
+	begin
+		Read(Ch);
+		
+		Deque[Ptr] := Ch;
+		Inc(Ptr);
+		if Ptr = M + 1 then Ptr := 1;
+
+		Dec(Delta, Abs(Count[Ch]));
+		Inc(Count[Ch]);
+		Inc(Delta, Abs(Count[Ch]));
+		
+		if Delta = 0 then Inc(Answer);
+		
+		Ch := Deque[Ptr];
+		Dec(Delta, Abs(Count[Ch]));
+		Dec(Count[Ch]);
+		Inc(Delta, Abs(Count[Ch]));
+	end;
+	Writeln(Answer);
+end;
+begin
+	Main;
+end.

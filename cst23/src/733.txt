@@ -1,0 +1,153 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+#define pb push_back
+
+const int kMaxN = 10000, kMaxM = kMaxN * 2, kInf = 0x3f3f3f3f;
+const int kMaxV = kMaxN, kMaxE = kMaxM * 2;
+int n, m, q, cnt, begin[kMaxV], end[kMaxE], next[kMaxE], cost[kMaxE];
+int dcnt, bcnt, dfn[kMaxV], low[kMaxV], belong[kMaxV], stop;
+int sz[kMaxV], pos[kMaxV];
+vector<int> sum[kMaxV];
+vector<int> son[kMaxV];
+int anc[kMaxV][15], dis[kMaxV][15], weight[kMaxV], dep[kMaxV];
+
+struct Edge {
+	int u, v, c;
+	Edge() {}
+	Edge(int u_, int v_, int c_) : u(min(u_, v_)), v(max(u_, v_)), c(c_) {}
+	bool operator != (const Edge &t) const {
+		return (u != t.u || v != t.v);
+	}
+};
+
+Edge stack[kMaxV];
+
+void AddEdge(int u, int v, int c) {
+	next[cnt] = begin[u];
+	begin[u] = cnt;
+	end[cnt] = v;
+	cost[cnt ++] = c;
+}
+
+void Dfs(int u, int p) {
+	low[u] = dfn[u] = ++ dcnt;
+	for (int now = begin[u], v; now != -1; now = next[now])
+		if ((v = end[now]) != p && dfn[v] < dfn[u]) {
+			stack[stop ++] = Edge(u, v, cost[now]);
+			if (!dfn[v]) {
+				Dfs(v, u);
+				low[u] = min(low[u], low[v]);
+				static Edge tmp[kMaxV];
+				int tmp_idx = 0;
+				if (low[v] >= dfn[u]) {
+					sum[bcnt].pb(0);
+					do {
+						++ sz[bcnt];
+						tmp[tmp_idx ++] = stack[stop - 1];
+						belong[stack[stop - 1].u] = belong[stack[stop - 1].v] = bcnt;
+					} while (stack[-- stop] != Edge(u, v, cost[now]));
+					if (tmp[0].u != u) swap(tmp[0].u, tmp[0].v);
+					for (int i = 1, las = tmp[0].v; i < tmp_idx; ++ i) {
+						if (tmp[i].u != las) swap(tmp[i].u, tmp[i].v);
+						las = tmp[i].v;
+					}
+					for (int i = 0; i < tmp_idx; ++ i) sum[bcnt].pb(sum[bcnt].back() + tmp[i].c), pos[tmp[i].u] = i;
+					for (int i = 1; i < tmp_idx; ++ i) {
+						int nv = tmp[i].u;
+						weight[nv] = min(sum[bcnt].at(i), sum[bcnt].back() - sum[bcnt].at(i));
+						son[u].pb(nv);
+						anc[nv][0] = u;
+						dis[nv][0] = weight[nv];
+					}
+					if (tmp_idx == 1) {
+						int nv = tmp[0].v;
+						weight[nv] = tmp[0].c;
+						son[u].pb(nv);
+						anc[nv][0] = u;
+						dis[nv][0] = weight[nv];
+					}
+					++ bcnt;
+				}
+			}
+			else {
+				low[u] = min(low[u], dfn[v]);
+			}
+		}
+}
+
+void Bfs() {
+	static int q[kMaxV], qh, qt;
+	q[qt ++] = 0;
+	while (qh < qt) {
+		int u = q[qh ++];
+		for (vector<int>::iterator it = son[u].begin(); it != son[u].end(); ++ it) {
+			int v = *it;
+			q[qt ++] = v;
+			dep[v] = dep[u] + 1;
+		}
+	}
+}
+
+int Query(int u, int v) {
+	int a = 0, b = 0;
+	if (dep[u] < dep[v]) swap(u, v);
+	int delta = dep[u] - dep[v];
+	for (int i = 14; i >= 0; -- i)
+		if (delta >> i & 1) {
+			a += dis[u][i];
+			u = anc[u][i];
+		}
+	if (u == v) return a;
+	for (int i = 14; i >= 0; -- i)
+		if (anc[u][i] != -1 && anc[u][i] != anc[v][i]) {
+			a += dis[u][i], b += dis[v][i];
+			u = anc[u][i], v = anc[v][i];
+			if (belong[u] == belong[v]) break;
+		}
+	if (belong[u] == belong[v]) {
+		int bel = belong[u];
+		int add = abs(sum[bel].at(pos[u]) - sum[bel].at(pos[v]));
+		add = min(add, sum[bel].back() - add);
+		a += add;
+	}
+	else {
+		a += dis[u][0], b += dis[v][0];
+	}
+	return a + b;
+}
+
+int main() {
+	memset(begin, -1, sizeof(begin));
+	scanf("%d%d%d", &n, &m, &q);
+	for (int u, v, c; m --; ) {
+		scanf("%d%d%d", &u, &v, &c);
+		-- u, -- v;
+		AddEdge(u, v, c);
+		AddEdge(v, u, c);
+	}
+	weight[0] = kInf;
+	anc[0][0] = -1;
+	dis[0][0] = kInf;
+	Dfs(0, -1);
+	Bfs();
+	for (int j = 1; j < 15; ++ j)
+		for (int i = 0; i < n; ++ i)
+			if (anc[i][j - 1] != -1) {
+				anc[i][j] = anc[anc[i][j - 1]][j - 1];
+				dis[i][j] = min(kInf, dis[i][j - 1] + dis[anc[i][j - 1]][j - 1]);
+			}
+			else anc[i][j] = -1, dis[i][j] = kInf;
+	for (int u, v; q --; ) {
+		scanf("%d%d", &u, &v);
+		printf("%d
+", Query(-- u, -- v));
+	}
+	return 0;
+}
+

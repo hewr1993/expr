@@ -1,0 +1,25 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+bool f[1005][105]={0};
+int n,k,a[1005],m;
+int main()
+{
+    int i,j;
+    cin>>m;
+    while(m--){
+    scanf("%d%d",&n,&k);
+    memset(f,0,sizeof(f));
+    for( i=1;i<=n;i++){ scanf("%d",&a[i]); a[i]=(a[i]%k+k)%k;}
+    f[1][a[1]]=1;
+    for( i=2;i<=n;i++)
+       for( j=0;j<k;j++)f[i][j]=(f[i-1][(j+a[i])%k]||f[i-1][(j-a[i]+k)%k]);
+    if(f[n][0]==0)cout<<"Not Divisible
+";
+    else cout<<"Divisible
+"; 
+    }
+     return 0;
+}
+

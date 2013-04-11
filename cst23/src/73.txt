@@ -1,0 +1,51 @@
+//**********************************************
+//*程序名：字符统计                            *
+//*作者：山月                                  *
+//*编制时间：2012.11.9                         *
+//*功能：统计字符串                            * 
+//**********************************************
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+int gys(int x,int y);
+int gbs(int x,int y);
+int main()
+{
+    int x,y,z;
+    cin >> x >> y >> z;
+    if (z == 1) cout << x + y << endl;
+    else if (z == 2) cout << x - y << endl;
+    else if (z == 3) cout << x * y << endl;
+    else if (z == 4) cout << x / y << endl;
+    else if (z == 5) cout << x % y << endl;
+    else if (z == 6) cout << gys(x,y) << endl;
+    else cout << gbs(x,y) << endl;
+    system("pause");
+    return 0;
+}
+
+int gys(int x,int y)
+{
+    int i,min;
+    if (x > y) min = y;
+    else min = x;
+    for(i = min;;i--)
+    {
+        if ((x % i == 0) && (y % i == 0)) return i;
+    }
+}
+
+int gbs(int x,int y)
+{
+    int i,min;
+    if (x < y) min = x;
+    else min = y;
+    for (i = 1;; i++)
+    {
+        if ((min * i % x == 0) && (min * i % y == 0))
+        {
+            return min * i;
+        }
+    }
+}                    
+        

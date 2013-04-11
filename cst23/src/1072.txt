@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+int i;
+int b;
+
+int su(int ini)
+{
+     int temp=0;
+     double t=sqrt(ini);
+     for(i=2;i<=t;i++)
+     {
+           if(ini%i == 0) return 0;             
+     }
+     return 1;  
+}
+int main()
+{
+    int min, max;
+    int num=0;
+    
+    scanf("%d %d", &min, &max);
+        
+    if(min%2==0) min = min+1;
+    
+    while(1)
+    {
+            
+            if(su(min) == 1)
+            {
+                           if(su(min+2) == 1)
+                           {
+                                        num = num+1;
+                                        //printf("%d %d
+", min, min+2);
+                           }
+                           else min = min + 2;
+            }
+            min = min + 2;
+            if(min > max-2) break;
+    }
+    printf("%d", num);
+    //system("pause");
+    return 0;
+}
+

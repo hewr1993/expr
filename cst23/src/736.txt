@@ -1,0 +1,134 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<algorithm>
+using namespace std;
+const int N=50010,GHN=170,INF=2000000000;
+int n,m;
+int D[N],L[N];
+int tong[10000010];
+struct pi
+{
+   int g,s;
+   pi(){}pi(int a,int b):g(a),s(b){}
+   bool operator<(const pi&a)const
+   {
+        if(g!=a.g)return g<a.g;
+        return s<a.s;
+    }
+};
+int G[GHN][GHN],S[GHN][GHN];
+int ms[N];
+struct box
+{
+   pi lli[GHN],rli[GHN],tli[GHN*GHN];
+   int lms[GHN],rms[GHN],tms[GHN*GHN];
+   int ln,rn,tn,l,r,glr,slr;
+   void mma(pi l[],int&n)
+   {
+        int i,j;
+        sort(l+1,l+n+1);
+      for(ms[n]=-INF,i=n-1;i>=1;i--)
+         ms[i]=max(ms[i+1],l[i+1].s);
+      for(i=1,j=0;i<=n;i++)
+         if(l[i].s>ms[i])
+            l[++j]=l[i];
+      n=j;
+    }
+   void make(int ll,int rr)
+   {
+      int i,j;
+      l=ll,r=rr;
+      tn=0,ln=rn=r-l+1;
+      for(i=l;i<=r;i++)
+         for(j=i;j<=r;j++)
+            S[i-l+1][j-l+1]=S[i-l+1][j-l]+D[j];
+      for(j=l;j<=r;j++)
+      {
+         G[j-l+1][j-l+1]=L[j];
+         for(i=j-1;i>=l;i--)
+            G[i-l+1][j-l+1]=min(G[i-l+2][j-l+1],L[i]+S[i-l+2][j-l+1]);
+      }
+      for(i=l;i<=r;i++)
+      {
+         for(j=i;j<=r;j++)
+            tli[++tn]=pi(G[i-l+1][j-l+1],S[i-l+1][j-l+1]);
+         lli[i-l+1]=pi(G[1][i-l+1],S[1][i-l+1]);
+         rli[i-l+1]=pi(G[i-l+1][r-l+1],S[i-l+1][r-l+1]);
+      }
+      glr=G[1][r-l+1];
+      slr=S[1][r-l+1];
+      mma(tli,tn);
+      mma(lli,ln);
+      mma(rli,rn);
+   }
+}bl[500];
+inline int cal(pi l[],int n,int x)
+{
+    int lb=1,rb=n;
+    while(lb<rb)
+    {
+        int m=lb+rb>>1;
+        if(m==lb) m++;
+        if(l[m].g<l[m].s+x) lb=m;
+        else rb=m-1;
+    }
+    if(lb==n) return min(l[lb].g,l[lb].s+x);
+    return max(min(l[lb].g,l[lb].s+x),min(l[lb+1].g,l[lb+1].s+x));
+}
+int cnt;
+int main()
+{
+   int a,b,c,i,j;
+   scanf("%d%d",&n,&m);
+   for(i=1;i<=n;i++) scanf("%d",&D[i]);
+   for(i=1;i<=n;i++) scanf("%d",&L[i]);
+   for(i=1;i<=n;i=j+1)
+   {
+      j=min(n,i+165);
+      bl[++cnt].make(i,j);
+   }
+   //for(i=1;i<=n;i++,puts(""))
+   //   for(j=i;j<=n;j++) printf("%d ",G[i][j]);
+   while(m--)
+   {
+      scanf("%d%d%d",&a,&b,&c);
+      int res=c,Y=c;
+      if(b-a<=800)
+      {
+            for(a;a<=b;a++)
+            res=max(res,Y=max(c,min(Y+D[a],L[a])));
+         printf("%d
+",res);
+            continue;
+        }
+      for(i=1;i<=cnt;i++)
+         if(a<=bl[i].r)
+         {
+                //printf("!!!%d
+",i)
+            for(;a<=min(b,bl[i].r);a++)
+               res=max(res,Y=max(c,min(Y+D[a],L[a])));//,printf("!!!%d
+",a);
+            break;
+         }
+      //printf("Y=%d res=%d
+",Y,res);
+      if(a<b)
+      {
+         for(i++;bl[i].r<b;i++)
+         {
+                res=max(res,cal(bl[i].lli,bl[i].ln,Y));
+                res=max(res,cal(bl[i].tli,bl[i].tn,c));
+                Y=max(cal(bl[i].rli,bl[i].rn,c),min(bl[i].glr,bl[i].slr+Y));
+                //printf("Y=%d
+",Y);
+         }
+         for(a=bl[i].l;a<=b;a++)
+                res=max(res,Y=max(c,min(Y+D[a],L[a])));
+      }
+    printf("%d
+",res);
+   }
+   return 0;
+}

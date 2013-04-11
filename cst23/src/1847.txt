@@ -1,0 +1,235 @@
+#include <cstdio>
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+using namespace std;
+#define Rep(i,j,k) for(int i=(j); i<=(k); i++)
+#define Repd(i,j,k) for(int i=(j); i>=(k); i--)
+#define maxn 61000
+#define maxdep 16
+
+int n, query;
+int wz[maxn], pos[maxn];
+
+struct Tpoint{
+	int x, y, z, id;
+		
+	bool operator<(const Tpoint &b)const{
+		return x<b.x;
+	}
+} a[maxn];
+
+int bs, bt;
+
+struct Tnode{
+	Tnode *l, *r;
+	int cnt;
+} pool[maxn*100], *cur, *trash[maxn*100];
+int trash_tot;
+
+Tnode *root[340][340];
+int num[340][340];
+
+Tnode* newnode(){
+	Tnode *ret;
+	if (trash_tot)
+		ret=trash[trash_tot--];
+	else
+		ret=cur++;
+	ret->l=ret->r=0;
+	ret->cnt=0;
+	return ret;
+}
+
+Tnode* ins(Tnode *ori, int z, int d, bool add){
+	Tnode *ret;
+	if (add){
+		ret=newnode();
+		if (ori) *ret=*ori;
+	}else{
+		ret=ori;
+		if (!ret) ret=newnode();
+	}
+	ret->cnt++;
+	if (d==-1)
+		return ret;
+	if ((z>>d)&1)
+		ret->r=ins(ret->r, z, d-1, add);
+	else
+		ret->l=ins(ret->l, z, d-1, add);
+	return ret;
+}
+
+void recycle_dfs(Tnode *p){
+	if (!p || !p->cnt) return;
+	recycle_dfs(p->l);
+	recycle_dfs(p->r);
+	trash[++trash_tot]=p;
+	p->l=p->r=0, p->cnt=0;
+}
+
+void recycle(int b){
+	int l=(b-1)*bs+1, r=min(b*bs,n), m=r-l+1;
+	Repd(i,m,1)
+		recycle_dfs(root[b][i]);
+}
+
+bool cmp(int x, int y){
+	return a[x].y<a[y].y;
+}
+
+void build(int b){
+	int l=(b-1)*bs+1, r=min(b*bs,n), m=r-l+1;
+	Rep(i,l,r)
+		num[b][i-l+1]=i;
+	sort(num[b]+1,num[b]+m+1,cmp);
+	Rep(i,1,m)
+		root[b][i]=ins(root[b][i-1],a[num[b][i]].z, maxdep, 1);
+}
+
+Tnode *tree[1000];
+int weight[1000], tree_tot;
+bool ok;
+
+int dfs(int kth, int d){
+	if (d==-1) return 0;
+	int tot=0, ltot=0;
+	Rep(i,1,tree_tot) if (tree[i]){
+		tot+=tree[i]->cnt*weight[i];
+		if (tree[i]->l)
+			ltot+=tree[i]->l->cnt*weight[i];
+	}
+	if (tot<kth) return ok=0, -1;
+	if (kth<=ltot){
+		Rep(i,1,tree_tot) if (tree[i]) tree[i]=tree[i]->l;
+		return dfs(kth,d-1);
+	}else{
+		Rep(i,1,tree_tot) if (tree[i]) tree[i]=tree[i]->r;
+		return (1<<d)+dfs(kth-ltot,d-1);
+	}
+}
+
+int main(){
+	cin>>n>>query;
+	
+	Rep(i,1,n)
+		scanf("%d%d%d",&a[i].x,&a[i].y,&a[i].z), a[i].id=i, wz[++wz[0]]=a[i].z;
+		
+	sort(wz+1,wz+wz[0]+1);
+	wz[0]=unique(wz+1,wz+wz[0]+1)-wz-1;
+	Rep(i,1,n) a[i].z=lower_bound(wz+1,wz+wz[0]+1,a[i].z)-wz;
+	
+	sort(a+1,a+n+1);
+	Rep(i,1,n) pos[a[i].id]=i;
+	
+	for(bs=1; (bs+1)*(bs+1)<=n; bs++);
+	bt=(n-1)/bs+1;
+	
+	cur=pool;
+	Rep(b,1,bt)
+		build(b);
+	
+	while(query--){
+		char st[10]; scanf("%s",st);
+		if (st[0]=='Q'){
+			int x0, y0, x1, y1, kth;
+			scanf("%d%d%d%d%d",&x0,&y0,&x1,&y1,&kth);
+			if (x0>x1) swap(x0,x1);
+			if (y0>y1) swap(y0,y1);
+			
+			int le=1, ri=n, l=-1;
+			while(le<=ri){
+				int mid=(le+ri)/2;
+				if (x0<=a[mid].x)
+					l=mid, ri=mid-1;
+				else
+					le=mid+1;
+			}
+			
+			le=1, ri=n; int r=-1;
+			while(le<=ri){
+				int mid=(le+ri)/2;
+				if (x1>=a[mid].x)
+					r=mid, le=mid+1;
+				else
+					ri=mid-1;
+			}
+			
+			if (l==-1 || r==-1){
+				puts("It doesn't exist.");
+				continue;
+			}
+			
+			int lb=(l-1)/bs+1, rb=(r-1)/bs+1;
+			
+			tree_tot=0;
+			
+			tree_tot++;
+			weight[tree_tot]=1;
+			tree[tree_tot]=0;
+			if (lb==rb){
+				Rep(i,l,r)
+					if (y0<=a[i].y && a[i].y<=y1)
+						tree[tree_tot]=ins(tree[tree_tot],a[i].z,maxdep,0);
+			}else{
+				Rep(i,l,lb*bs)
+					if (y0<=a[i].y && a[i].y<=y1)
+						tree[tree_tot]=ins(tree[tree_tot],a[i].z,maxdep,0);
+				Rep(i,(rb-1)*bs+1,r)				
+					if (y0<=a[i].y && a[i].y<=y1)
+						tree[tree_tot]=ins(tree[tree_tot],a[i].z,maxdep,0);
+			}
+			Tnode *ROOT=tree[1];
+			
+			Rep(b,lb+1,rb-1){
+				int l=(b-1)*bs+1, r=min(b*bs,n), m=r-l+1;
+				int le,ri,l0=-1,r0=-1;
+				
+				le=1, ri=m;
+				while(le<=ri){
+					int mid=(le+ri)/2;
+					if (y0<=a[num[b][mid]].y)
+						l0=mid, ri=mid-1;
+					else
+						le=mid+1;
+				}
+				le=1, ri=m;
+				while(le<=ri){
+					int mid=(le+ri)/2;
+					if (y1>=a[num[b][mid]].y)
+						r0=mid, le=mid+1;
+					else
+						ri=mid-1;
+				}
+				
+				if (l0!=-1 && r0!=-1){
+					tree_tot++;
+					weight[tree_tot]=1;
+					tree[tree_tot]=root[b][r0];
+					tree_tot++;
+					weight[tree_tot]=-1;
+					tree[tree_tot]=root[b][l0-1];
+				}
+			}
+			
+			ok=1;
+			int ret=dfs(kth,maxdep);
+			if (!ok) puts("It doesn't exist.");
+				else printf("%d
+",wz[ret]);
+			
+			recycle_dfs(ROOT);	
+		}else{
+			int x,y; scanf("%d%d",&x,&y); x++, y++;
+			x=pos[x], y=pos[y];
+			swap(a[x].z, a[y].z);
+			int bx=(x-1)/bs+1, by=(y-1)/bs+1;
+			recycle(bx);
+			if (bx!=by) recycle(by);
+			build(bx);
+			if (bx!=by) build(by);
+		}
+	}
+	
+	return 0;
+}

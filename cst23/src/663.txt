@@ -1,0 +1,24 @@
+#include <stdio.h>
+int my_strcmp (char s1[], char s2[]);
+int main (){
+	char s1[20]={0}, s2[20]={0};
+	gets(s1);
+	gets(s2);
+	printf("%d", my_strcmp (s1, s2) );
+	return 0;
+}
+int my_strcmp (char s1[], char s2[]){
+	int i;
+	for(i=0; i<20; i++){
+		if(s1[i]>s2[i]) {
+			return 1;
+		}
+		if(s1[i]<s2[i]){
+			return (-1);
+		}
+		if(s1[i]==s2[i] && i!=19) continue;
+		else return 0;
+		break;
+	}
+}
+

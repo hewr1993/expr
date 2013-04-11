@@ -1,0 +1,30 @@
+#include<iostream>
+
+template<class T>
+int Max(T Arr[],int n)
+{
+    T res;
+    int t=0;
+    res=Arr[0];
+    for(int i=1;i<n;i++)
+    {
+        if(res<Arr[i])
+        {
+            res=Arr[i];
+            t=i;
+        }   
+    }
+    return t;
+}
+using namespace std;
+int main()
+{
+    int n=0;
+    cin>>n;
+    int* arr=new int[n];
+    for(int i=0;i<n;i++)
+        cin>>arr[i];
+    cout<<"The max value is:"<<arr[Max(arr,n)]<<endl;
+    return 0;
+}
+

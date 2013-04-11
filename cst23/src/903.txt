@@ -1,0 +1,151 @@
+#include <stdio.h>
+#include <stdlib.h>
+int averstudent(int score[]);
+void avercourse(int score[10][6]);
+void high(int score[10][6]);
+void average(int array[6]);
+void quicksort(int array[], int begin, int end);
+void swap(int array[], int m, int n);
+
+char name[10][20] = { "", "", "", "", "", "", "", "", "", "" };
+int score[10][6];
+int course[6];
+
+int main(int argc, char *argv[])
+{
+	int i, j, k;
+
+	for (i = 0; i < 10; i++)
+	{
+
+		scanf("%s", name[i]);
+		for (j = 0; j < 6; j++)
+			scanf("%d", &score[i][j]);
+	}
+	for (k = 0; k < 10; k++)
+	{
+		printf("%s %d
+", name[k], averstudent(score[k]));
+	}
+	avercourse(score);
+	high(score);
+	average(course);
+	return 0;
+}
+
+int averstudent(int score[])
+{
+	int aver;
+	aver =
+	    (score[0] + score[1] + score[2] + score[3] + score[4] +
+	     score[5]) / 6;
+	return aver;
+}
+
+void avercourse(int score[10][6])
+{
+	int avercourse, j;
+	for (j = 0; j < 6; j++)
+	{
+		avercourse =
+		    (score[0][j] + score[1][j] + score[2][j] +
+		     score[3][j] + score[4][j] + score[5][j] +
+		     score[6][j] + score[7][j] + score[8][j] +
+		     score[9][j]) / 10;
+		course[j] = avercourse;
+		printf("%d
+", avercourse);
+	}
+}
+
+void high(int score[10][6])
+{
+	int order[60], i, j, k = 0, flag = 0;
+	static int student, course;
+	for (i = 0; i < 10; i++)
+	{
+		for (j = 0; j < 6; j++)
+		{
+			order[k] = score[i][j];
+			k++;
+		}
+	}
+	quicksort(order, 0, 59);
+
+	for (i = 0; i < 10; i++)
+	{
+		for (j = 0; j < 6; j++)
+		{
+			if (score[i][j] == order[59])
+			{
+				student = i;
+				course = j + 1;
+				flag = 1;
+				break;
+			}
+		}
+		if (flag == 1)
+			break;
+	}
+	printf("%s %d
+", name[student], course);
+}
+
+void quicksort(int array[], int begin, int end)
+{
+	if (begin >= end)
+	{
+		return;
+	}
+	else
+	{
+
+		int pivot = begin;
+		int i = begin + 1;
+		int j = end;
+
+		while (i <= j)
+		{
+			while (array[i] <= array[pivot] && i <= end)
+				i++;
+			while (array[j] > array[pivot] && j >= begin)
+				j--;
+			if (i < j)
+			{
+				swap(array, i, j);
+			}
+		}
+		swap(array, pivot, j);
+		pivot = j;
+
+		quicksort(array, begin, pivot - 1);
+		quicksort(array, pivot + 1, end);
+	}
+}
+
+void swap(int array[], int m, int n)
+{
+	int temp;
+	temp = array[m];
+	array[m] = array[n];
+	array[n] = temp;
+}
+
+void average(int array[6])
+{
+	int result;
+	result =
+	    (array[0] * array[0] + array[1] * array[1] +
+	     array[2] * array[2] + array[3] * array[3] +
+	     array[4] * array[4] + array[5] * array[5]) / 6 - ((array[0] +
+								array[1] +
+								array[2] +
+								array[3] +
+								array[4] +
+								array[5]) /
+							       6) *
+	    ((array[0] + array[1] + array[2] + array[3] + array[4] +
+	      array[5]) / 6);
+	printf("%d", result);
+}
+

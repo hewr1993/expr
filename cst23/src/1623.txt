@@ -1,0 +1,101 @@
+#include <iostream>
+#include <cstdio>
+using namespace std;
+#define Mod 10007
+int dp[1010][1010];
+__int64 f(__int64 x, __int64 y)
+{
+    __int64 re=1;
+    int i;
+    for (i=0; i<y; i++)
+    {
+         re *= x;
+         re %= Mod;
+    }
+    return re%Mod;
+}
+
+/*__int64 C(__int64 N, __int64 K)
+{
+    __int64 re=1;
+    if (K == 0 || N == K)
+        return 1;
+    int i, j=2;
+    for (i=N-K+1; i<=N; i++)
+    {
+        re *= i;
+        cout<<re<<endl;
+        while (j<=K && re%j==0)
+        {
+            re = re/j;
+            j++;
+        }
+
+    }
+    cout<<re<<" "<<j<<endl;
+    return re%Mod;
+}
+*/
+
+void C()
+{
+    int i, j;
+    for (i=1; i<=1000; i++)
+    {
+        dp[1][i] = i;
+        dp[0][i] = 1;
+        dp[i][i] = 1;
+    }
+
+
+    for (i=1; i<=1000; i++)
+        for (j=1; j<i; j++)
+            dp[j][i] = (dp[j-1][i-1]+dp[j][i-1])%Mod;
+}
+
+
+
+
+int main()
+{
+    __int64 ans, a, b, k, n, m;
+   // cout<<C(5, 4)<<endl;
+   C();
+   // cout<<17310309456440%Mod<<endl;
+    while (scanf("%I64d%I64d%I64d%I64d%I64d", &a, &b, &k, &n, &m) != EOF)
+    {
+
+        ans = 1;
+        if (a == 0 || b == 0)
+        {
+            puts("0");
+            continue;
+        }
+        if (k == 0)
+        {
+            puts("1");
+            continue;
+        }
+
+        ans = f(a, n);
+     //   cout<<ans<<endl;
+
+        ans = ans*f(b, m);
+      //  cout<<ans<<endl;
+
+        ans = ans%Mod;
+        ans = ans*dp[n][k];
+
+       // cout<<ans<<endl;
+        ans = ans%Mod;
+        printf("%I64d
+", ans%Mod);
+
+    }
+}
+
+
+/*
+1 1 323 123 200
+*/
+

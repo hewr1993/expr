@@ -1,0 +1,85 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+
+using namespace std;
+int k;
+struct juzhen
+{
+	int a[2][2];
+};
+juzhen na[5];
+
+juzhen mul(juzhen x,juzhen y)
+{
+	juzhen ans;
+	for(int i=0;i<2;i++)
+	{
+		for(int j=0;j<2;j++)
+		{
+			ans.a[i][j]=0;
+		}
+	}	
+	for(int i=0;i<2;i++)
+	{
+		for(int j=0;j<2;j++)
+		{
+			for(int l=0;l<2;l++)
+			{
+				ans.a[i][j]+=x.a[i][l]*y.a[l][j]%k%k;
+				ans.a[i][j]=ans.a[i][j]%k;
+			}
+		}
+	}
+	return ans;
+}
+
+juzhen calc(juzhen na,int n)
+{
+	juzhen t;
+	juzhen ans;
+	juzhen ret;
+	for(int i=0;i<2;i++)
+		for(int j=0;j<2;j++)
+			na.a[i][j]=na.a[i][j]%k;
+	ret.a[0][0]=1%k;
+	ret.a[0][1]=0;
+	ret.a[1][0]=0;
+	ret.a[1][1]=1%k;
+	if(n==0)
+		return ret;
+	if(n==1)
+		return na;
+	if(n%2==0)
+	{
+		t=calc(na,n/2);
+		ans=mul(t,t);
+	}
+	if(n%2!=0)
+	{
+		t=calc(na,n/2);
+		ans=mul(t,t);
+		ans=mul(ans,na);
+	}
+	return ans;
+}
+
+int main()
+{
+	int n;
+	cin>>n>>k;
+	for(int i=0;i<2;i++)
+	{
+		for(int j=0;j<2;j++)
+			cin>>na[0].a[i][j];
+	}
+	na[1]=calc (na[0],n);
+	for(int i=0;i<2;i++)
+	{
+		for(int j=0;j<2;j++)
+			cout<<na[1].a[i][j]<<" ";
+		cout<<endl;
+	}
+	return 0;
+}

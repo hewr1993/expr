@@ -1,0 +1,44 @@
+#include<iostream>
+using namespace std;
+
+void sort(int array[],int zz,int yy)
+{
+    int z,y,k;
+    if(zz<yy)
+    {
+        z=zz;y=yy;k=array[z];
+        do{
+            while((z<y)&&(array[y]>=k)) y--;
+            if(z<y)
+            {
+                array[z]=array[y];
+                z=z+1;
+            }
+            while((z<y)&&(array[z]<=k))z++;
+            if(z<y)
+                array[y]=array[z];
+        }while(z!=y);
+        array[z]=k;
+        sort(array,zz,z-1);
+        sort(array,z+1,yy);
+    }
+}
+
+
+int main()
+{
+	int n,i;
+	int a[100];
+	cin>>n;
+	for(i=0;i<n;i++)
+	{
+		cin>>a[i];
+	}
+	sort(a,0,n-1);
+	for(i=0;i<n;i++)
+	{
+		cout<<a[i]<<' ';
+	}
+
+	return 0;
+}

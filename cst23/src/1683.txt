@@ -1,0 +1,152 @@
+#include <cstdio>
+#include <vector>
+#include <map>
+
+using namespace std;
+typedef vector< int > Cube;
+#define maxn 50
+#define maxm 1000000
+#define oo 1000000000
+
+int task;
+int dx[4] = {1,0,-1,0},dy[4] = {0,1,0,-1};
+
+int n,m,ans = oo;
+int cb[maxn][maxn];
+int st[8],end[8];
+
+int tot = 0,rot[24][4];
+map< Cube, int > hash;
+int tab[4][6] = {{3,2,0,1,4,5},{4,5,2,3,1,0},{2,3,1,0,4,5},{5,4,2,3,0,1}};
+int pos[24][6];
+
+int a[6];
+bool used[7];
+int total = 0,num[720][6];
+
+int dis[maxn][maxn][24];
+int l,r,dl[maxm][3];
+bool in[maxn][maxn][24];
+
+int rotate( Cube a )
+{
+    if( hash.find(a) == hash.end() )
+        {
+            int i,j;
+            
+            for( i = 0 ; i < 6 ; ++i )
+                pos[tot][i] = a[i];
+            hash[a] = tot++;
+            for( i = 0 ; i < 4 ; ++i )
+                {
+                    Cube b;
+                    for( j = 0 ; j < 6 ; ++j )
+                        b.push_back(a[tab[i][j]]);
+                    rot[hash[a]][i] = rotate(b);
+                }
+        }
+    return hash[a];
+}
+
+void dfs( int i )
+{
+    int j;
+    
+    if( i < 6 )
+        {
+            for( j = 1 ; j <= 6 ; ++j )
+                if( !used[j] )
+                    {
+                        used[j] = 1;
+                        a[i] = j;
+                        dfs(i+1);
+                        used[j] = 0;
+                    }
+        }
+    else
+        {
+            for( j = 0 ; j < 6 ; ++j )
+                num[total][j] = a[j];
+            ++total;
+        }
+}
+
+inline void add( int a[], int i, int j, int k )
+{
+    int p;
+    
+    for( p = 0 ; p < 6 ; ++p )
+        if( end[p+2] && a[pos[k][p]] != end[p+2] )
+            break;
+    if( i == end[0] && j == end[1] && p == 6 )
+        ans = min(ans,dis[i][j][k]);
+    if( dis[i][j][k] >= ans || in[i][j][k] )
+        return;
+    in[i][j][k] = 1;
+    dl[r][0] = i, dl[r][1] = j, dl[r][2] = k;
+    r++;
+}
+
+void spfa( int a[] )
+{
+    int i,j,k,p,s;
+    
+    l = r = 0;
+    for( i = 1 ; i <= n ; ++i )
+        for( j = 1 ; j <= m ; ++j )
+            for( k = 0 ; k < 24 ; ++k )
+                dis[i][j][k] = oo;
+    dis[st[0]][st[1]][0] = 0;
+    add(a,st[0],st[1],0);
+    
+    while( l < r )
+        {
+            for( p = 0 ; p < task*2 ; ++p )
+                {
+                    i = dl[l][0]+dx[p], j = dl[l][1]+dy[p], k = rot[dl[l][2]][p];
+                    s = dis[dl[l][0]][dl[l][1]][dl[l][2]]+cb[i][j]*a[pos[k][0]];
+                    if( i < 1 || i > n || j < 1 || j > m || cb[i][j] == -1 || dis[i][j][k] <= s )
+                        continue;
+                    dis[i][j][k] = s;
+                    add(a,i,j,k);
+                }
+            in[dl[l][0]][dl[l][1]][dl[l][2]] = 0;
+            ++l;
+        }
+}
+
+int main()
+{
+    int i,j;
+    
+    Cube c;
+    for( i = 0 ; i < 6 ; ++i )
+        c.push_back(i);
+    rotate(c);
+    dfs(0);
+    
+    scanf("%d",&task);
+    scanf("%d%d",&n,&m);
+    for( i = 1 ; i <= n ; ++i )
+        for( j = 1 ; j <= m ; ++j )
+            scanf("%d",&cb[i][j]);
+    for( i = 0 ; i < 8 ; ++i )
+        scanf("%d",&st[i]);
+    for( i = 0 ; i < 8 ; ++i )
+        scanf("%d",&end[i]);
+    
+    for( i = 0 ; i < total ; ++i )
+        {
+            for( j = 0 ; j < 6 ; ++j )
+                if( st[j+2] && num[i][j] != st[j+2] )
+                    break;
+            if( j == 6 )
+                spfa(num[i]);
+        }
+    
+    printf("%d
+",ans < oo ? ans : -1);
+    
+    return 0;
+}
+

@@ -1,0 +1,176 @@
+
+// Program  :  CTSC 2010 product
+
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+#include <set>
+
+using namespace std;
+
+const int inf = 1000000000;
+
+struct node
+  {
+    int sum, minl, minr, minm, minl_loc, minr_loc;
+    pair<int, int> minm_loc;
+  } tree[2][1<<18];
+
+int D[2][100000], U[2][100000], P[2][100000], C[2][100000];
+int flow[2][1<<18], delta[2][1<<18];
+
+node operator + (const node &a, const node &b)
+  {
+    node res;
+    res.sum = a.sum + b.sum;
+    if (a.minl < inf && a.minl + b.sum < b.minl)
+      res.minl = a.minl + b.sum, res.minl_loc = a.minl_loc;
+    else
+      res.minl = b.minl, res.minl_loc = b.minl_loc;
+    if (b.minr < inf && b.minr + a.sum < a.minr)
+      res.minr = b.minr + a.sum, res.minr_loc = b.minr_loc;
+    else
+      res.minr = a.minr, res.minr_loc = a.minr_loc;
+    res.minm = min(inf, a.minl + b.minr);
+    res.minm_loc = make_pair(a.minl_loc, b.minr_loc);
+    if (a.minm < res.minm) res.minm = a.minm, res.minm_loc = a.minm_loc;
+    if (b.minm < res.minm) res.minm = b.minm, res.minm_loc = b.minm_loc;
+    return res;
+  }
+
+void Modify(int no, int i, int l, int r, int loc, int val = inf)
+  {
+    if (l + 1 == r)
+      {
+        if (val < inf) tree[no][i].sum = val;
+        tree[no][i].minl = tree[no][i].minr = tree[no][i].minm = inf;
+        if (D[no][l] > 0) tree[no][i].minl = tree[no][i].sum, tree[no][i].minl_loc = l;
+        if (U[no][l] > 0) tree[no][i].minr = P[no][l], tree[no][i].minr_loc = l;
+        if (D[no][l] > 0 && U[no][l] > 0)
+          tree[no][i].minm = P[no][l], tree[no][i].minm_loc = make_pair(l, l);
+        return;
+      }
+    int mid = l + r >> 1;
+    if (loc < mid) Modify(no, i * 2, l, mid, loc, val);
+    if (loc >= mid) Modify(no, i * 2 + 1, mid, r, loc, val);
+    tree[no][i] = tree[no][i*2] + tree[no][i*2+1];
+  }
+
+void Push_Down(int no, int i)
+  {
+    if (delta[no][i] == 0) return;
+    if (flow[no][i*2] < inf)
+      flow[no][i*2] += delta[no][i], delta[no][i*2] += delta[no][i];
+    if (flow[no][i*2+1] < inf)
+      flow[no][i*2+1] += delta[no][i], delta[no][i*2+1] += delta[no][i];
+    delta[no][i] = 0;
+  }
+
+void Set_Flow(int no, int i, int l, int r, int loc, int val)
+  {
+    if (l + 1 == r)
+      {
+        flow[no][i] = val;
+        return;
+      }
+    Push_Down(no, i);
+    int mid = l + r >> 1;
+    if (loc < mid) Set_Flow(no, i * 2, l, mid, loc, val);
+    if (loc >= mid) Set_Flow(no, i * 2 + 1, mid, r, loc, val);
+    flow[no][i] = min(flow[no][i*2], flow[no][i*2+1]);
+  }
+
+int Get_Flow(int no, int i, int l, int r, int l1, int r1)
+  {
+    if (l1 <= l && r <= r1) return flow[no][i];
+    Push_Down(no, i);
+    int mid = l + r >> 1, res = inf;
+    if (l1 < mid) res = min(res, Get_Flow(no, i * 2, l, mid, l1, r1));
+    if (r1 > mid) res = min(res, Get_Flow(no, i * 2 + 1, mid, r, l1, r1));
+    return res;
+  }
+
+void Inc_Flow(int no, int i, int l, int r, int l1, int r1, int d)
+  {
+    if (l1 <= l && r <= r1)
+      {
+        if (flow[no][i] < inf) flow[no][i] += d, delta[no][i] += d;
+        return;
+      }
+    Push_Down(no, i);
+    int mid = l + r >> 1;
+    if (l1 < mid) Inc_Flow(no, i * 2, l, mid, l1, r1, d);
+    if (r1 > mid) Inc_Flow(no, i * 2 + 1, mid, r, l1, r1, d);
+    flow[no][i] = min(flow[no][i*2], flow[no][i*2+1]);
+  }
+
+int Get_Min_Loc(int no, int i, int l, int r)
+  {
+    if (l + 1 == r) return l;
+    int mid = l + r >> 1;
+    if (flow[no][i*2] < flow[no][i*2+1])
+      return Get_Min_Loc(no, i * 2, l, mid);
+    else
+      return Get_Min_Loc(no, i * 2 + 1, mid, r);
+  }
+
+int main()
+  {
+    int n, i, tmp, loc, a, b, cur;
+    set<int> S;
+    
+    scanf("%d", &n);
+    for (i = 0; i < n; i ++) scanf("%d", &D[0][i]), D[1][n-1-i] = D[0][i];
+    for (i = 0; i < n; i ++) scanf("%d", &U[0][i]), U[1][n-1-i] = U[0][i];
+    for (i = 0; i < n; i ++) scanf("%d", &P[0][i]), P[1][n-1-i] = P[0][i];
+    for (i = 0; i < n - 1; i ++) scanf("%d", &C[1][n-2-i]);
+    for (i = 0; i < n - 1; i ++) scanf("%d", &C[0][i]);
+    C[0][n-1] = C[1][n-1] = 0;
+    for (i = 0; i < n; i ++)
+      Modify(0, 1, 0, n, i, C[0][i]), Modify(1, 1, 0, n, i, C[1][i]);
+    memset(delta, 0, sizeof(delta));
+    for (i = 0; i < n - 1; i ++)
+      Set_Flow(0, 1, 0, n - 1, i, inf), Set_Flow(1, 1, 0, n - 1, i, inf);
+    for (i = 0; i < n - 1; i ++) S.insert(i);
+    
+    long long ans = 0;
+    for ( ; ; )
+      {
+        if (tree[0][1].minm < tree[1][1].minm) loc = 0; else loc = 1;
+        if (tree[loc][1].minm == inf) break;
+        a = tree[loc][1].minm_loc.first;
+        b = tree[loc][1].minm_loc.second;
+        cur = min(D[loc][a], U[loc][b]);
+        if (a < b) cur = min(cur, Get_Flow(loc, 1, 0, n - 1, a, b));
+        ans += (long long)(cur) * tree[loc][1].minm;
+        
+        for ( ; ; )
+          {
+            set<int>::iterator p = S.lower_bound((loc == 0) ? a : n - 1 - b);
+            if (p == S.end() || *p >= ((loc == 0) ? b : n - 1 - a)) break;
+            tmp = (loc == 0) ? n - 2 - *p : *p;
+            Set_Flow(! loc, 1, 0, n - 1, tmp, 0);
+            Modify(! loc, 1, 0, n, tmp, -C[loc][n-2-tmp]);
+            S.erase(p);
+          }
+        if (a < b) Inc_Flow(! loc, 1, 0, n - 1, n - 1 - b, n - 1 - a, cur);
+        
+        if (a < b) Inc_Flow(loc, 1, 0, n - 1, a, b, -cur);
+        for ( ; flow[loc][1] == 0; )
+          {
+            tmp = Get_Min_Loc(loc, 1, 0, n - 1);
+            Set_Flow(loc, 1, 0, n - 1, tmp, inf);
+            Modify(loc, 1, 0, n, tmp, C[loc][tmp]);
+            S.insert((loc == 0) ? tmp : n - 2 - tmp);
+          }
+        D[loc][a] -= cur, D[! loc][n-1-a] -= cur;
+        if (D[loc][a] == 0) Modify(loc, 1, 0, n, a), Modify(! loc, 1, 0, n, n - 1 - a);
+        U[loc][b] -= cur, U[! loc][n-1-b] -= cur;
+        if (U[loc][b] == 0) Modify(loc, 1, 0, n, b), Modify(! loc, 1, 0, n, n - 1 - b);
+      }
+    printf("%I64d
+", ans);
+    
+    return 0;
+  }
+

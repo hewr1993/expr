@@ -1,0 +1,37 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<iostream>
+using namespace std;
+int t[100000];
+int h[100000],m[100000],s[100000];
+void output(int n)
+{
+if(n<10) cout<<"0"<<n;
+else cout<<n;
+}
+int main()
+{
+int c;
+
+cin>>c;
+for(int i=0;i<c;i++)
+{
+    cin>>t[i];
+    h[i]=t[i]/3600;
+    m[i]=(t[i]-h[i]*3600)/60;
+    s[i]=t[i]%60;
+}
+for(int j=0;j<c;j++)
+{
+    output(h[j]);
+    cout<<":";
+    output(m[j]);
+    cout<<":";
+    output(s[j]);
+    cout<<endl;
+}
+
+return 0;
+}
+

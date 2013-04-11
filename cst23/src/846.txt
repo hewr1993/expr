@@ -1,0 +1,72 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+class Time{
+public:
+	Time ( int newH, int newM, int newS){
+		hour = newH;
+		minute = newM;
+		second = newS;
+	}
+	void adv(int incr_hr,int incr_min,int incr_sec){
+		if(incr_sec + second >=60){
+			second = second + incr_sec - 60;
+			minute ++;}
+		else if (incr_sec + second < 0){
+			second = second + incr_sec + 60;
+			minute --;}		
+		else second = second + incr_sec;	
+		if ( incr_min + minute>=60){
+			minute = incr_min + minute - 60;
+			hour ++;}
+		else if ( incr_min + minute < 0){
+			minute = incr_min + minute + 60;
+			hour --;}
+		else minute = incr_min + minute ;
+        if( hour >=0)
+			hour =(hour + incr_hr)%24;
+		else hour= 24- (- hour)%24;
+	}
+	void reset(int a = 0, int b = 0, int c = 0){
+		hour = a;
+		minute = b;
+		second = c;
+	}
+	void print(){
+		if(second>=60){
+			second = second - 60;
+			minute ++;}
+		else if (second < 0){
+			second = second + 60;
+			minute --;}		
+		else second = second;	
+		if (minute>=60){
+			minute =minute - 60;
+			hour ++;}
+		else if ( minute < 0){
+			minute = minute + 60;
+			hour --;}
+		else minute =  minute ;
+        if( hour >=0)
+			hour =hour%24;
+		else hour= 24- (- hour)%24;
+		cout<<setfill('0')<<setw(2)<<hour<<":";
+	    cout<<setfill('0')<<setw(2)<<minute<<":";
+	    cout<<setfill('0')<<setw(2)<<second<<endl;
+	}
+private:
+	int hour, minute, second;
+};
+int main(){
+	int hour, minute, second;
+	int incr_hr, incr_min, incr_sec;
+	cin >> hour >> minute >> second >> incr_hr >> incr_min >> incr_sec;
+	Time t( hour, minute, second );
+	t.print();
+	t.adv( incr_hr, incr_min, incr_sec );
+	t.print();
+	t.reset();
+	t.print();
+	return 0;
+}
+

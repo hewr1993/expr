@@ -1,0 +1,63 @@
+program dcjl(input,output);
+const
+	maxn=20;
+var
+	str:array[0 .. maxn]of string;
+	next:array[0 .. maxn,0 .. maxn]of longint;
+	used:array[0 .. maxn]of longint;
+	n,i,ans:longint;
+	ch:char;
+function min(a,b:longint):longint;
+begin
+	if a<b then exit(a);
+	exit(b);
+end;
+function get(a,b:string):longint;
+var
+	i,j:longint;
+	ok:boolean;
+begin
+	for i:=1 to min(length(a),length(b)) do begin
+	ok:=true;
+	for j:=1 to i do
+	if a[length(a)-i+j]<>b[j] then begin
+	ok:=false;
+	break; end;
+	if ok then exit(i);
+	end;
+	exit(0);
+end;
+procedure prework;
+var
+	i,j:longint;
+begin
+	for i:=1 to n do
+	for j:=1 to n do
+	next[i,j]:=get(str[i],str[j]);
+	for i:=1 to n do used[i]:=2;
+end;
+procedure dfs(pre:longint;len:longint);
+var
+	i:longint;
+begin
+	if ans<len then ans:=len;
+	for i:=1 to n do
+	if (next[pre,i]<>min(length(str[pre]),length(str[i]))) and (used[i]>0) and (next[pre,i]>0) then begin
+	dec(used[i]);
+	dfs(i,len+length(str[i])-next[pre,i]);
+	inc(used[i]);
+	end;
+end;
+begin
+	readln(n);
+	for i:=1 to n do readln(str[i]);
+	readln(ch);
+	prework;
+	for i:=1 to n do
+	if str[i][1]=ch then begin
+	dec(used[i]);
+	dfs(i,length(str[i]));
+	inc(used[i]);
+	end;
+	writeln(ans);
+end.

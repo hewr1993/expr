@@ -1,0 +1,45 @@
+#include<iostream>
+using namespace std;
+int a[100001], b[100001];
+int partition(int *a, int l, int r)
+{
+	int i, p = l - 1, t = a[r];
+	for(i = l; i < r; i++)
+		if(a[i] > t)
+			swap(a[i], a[++p]);
+	swap(a[r], a[p + 1]);
+	return p + 1;
+}	
+void qsort(int *a, int l, int r)
+{
+	if(r > l)
+	{
+		int midpoint = partition(a, l, r);
+		qsort(a, l, midpoint - 1);
+		qsort(a, midpoint + 1, r);
+	}
+}
+int main()
+{
+	int n, m, h, i, j, z, s = 0;
+	cin >> n >> m >> h;
+	for(i = 1; i <= n; i++)
+		cin >> a[i];
+	for(j = 1; j <= m; j++)
+		cin >> b[j];
+	qsort(a, 1, n);
+	qsort(b, 1, m);
+
+	j = 0;
+	for(i = 1; i <= n; i++)
+		if(a[i] <= h)
+			s++;
+		else if(j + 1 <= m && a[i] - b[j + 1] <= h)
+		{
+			s++;
+			j++;
+		}
+	cout << s << endl;
+	return 0;
+}
+

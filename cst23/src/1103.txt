@@ -1,0 +1,15 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<iostream>
+using namespace std;
+int main()
+{
+    int s;
+    cin>>s;
+    if(s>=0&&s<60) cout<<"sorry";
+    if(s>=60&&s<85) cout<<"good";
+    if(s>=85&&s<=100) cout<<"excellent";
+    return 0;
+}
+

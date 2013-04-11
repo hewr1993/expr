@@ -1,0 +1,15 @@
+
+#include<iostream>
+int a[300],n,i;
+int main()
+{
+    a[0]=1;
+    a[1]=1;
+    for(i=2;i<=203;i++)
+        a[i]=(a[i-1]+a[i-2])%2005;
+    std::cin>>n;
+    n%=200;
+    std::cout<<a[n/2+1]*a[(n+1)/2+1]%2005;
+    return 0;
+}
+

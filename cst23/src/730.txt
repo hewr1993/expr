@@ -1,0 +1,160 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <bits/stl_pair.h>
+#define NMax 10000
+using namespace std;
+int N,T,Q;
+int fas[NMax][16];
+int depth[NMax],jump[NMax];
+vector<int> E[NMax];
+pair<int,int> B[NMax];
+int LCA(int x,int y){
+	if (x==y)return x;
+	if (depth[x]>depth[y])swap(x,y);
+	int z=depth[y]-depth[x];
+	for (int i=0;(1<<i)<=z;i++)if (z&(1<<i))y=fas[y][i];
+	for (int i=16-1;i>=0;i--)if (fas[x][i]!=fas[y][i])
+		x=fas[x][i],y=fas[y][i];
+	while (x!=y)x=fas[x][0],y=fas[y][0];
+	return x;
+}
+int Queue[NMax];
+int js[NMax][16];
+struct eve{
+	int x,y,id,si;
+}Eve[NMax*4];
+bool operator<(const eve &a,const eve &b){return a.x<b.x;}
+int ec;
+int ans[NMax];
+int dfslist[NMax],rank[NMax],right[NMax];
+int cnt[NMax];
+void dfs(){
+	static int cur[NMax];
+	static int stack[NMax];
+	int top=1,lc=1;
+	stack[0]=0;dfslist[0]=0;cur[0]=0;
+	while (top){
+		int x=stack[top-1];
+		if (cur[x]==(int)E[x].size())right[x]=lc-1,top--;
+		else{
+			int y=E[x][cur[x]];cur[x]++;
+			if (y!=fas[x][0]){
+				dfslist[lc++]=y;
+				stack[top++]=y;
+				cur[y]=0;
+			}
+		}
+	}
+	for (int i=0;i<N;i++)rank[dfslist[i]]=i;
+}
+void jumpAndCount(int &x,int w,int &c){
+	for (int i=16-1;i>=0;i--)if (depth[js[x][i]]>depth[w]){
+		c+=(1<<i);
+		x=js[x][i];
+	}
+}
+int tree[NMax];
+void tree_add(int a){
+	for (int i=a;i<N;i+=((i+1)&-(i+1)))tree[i]++;
+}
+int tree_ask(int a){
+	int s=0;
+	for (int i=a;i>=0;i-=((i+1)&-(i+1)))s+=tree[i];
+	return s;
+}
+int main()
+{
+	scanf("%d%d%d",&N,&T,&Q);
+	for (int i=0;i<N-1;i++){
+		int x,y;
+		scanf("%d%d",&x,&y);x--;y--;
+		E[x].push_back(y);E[y].push_back(x);
+	}
+	for (int i=0;i<N;i++)depth[i]=-1;
+	depth[0]=0;
+	for (int i=0;i<16;i++)fas[0][i]=0;
+	Queue[0]=0;
+	int bot=1;
+	for (int a=0;a<bot;a++){
+		int x=Queue[a];
+		for (int i=0;i<(int)E[x].size();i++)if (depth[E[x][i]]==-1){
+			int y=E[x][i];
+			fas[y][0]=x;
+			for (int j=1;j<16;j++)fas[y][j]=fas[fas[y][j-1]][j-1];
+			depth[y]=depth[x]+1;
+			Queue[bot++]=y;
+		}
+	}
+	for (int i=0;i<T;i++)scanf("%d%d",&B[i].first,&B[i].second),B[i].first--,B[i].second--;
+	for (int i=0;i<N;i++)jump[i]=i;
+	for (int i=0;i<T;i++){
+		int u=B[i].first,v=B[i].second;
+		int w=LCA(u,v);
+		if (depth[jump[u]]>depth[w])jump[u]=w;
+		if (depth[jump[v]]>depth[w])jump[v]=w;
+	}
+	for (int i=N-1;i>=0;i--){
+		int x=Queue[i];
+		for (int j=0;j<(int)E[x].size();j++)if (E[x][j]!=fas[x][0]){
+			int y=E[x][j];
+			if (depth[jump[y]]<depth[jump[x]])jump[x]=jump[y];
+		}
+	}
+	for (int i=0;i<16;i++)js[0][i]=jump[0];
+	for (int i=1;i<N;i++){
+		int x=Queue[i];
+		js[x][0]=jump[x];
+		for (int j=1;j<16;j++)js[x][j]=js[js[x][j-1]][j-1];
+	}
+	dfs();
+	ec=0;
+	for (int i=0;i<Q;i++){
+		int x,y;
+		scanf("%d%d",&x,&y);x--,y--;
+		if (depth[x]>depth[y])swap(x,y);
+		int w=LCA(x,y);
+		if (depth[js[x][16-1]]>depth[w] || depth[js[y][16-1]]>depth[w]){
+			ans[i]=-1;
+		}else{
+			ans[i]=0;
+			if (w==x){
+				if (w!=y)jumpAndCount(y,w,ans[i]),ans[i]++;
+			}else{
+				jumpAndCount(x,w,ans[i]);
+				jumpAndCount(y,w,ans[i]);
+				ans[i]+=2;
+				if (rank[x]>rank[y])swap(x,y);
+				Eve[ec].x=right[x];Eve[ec].y=right[y];Eve[ec].id=i;Eve[ec].si=1;ec++;
+				if (rank[x]){
+					Eve[ec].x=rank[x]-1;Eve[ec].y=right[y];Eve[ec].id=i;Eve[ec].si=-1;ec++;
+				}
+				if (rank[y]){
+					Eve[ec].x=right[x];Eve[ec].y=rank[y]-1;Eve[ec].id=i;Eve[ec].si=-1;ec++;
+				}
+				if (rank[x] && rank[y]){
+					Eve[ec].x=rank[x]-1;Eve[ec].y=rank[y]-1;Eve[ec].id=i;Eve[ec].si=1;ec++;
+				}
+			}
+		}
+	}
+	sort(Eve,Eve+ec);
+	for (int i=0;i<T;i++){
+		B[i].first=rank[B[i].first];
+		B[i].second=rank[B[i].second];
+		if (B[i].first>B[i].second)swap(B[i].first,B[i].second);
+	}
+	sort(B,B+T);
+	for (int i=0;i<N;i++)tree[i]=0;
+	for (int i=0;i<Q;i++)cnt[i]=0;
+	int p=0;
+	for (int i=0;i<ec;i++){
+		while (p<T && B[p].first<=Eve[i].x)tree_add(B[p++].second);
+		cnt[Eve[i].id]+=Eve[i].si*tree_ask(Eve[i].y);
+	}
+	for (int i=0;i<Q;i++)if (cnt[i])ans[i]--;
+	for (int i=0;i<Q;i++)printf("%d
+",ans[i]<=0?ans[i]:ans[i]-1);
+	return 0;
+}
+

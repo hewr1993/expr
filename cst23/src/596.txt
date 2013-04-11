@@ -1,0 +1,15 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+	int A,B,c;
+	cin>>A>>B;
+	if(A>=-50&&A<=50&&B>=-50&&B<=50)
+	{
+	c=A*A*A+B*B*B;
+	cout<<c<<endl;
+	}
+	return 0;
+}
+	
+	

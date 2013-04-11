@@ -1,0 +1,20 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+	int n,i;cin>>n;
+	char cha;cin>>cha;
+	char daicha[101];
+	for(i=0;i<=n-1;i++)
+	{
+		cin>>daicha[i];
+	}
+	for(i=0;i<=n-1;i++)
+	{
+		if(cha==daicha[i])
+		{cout<<i<<endl;return 0;}
+	}
+	cout<<-1<<endl;
+    return 0;
+}
+

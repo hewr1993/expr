@@ -1,0 +1,51 @@
+#include<iostream>
+#include<stdio.h>
+#include<cstring>
+#include<string.h>
+
+using namespace std ;
+
+const int MaxN = 33010 ;
+const int MaxM = 70 ;
+const int INF = 0x3f3f3f3f ;
+
+int n, m ;
+int c[MaxM], s[MaxM], att[MaxM] ;
+int h[MaxM], nx[MaxM] ;
+int f[MaxN], f2[MaxN] ;
+
+int main() {
+	scanf("%d%d", &n, &m) ;
+	for (int i = 1 ; i <= m ; i++) {
+		scanf("%d%d%d", &c[i], &s[i], &att[i]) ;
+		if (att[i] != 0) nx[i] = h[att[i]], h[att[i]] = i ;
+	}
+	memset(f, -0x3f3f3f3f, sizeof(f)) ; f[0] = 0 ;
+	for (int i = 1 ; i <= m ; i++) {
+		if (att[i] != 0) continue ;
+		//printf("root : %d
+", i) ;
+		for (int j = 0 ; j <= n - c[i] ; j++)
+			f2[j] = f[j] + c[i] * s[i] ;
+		for (int k = h[i] ; k ; k = nx[k])
+			for (int j = n - c[k] ; j >= 0 ; j--)
+				f2[j + c[k]] = max(f2[j + c[k]], f2[j] + c[k] * s[k]) ;
+		//for (int j = 0 ; j <= n - c[i] ; j++)
+		//	if (f2[j] > 0) printf("f2[%d]=%d
+", j, f2[j]) ; 
+		for (int j = 0 ; j <= n - c[i] ; j++)
+			f[j + c[i]] = max(f[j + c[i]], f2[j]) ;
+		//for (int j = 0 ; j <= n ; j++)
+		//	if (f[j] > 0) printf("f[%d]=%d
+", j, f[j]) ; 
+	}
+	int ans = -INF ;
+	for (int i = 0 ; i <= n ; i++)
+		ans = max(ans, f[i]) ;
+	printf("%d
+", ans) ;
+	//system("PAUSE") ;
+	return 0 ;
+}
+
+

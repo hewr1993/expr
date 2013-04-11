@@ -1,0 +1,21 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+#include <fstream>
+#include <cstring>
+#include <string>
+
+using namespace std;
+
+// 从文件inp.txt中输入一个整数x，将x的平方输出到标准输出。
+void dosqr()
+{
+    int x;
+    ifstream fin("inp.txt");
+    fin>>x;
+    int y=x*x;;
+    cout<<y<<endl;
+    return;
+}
+
+

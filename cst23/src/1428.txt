@@ -1,0 +1,44 @@
+#include<iostream>
+using namespace std;
+
+int main ()
+{
+    int m = 0 , S = 0 , T = 0 , s = 0 , t = 0;
+    bool bPrime = false ;
+    cin >> m >> S >> T ;
+    for ( t = T ;t > 0;t--)
+    {
+        if (m >= 10)
+        {
+              m = m - 10;
+              s = s + 60;
+        }
+        else if (t == 1)        s = s + 17;
+        else if (S - s <= 17)   s = s + 17;
+        else if (m >= 6)        m = m + 4;
+        else if (t == 2)        s = s + 17;
+        else if (S - s <= 34)   s = s + 17;
+        else if (m >= 2)        m = m + 4;
+        else if (t < 7)         s = s + 17;
+        else if (S - s <= 119)  s = s + 17;
+        else                    m = m + 4;
+        if (S <= s)
+        {
+              bPrime = true ;
+              break;
+        }
+    }
+    if (bPrime)
+    {
+       cout << "Yes" << endl;
+       cout << T - t + 1 << endl;
+    }
+    else
+    {
+        cout << "No" << endl;
+        cout << s << endl;
+    }
+    //system("pause");
+    return 0;
+}
+

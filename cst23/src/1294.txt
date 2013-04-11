@@ -1,0 +1,30 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<iostream>
+using namespace std;
+int comp(const void *a,const void *b)
+{
+    return *(int *)a-*(int *)b;
+}
+int main()
+{
+    int n;
+    int i;
+    int s=0;
+    int m[1000];
+    cin>>n;
+    for(int j=0;j<n;j++)
+    {
+        cin>>i;
+        for(int k=0;k<i;k++)
+        {
+            cin>>m[k];
+        }
+        qsort(m,i,sizeof(int),comp);
+        s+=m[0];
+    }
+    cout<<s;
+    return 0;
+}
+

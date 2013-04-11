@@ -1,0 +1,35 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+
+using namespace std;
+int a[100000];
+int main()
+{
+	int n;
+	cin>>n;
+	int m;
+	cin>>m;
+	for(int i=1;i<=m;i++)
+		cin>>a[i];
+	int p=-1;
+	for(int i=1;i<=n;i++)
+	{	
+		int b=0;
+		for(int j=p+1;j<=m;j++)
+		{
+			if(a[j]==i)
+			{
+				b=1;
+				p=j;
+				break;
+			}
+			if(a[j]>i)
+				break;
+		}
+		if(b==0)
+			cout<<i<<endl;
+	}
+	return 0;
+}

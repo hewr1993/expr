@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>  
+  
+int main()
+{
+    int n,m,time=0,max;
+    int i,j,k,temp;
+    scanf("%d %d",&n,&m);
+    int mt[n+1],mm[m+1];
+    for(i=1; i<=n; i++)  scanf("%d",&mt[i]); 
+    if ( n <= m) time=0;
+     else
+     {
+       for(i=1; i<n ;i++) 
+         for(j=i+1 ; j<=n ; j++)  
+          if (mt[j] < mt[i])
+          {
+                  temp = mt[j] ;
+                  mt[j] = mt[i];
+                  mt[i] = temp ;
+          }
+          
+          int x;
+          int y;
+           x=0;
+           y=0;
+          for(int i=1;i<=n;i++)
+          {
+              x=i/m;
+              y=i%m;
+              if(i<=m)
+              {        
+              }
+              else if(i<=2*m)
+              {
+                   time+= mt[i-m];
+              }
+              else
+              {
+                  for(int j=i-m;j>0;j=j-m)
+                  {
+                          time+=mt[j];
+                  }
+              }          
+          }      
+     }
+    printf("%d ",time);
+    return 0 ;
+ }

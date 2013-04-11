@@ -1,0 +1,120 @@
+#include<iostream>
+#include<cstdlib>
+#include<cstring>
+#include<cmath>
+#include<cstdio>
+using namespace std;
+const int MAXH = 30;
+const int MAXN=10010;
+int lch[MAXN],rch[MAXN],par[MAXN],cl[MAXN],que[MAXN],ind[MAXN];
+int en=0,be=0;
+int f[MAXN][MAXH][2];
+int n;
+
+void input()
+{
+    memset(ind,0,sizeof(ind));
+    memset(par,0,sizeof(par));
+    cin>>n;
+    for(int i=1;i<=n;++i)
+    {
+        char tcl;
+        cin>>lch[i]>>rch[i]>>tcl;
+        if(tcl=='R') cl[i]=0;
+        else cl[i]=1;
+        if(lch[i]!=-1)
+        {
+             par[lch[i]]=i;
+             ind[i]++;
+        }
+        if(rch[i]!=-1) 
+        {
+            par[rch[i]]=i;
+            ind[i]++;
+        }
+    }
+}
+
+void calq()
+{
+     for(int i=1;i<=n;i++)
+        if(ind[i]==0)
+            que[be++]=i;
+    while(en<be)
+    {
+        int x=que[en++];
+        ind[par[x]]--;
+        if(ind[par[x]]==0)
+            que[be++]=par[x];
+    }
+}
+
+
+void dp()
+{
+    memset(f,1,sizeof(f));
+    for(int i=0;i<be;++i)
+    {
+        int p=que[i];
+        int tlch=lch[p];
+        int trch=rch[p];
+        if(tlch==-1)
+        {
+            f[p][1][1]=1-cl[p];
+            //叶节点为黑 
+        }
+        else
+        {
+            for(int h=0;h<MAXH;++h)
+            {
+                int c=cl[p]+f[tlch][h][1]+f[trch][h][1];
+                if(c<f[p][h][0])
+                    f[p][h][0]=c;
+                if(h>0)
+                {
+                    int c2=1-cl[p]+ min(f[tlch][h-1][0],f[tlch][h-1][1])+ min(f[trch][h-1][0],f[trch][h-1][1]);
+                    if(c2<f[p][h][1]) f[p][h][1]=c2;
+                }
+            }
+        }
+    }
+}
+void getans()
+{
+    int root=-1;
+    for(int i=1;i<=n;i++)
+        if(!par[i])
+            root=i;
+    int ans=MAXN+1;
+    /*
+    for(int h=0;h<30;h++)
+    {
+      cout<<f[root][h][0]<<" "<<f[root][h][1]<<endl;
+    }
+    */
+    for(int h=0;h<30;++h)
+    {
+      if(f[root][h][0]< ans)
+        ans=f[root][h][0];
+      if(f[root][h][1]< ans)
+        ans=f[root][h][1];
+     
+    }
+    if(ans>n)
+        cout<<"impossible"<<endl;
+    else
+        cout<<ans<<endl;  
+        
+}
+
+int main()
+{
+    
+
+    input();
+    calq();
+    dp();
+    getans();
+    return 0;
+}
+

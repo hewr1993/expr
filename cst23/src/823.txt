@@ -1,0 +1,11 @@
+#include<stdio.h>
+int main()
+{
+float f;
+int c;
+scanf("%d",&c);
+f=(9.0/5)*c+32.0;
+printf("%5.2f
+",f);
+return 0;
+}   

@@ -1,0 +1,116 @@
+//纪念品分组 
+#include<iostream>
+#include<cstring>
+
+using namespace std;
+//ifstream cin("group9.in");
+//ofstream cout("group9.txt");
+const int maxw=205;
+
+int T;
+int N;
+int W;
+int ans;
+int st,ed;
+
+int val[maxw];
+
+inline void next(int& start)
+{
+	int i;
+	if(val[start]==0)
+	{	
+		for(i=start;i<=W;++i)
+			if(val[i])
+				break;
+		if(i<=W)
+			start=i;
+		else
+			start=W+1;
+	}
+}
+
+inline void prev(int& end)
+{
+	int i;
+	if(val[end]==0)
+	{	
+		for(i=end;i>=5;--i)
+			if(val[i])
+				break;
+		if(i>=5)
+			end=i;
+		else
+			end=0;
+	}
+}
+
+int main()
+{
+	cin>>T;
+	for(int t=0;t<T;++t)
+	{
+		memset(val,0,sizeof(val));
+		ans=0;
+		cin>>W>>N;
+		int tmp;
+		for(int i=0;i<N;++i)
+		{
+			cin>>tmp;
+			if(tmp<=W)
+				++val[tmp];
+		}
+		
+		for(int i=5;i<=W;++i)
+			if(val[i])
+			{
+				st=i;
+				break;
+			}
+		for(int i=W;i>4;--i)
+			if(val[i])
+			{
+				ed=i;
+				break;
+			}
+		while(st<ed)
+		{
+			if(st+ed<=W)
+			{
+				--val[st],--val[ed];
+				++ans;
+				next(st);
+				prev(ed);
+			}
+			else
+			{
+				--val[ed];
+				++ans;
+				prev(ed);
+			}
+		}
+		if(st==ed)
+		{	
+			if(val[st]&1)
+			{
+				if(st*2<=W)
+					ans+=val[st]/2+1;
+				else
+					ans+=val[st];
+			}
+			else
+			{
+				if(st*2<=W)
+					ans+=val[st]/2;
+				else
+					ans+=val[st];
+			}
+		}
+		cout<<ans<<endl;
+		
+	}	
+	
+//	while(1);
+	return 0;
+}
+

@@ -1,0 +1,231 @@
+//******************************************************
+//*程序名：01序列2                                     * 
+//*作者：路云飞                                        *
+//*编制时间：2012年10月3日                             *
+//*主要功能：按从小到大的顺序输出这些01串。            *
+//******************************************************
+#include <iostream>
+using namespace std;
+
+int main ()
+{
+	int n,y,yh,qw,bw,bwh,sw,swh,w,q,b,bh,s,g;
+	cin>>n;
+	y=n/100000000;
+	if (y>=10&&y<20)
+		cout<<"shi"<<" ";
+	if (y==20)
+		cout<<"er shi"<<" ";
+	else y=y%10; 
+	if (y==1)
+		cout<<"yi"<<" "; 
+	if (y==2)
+		cout<<"er"<<" "; 
+	if (y==3)
+		cout<<"san"<<" "; 
+	if (y==4)
+		cout<<"si"<<" "; 
+	if (y==5)
+		cout<<"wu"<<" "; 
+	if (y==6)
+		cout<<"liu"<<" "; 
+	if (y==7)
+		cout<<"qi"<<" "; 
+	if (y==8)
+		cout<<"ba"<<" "; 
+	if (y==9)
+		cout<<"jiu"<<" "; 
+	if (y>0)
+		cout<<"yi"<<" "; 
+	y=n%100000000;
+	qw=y/10000000;
+	yh=n/100000000;
+	if (qw==1)
+		cout<<"yi"<<" "; 
+	if (qw==2)
+		cout<<"er"<<" "; 
+	if (qw==3)
+		cout<<"san"<<" "; 
+	if (qw==4)
+		cout<<"si"<<" "; 
+	if (qw==5)
+		cout<<"wu"<<" "; 
+	if (qw==6)
+		cout<<"liu"<<" "; 
+	if (qw==7)
+		cout<<"qi"<<" "; 
+	if (qw==8)
+		cout<<"ba"<<" "; 
+	if (qw==9)
+		cout<<"jiu"<<" "; 
+	if (qw>0)
+		cout<<"qian"<<" ";
+	if (yh>0&&qw==0&&n%10000000!=0)
+		cout<<"ling"<<" "; 
+	qw=y%10000000;
+	bw=qw/1000000;
+	bwh=qw%1000000;
+	sw=bwh/100000;
+	swh=bwh%100000;
+	w=swh/10000;
+	qw=n%100000000/10000000;
+	if (bw==1)
+		cout<<"yi"<<" "; 
+	if (bw==2)
+		cout<<"er"<<" "; 
+	if (bw==3)
+		cout<<"san"<<" "; 
+	if (bw==4)
+		cout<<"si"<<" "; 
+	if (bw==5)
+		cout<<"wu"<<" "; 
+	if (bw==6)
+		cout<<"liu"<<" "; 
+	if (bw==7)
+		cout<<"qi"<<" "; 
+	if (bw==8)
+		cout<<"ba"<<" "; 
+	if (bw==9)
+		cout<<"jiu"<<" "; 
+	if (bw>0)
+		cout<<"bai"<<" ";
+	if (bw==0&&qw!=0&&sw!=0)
+	 	cout<<"ling"<<" ";
+	if (sw==1&&bw*qw!=0)
+		cout<<"yi"<<" "; 
+	if (sw==2)
+		cout<<"er"<<" "; 
+	if (sw==3)
+		cout<<"san"<<" "; 
+	if (sw==4)
+		cout<<"si"<<" "; 
+	if (sw==5)
+		cout<<"wu"<<" "; 
+	if (sw==6)
+		cout<<"liu"<<" "; 
+	if (sw==7)
+		cout<<"qi"<<" "; 
+	if (sw==8)
+		cout<<"ba"<<" "; 
+	if (sw==9)
+		cout<<"jiu"<<" "; 
+	if (sw>0)
+		cout<<"shi"<<" ";
+	if (sw==0&&qw!=0&&w!=0)
+	 	cout<<"ling"<<" ";
+	if (w==1)
+		cout<<"yi"<<" "; 
+	if (w==2)
+		cout<<"er"<<" "; 
+	if (w==3)
+		cout<<"san"<<" "; 
+	if (w==4)
+		cout<<"si"<<" "; 
+	if (w==5)
+		cout<<"wu"<<" "; 
+	if (w==6)
+		cout<<"liu"<<" "; 
+	if (w==7)
+		cout<<"qi"<<" "; 
+	if (w==8)
+		cout<<"ba"<<" "; 
+	if (w==9)
+		cout<<"jiu"<<" "; 
+	if (n/10000>0&&n%100000000/10000!=0)
+		cout<<"wan"<<" ";
+	w=y%10000;
+	q=w/1000;
+	if (q==1)
+		cout<<"yi"<<" "; 
+	if (q==2)
+		cout<<"er"<<" "; 
+	if (q==3)
+		cout<<"san"<<" "; 
+	if (q==4)
+		cout<<"si"<<" "; 
+	if (q==5)
+		cout<<"wu"<<" "; 
+	if (q==6)
+		cout<<"liu"<<" "; 
+	if (q==7)
+		cout<<"qi"<<" "; 
+	if (q==8)
+		cout<<"ba"<<" "; 
+	if (q==9)
+		cout<<"jiu"<<" "; 
+	if (q>0)
+		cout<<"qian"<<" "; 
+	q=w%1000;
+	b=q/100;
+	bh=q%100;
+	s=bh/10;
+	g=bh%10;
+	q=n%10000/1000;
+	if (q==0&&y/10000>0&&y%1000!=0)
+		cout<<"ling"<<" ";
+	if (b==1)
+		cout<<"yi"<<" "; 
+	if (b==2)
+		cout<<"er"<<" "; 
+	if (b==3)
+		cout<<"san"<<" "; 
+	if (b==4)
+		cout<<"si"<<" "; 
+	if (b==5)
+		cout<<"wu"<<" "; 
+	if (b==6)
+		cout<<"liu"<<" "; 
+	if (b==7)
+		cout<<"qi"<<" "; 
+	if (b==8)
+		cout<<"ba"<<" "; 
+	if (b==9)
+		cout<<"jiu"<<" "; 
+	if (b>0)
+		cout<<"bai"<<" ";
+	if (b==0&&q!=0&&s!=0)
+	 	cout<<"ling"<<" ";
+	if (s==1)
+		cout<<"yi"<<" "; 
+	if (s==2)
+		cout<<"er"<<" "; 
+	if (s==3)
+		cout<<"san"<<" "; 
+	if (s==4)
+		cout<<"si"<<" "; 
+	if (s==5)
+		cout<<"wu"<<" "; 
+	if (s==6)
+		cout<<"liu"<<" "; 
+	if (s==7)
+		cout<<"qi"<<" "; 
+	if (s==8)
+		cout<<"ba"<<" "; 
+	if (s==9)
+		cout<<"jiu"<<" "; 
+	if (s>0)
+		cout<<"shi"<<" ";
+	if (s==0&&q!=0&&g!=0)
+	 	cout<<"ling"<<" ";
+	if (g==1)
+		cout<<"yi"<<" "; 
+	if (g==2)
+		cout<<"er"<<" "; 
+	if (g==3)
+		cout<<"san"<<" "; 
+	if (g==4)
+		cout<<"si"<<" "; 
+	if (g==5)
+		cout<<"wu"<<" "; 
+	if (g==6)
+		cout<<"liu"<<" "; 
+	if (g==7)
+		cout<<"qi"<<" "; 
+	if (g==8)
+		cout<<"ba"<<" "; 
+	if (g==9)
+		cout<<"jiu"<<" "; 
+	return 0;
+}
+		
+

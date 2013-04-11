@@ -1,0 +1,44 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
+
+using namespace std;
+
+struct t{
+       int a, b, v;
+} q[100];
+
+int n, x, ans[10];
+vector<int> mark[501];
+int now,ii;
+
+int main()
+{
+    scanf("%d", &n);
+    scanf("%d", &x);
+    int tmp =n * (n - 1) / 2;
+    for(int i = 0; i < tmp; i++){
+            scanf("%d %d %d", &q[i].a, &q[i].b, &q[i].v);
+            mark[q[i].v].push_back(i);
+    }
+    now = 0;
+    ii = 1;
+    while(!ans[x]){
+                   now++;
+                   while(mark[ii].size() != n - now){
+                                        ii++;
+                   }
+                   if(q[mark[ii][0]].a == q[mark[ii][1]].a || q[mark[ii][0]].a == q[mark[ii][1]].b){
+                                      ans[q[mark[ii][0]].a] = ii;
+                   }
+                   else{
+                        ans[q[mark[ii][0]].b] = ii;
+                   }
+                   ii++;
+    }
+    printf("%d", ans[x]);
+    return 0;
+}
+

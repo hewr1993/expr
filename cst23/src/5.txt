@@ -1,0 +1,10 @@
+#include <iostream.h>
+#include <math.h>
+
+int main()
+{
+    float y=(2*sqrt(5)*(sqrt(6)+sqrt(3)))/(6+3);
+    cout<<y<<endl;
+    int g;
+    scanf("%d",g);
+}     

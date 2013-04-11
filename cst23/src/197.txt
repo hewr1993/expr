@@ -1,0 +1,17 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+    double a, b, x;
+    cin >> a >> b;
+    if(a < 10000000)
+        x = 0.985;
+    else
+        x = 0.988;
+    cout.setf(ios :: fixed);
+    cout.precision(3);
+    cout << a / (a * x / b) / 0.995 << endl;
+//    system("pause");
+    return 0;
+}
+

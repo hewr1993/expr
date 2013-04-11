@@ -1,0 +1,24 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+
+using namespace std;
+int main()
+{
+	int f[10000];
+	int a,b;
+	char c;
+	int m;
+	cin>>a>>c>>b;
+	f[1]=1;
+	f[2]=1;
+	m=a;
+	if(m<b)
+		m=b;
+		
+	for(int i=3;i<=m;i++)
+		f[i]=f[i-1]+f[i-2];
+	cout<<f[a]<<","<<f[b]<<endl;
+	return 0;
+}

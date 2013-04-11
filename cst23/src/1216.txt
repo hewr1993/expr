@@ -1,0 +1,42 @@
+#include <iostream>
+using namespace std;
+bool getans=false,occ[11]={0};
+int n,m,num=0;
+int a[11];
+void print()
+{
+     for (int i=1;i<=n;i++)
+         cout<<a[i]<<' ';
+     cout<<endl;
+}
+void search(int step)
+{
+     if (step==n+1)
+	 {
+         num++;
+		  if (num==m)
+		  {
+             print();
+             getans=true;
+		  }
+		 return;
+	 }
+     for (a[step]=1;a[step]<=n;a[step]++)
+     {
+		 if (!occ[a[step]])
+		 {
+			 occ[a[step]]=true;
+             search(step+1);
+			 occ[a[step]]=false;
+             if (getans)
+                 return;
+		 }
+     }
+}
+int main()
+{
+    cin>>n>>m;
+    search(1);
+    return 0;
+}
+

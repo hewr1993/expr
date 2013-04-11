@@ -1,0 +1,49 @@
+#include<iostream>
+using namespace std;
+int sw(int x)
+{
+    int z=1;
+    while(x/10>=1)
+    {
+        z++;
+        x=x/10;
+    }
+    return z;
+}
+int f(int a)
+{
+    int i;
+    int z=1;
+    for(i=1;i<=a;i++)
+        z*=10;
+    return z;
+}
+int bj(int a,int b)
+{
+    int l1=sw(a);
+    int l2=sw(b);
+    long long int x1,x2;
+    x1=a*f(l2)+b;
+    x2=b*f(l1)+a;
+    if(x1>=x2)
+        return 1;
+    else
+        return 0;
+}
+int main()
+{
+    int n;
+    int i,j;
+    int a[21]={0};
+    cin>>n;
+    for(i=1;i<=n;i++)
+        cin>>a[i];
+    for(i=1;i<n;i++)
+       for(j=i+1;j<=n;j++)
+           if(i!=j)
+               if(bj(a[i],a[j])==0)
+                   swap(a[i],a[j]);
+    for(i=1;i<=n;i++)
+        cout<<a[i];
+    return 0;
+}

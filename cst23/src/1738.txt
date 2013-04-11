@@ -1,0 +1,153 @@
+#include<cstdio>
+#include<cmath>
+#include<cstring>
+#include<set>
+#include<algorithm>
+#define sqr(x) ((x)*(x))
+using namespace std;
+const int maxn=100010;
+struct point
+{
+    long long x[2],ans;
+    int id;
+    long long dis(const point &b) const
+    {
+        long long ans=0;
+        for(int i=0;i<2;i++)ans+=sqr(x[i]-b.x[i]);
+        return ans;
+    }
+    bool operator < (const point &b) const
+    {
+        if(ans==b.ans)return id<b.id;
+        return ans>b.ans;
+    }
+};
+int now;
+bool cmp(point a,point b)
+{
+    return a.x[now]<b.x[now];
+}
+point a[maxn];
+int root[maxn];
+long long L[maxn][4];
+long long R[maxn][4];
+void build(int l,int r)
+{
+    if(l>r)return;
+    int mid=(l+r)/2;
+    long long ma=-1;
+    int id;
+    for(int i=0;i<2;i++)
+    {
+        now=i;
+        long long de=max_element(a+l,a+r+1,cmp)->x[i]-min_element(a+l,a+r+1,cmp)->x[i];
+        if(de>ma)
+        {
+            ma=de;id=i;
+        }
+    }
+    root[mid]=id;
+    now=id;
+    nth_element(a+l,a+mid,a+r+1,cmp);
+    L[mid][0]=min_element(a+l,a+mid,cmp)->x[id];L[mid][1]=max_element(a+l,a+mid,cmp)->x[id];
+    R[mid][0]=min_element(a+mid+1,a+r+1,cmp)->x[id];R[mid][1]=max_element(a+mid+1,a+r+1,cmp)->x[id];
+    id^=1;now=id;
+    L[mid][2]=min_element(a+l,a+mid,cmp)->x[id];L[mid][3]=max_element(a+l,a+mid,cmp)->x[id];
+    R[mid][2]=min_element(a+mid+1,a+r+1,cmp)->x[id];R[mid][3]=max_element(a+mid+1,a+r+1,cmp)->x[id];
+    build(l,mid-1);
+    build(mid+1,r);
+}
+set <point> S;
+set <point> :: iterator it;
+int m;
+void query(int l,int r,point &p)
+{
+    if(l>r)return;
+    int mid=(l+r)/2;
+    a[mid].ans=p.dis(a[mid]);
+    S.insert(a[mid]);
+    if(S.size()>m)
+    {
+        it=S.end();it--;
+        S.erase(it);
+    }
+
+    long long d1,d2;
+    d1=max(abs(R[mid][1]-p.x[root[mid]]),abs(p.x[root[mid]]-R[mid][0]));
+    d2=max(abs(R[mid][2]-p.x[root[mid]^1]),abs(R[mid][3]-p.x[root[mid]^1]));
+    long long dR=d1*d1+d2*d2;
+    d1=max(abs(L[mid][1]-p.x[root[mid]]),abs(p.x[root[mid]]-L[mid][0]));
+    d2=max(abs(L[mid][2]-p.x[root[mid]^1]),abs(L[mid][3]-p.x[root[mid]^1]));
+    long long dL=d1*d1+d2*d2;
+    if(dR>dL)
+    {
+        it=S.end();it--;
+        if(S.size()<m||dR>=(it->ans))
+        query(mid+1,r,p);
+        it=S.end();it--;
+        if(S.size()<m||dL>=(it->ans))
+        query(l,mid-1,p);
+    }
+    else
+    {
+        it=S.end();it--;
+        if(S.size()<m||dL>=(it->ans))
+        query(l,mid-1,p);
+        it=S.end();it--;
+        if(S.size()<m||dR>=(it->ans))
+        query(mid+1,r,p);
+    }
+}
+void gen()
+{
+    freopen("C:\Users\James\Desktop\in.txt","w",stdout);
+    srand(123);
+    int n=rand()%50+5;
+    printf("%d
+",n);
+    for(int i=1;i<=n;i++)
+    {
+        printf("%d %d
+",rand(),rand());
+    }
+    printf("100
+");
+    for(int i=1;i<=100;i++)
+    {
+        printf("%d %d ",rand(),rand());
+        printf("%d
+",3);
+    }
+}
+int n;
+int main()
+{
+    //gen();return 0;
+    //freopen("C:\Users\James\Desktop\in.txt","r",stdin);
+    //freopen("C:\Users\James\Desktop\out.txt","w",stdout);
+    scanf("%d",&n);
+    for(int i=1;i<=n;i++)
+    {
+        a[i].id=i;
+        int x,y;
+        scanf("%d %d",&x,&y);
+        a[i].x[0]=x;
+        a[i].x[1]=y;
+    }
+    build(1,n);
+    int Q;point p;
+    scanf("%d",&Q);
+    while(Q--)
+    {
+        int x,y;
+        scanf("%d %d",&x,&y);
+        p.x[0]=x;p.x[1]=y;
+        scanf("%d",&m);
+        S.clear();
+        query(1,n,p);
+        it=S.end();--it;
+        printf("%d
+",it->id);
+    }
+}
+

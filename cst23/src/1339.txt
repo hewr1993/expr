@@ -1,0 +1,57 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<string.h>
+char s[10000]={0};
+int sum=0;
+int power(int x,int y)    //right
+{int product=1;
+ for(int i=1;i<=y;i++)
+     product*=x;
+ return product;    
+}
+
+void f(int start,int end)     //right
+{
+    int t;
+    t=end-start;
+    for(int i=start;i<=end;i++,t--)
+        sum+=(s[i]-48)*power(10,t);
+}
+
+
+
+int main()
+{
+    int len,i=0,j=0,start,end,flag=0;
+    gets(s);
+    len=strlen(s)-1;
+    
+    for(i=0;i<=len;i++)
+    {    
+        if(isdigit(s[i]))       
+        {     
+             start=i;flag=1;j=i; 
+             while(isdigit(s[j]))
+             {
+                            
+                             
+                j++;             
+             }
+             end=j-1;                 
+                 f(start,end);
+                 i=j; 
+        }
+    }        
+    if(flag==1)
+        printf("%d",sum); 
+    else    
+        printf("0"); 
+    /*f(0,0);
+    printf("%d",sum); */  
+    //system("pause");              
+                  
+                  
+    return 0;                  
+}
+

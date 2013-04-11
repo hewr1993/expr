@@ -1,0 +1,12 @@
+int func(int t, int v)
+{
+int add(int t, int v);
+return add(t,v);
+}
+int s=0;
+int add(int t, int v){
+if(t==0)s+=v;
+if(t==1)return s;
+return 0;
+}
+

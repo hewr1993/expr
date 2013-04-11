@@ -1,0 +1,131 @@
+/* 
+ * tsinsen/1144/1144.cpp
+ *
+ * Copyright (c) 2012  Tung Cheng
+ *
+ */
+
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+const int N_MAX = 150;
+const int M_MAX = 20;
+const int oo = 100000000;
+
+int mod(int x, int y)	// int
+{
+	while (x < 0)
+		x += y;
+	return x % y;
+}
+
+int n, m;
+int x[N_MAX];	// int
+int sum[N_MAX][N_MAX];	// int
+int mn[N_MAX][N_MAX][M_MAX]; // int
+int mx[N_MAX][N_MAX][M_MAX]; // int
+bool pmn[N_MAX][N_MAX][M_MAX];
+bool pmx[N_MAX][N_MAX][M_MAX];
+
+void init()
+{
+	int i, j, u;
+
+	cin >> n >> m;
+	for (i = 1; i <= n; i ++) {
+		cin >> x[i];
+		x[i + n] = x[i];
+	}
+
+	memset(sum, 0, sizeof(sum));
+	memset(pmx, 0, sizeof(pmx));
+	memset(pmn, 0, sizeof(pmn));
+	for (i = 1; i <= 2 * n; i ++)
+		for (j = i; j <= 2 * n; j ++)
+			if (i == j)
+				sum[i][j] = mod(x[i], 10);
+			else {
+				for (u =  i; u <= j; u ++) {
+					sum[i][j] += x[u];
+					sum[i][j] = mod(sum[i][j], 10);
+				}
+			}
+}
+
+int find_ext(int i, int j, int k, bool flag_ext)//a, int b, )	// extrema
+	// int
+{
+/*	if (flag_ext)	// min
+		if (pmn[i][j][k])
+			return mn[i][j][k];
+	if (!flag_ext)	// not 'else'
+		if (pmx[i][j][k])
+			return mx[i][j][k];*/
+	if (flag_ext)
+		if (pmn[i][j][k])
+			return mn[i][j][k];
+		else {
+			mn[i][j][k] = oo;	// init
+			if (k == 1 || i == j) {
+				mn[i][j][k] = sum[i][j];//[k];
+				pmn[i][j][1] = true;
+				return mn[i][j][k];
+			}
+		}
+	if (!flag_ext)
+		if (pmx[i][j][k])
+			return mx[i][j][k];
+		else {
+			mx[i][j][k] = 0;
+			if (k == 1 || i == j) {
+				mx[i][j][k] = sum[i][j];//[k];
+				pmx[i][j][k] = true;
+				return mx[i][j][k];
+			}
+		}
+
+	int u;
+	for (u = i; u < j; u ++) {
+		if (flag_ext) {	// min!!!!!
+			mn[i][j][k] = min(mn[i][j][k], 
+					find_ext(i, u, k - 1, flag_ext) * sum[u + 1][j]);
+		}
+		else {
+			mx[i][j][k] = max(mx[i][j][k], 
+					find_ext(i, u, k - 1, flag_ext) * sum[u + 1][j]);
+		}
+	}
+
+	if (flag_ext) {
+		pmn[i][j][k] = true;
+		return mn[i][j][k];
+	}
+	else {
+		pmx[i][j][k] = true;
+		return mx[i][j][k];
+	}
+}
+
+int main()
+{
+	int d;
+	int mx_f = 0;		// int
+	int mn_f = oo;	// int
+
+	init();
+
+	for (d = 0; d < n; d ++) {	//|XX|XX|
+		mx_f = max(mx_f, find_ext(1 + d, n + d, m, 0)); // extrema
+		//max(mx, find_mx(1 + d, n + d, m));
+		mn_f = min(mn_f, find_ext(1 + d, n + d, m, 1));
+	}
+
+	cout << mn_f << endl;
+	cout << mx_f << endl;
+
+	return 0;
+}
+
+

@@ -1,0 +1,91 @@
+#include <iostream>
+using namespace std;
+long long int a[1000], s[1000] = {};
+long long int f[1000][1000] = {};
+int main()
+{
+	long long int n, k, i, j, p, t;
+	cin >> n >> k;
+	for(i = 1; i <= n; i++)
+	{
+		cin >> a[i];
+		f[i][0] = s[i] = s[i - 1] + a[i];
+	}
+	for(i = 2; i <= n; i++)
+		for(j = 1; j <= min(i - 1, k); j++)
+			for(p = j; p < i; p++)
+			{
+				if((t = f[p][j - 1] * a[p + 1] + s[i] - s[p + 1]) > f[i][j])
+					f[i][j] = t;
+				if((t = f[p][j - 1] * (s[i] - s[p])) > f[i][j])
+					f[i][j] = t;
+				if(f[i][j] == 28)
+					cout << i << ' ' << j << ' ' << p << endl;
+			}
+	cout << f[n][k] << endl;
+	return 0;
+}
+//TLE
+/*long long int a[16];
+long long int F[16][16][16];
+long long int f(long long int i, long long int j, long long int k)
+{
+	if(F[i][j][k] > 0)
+		return F[i][j][k];
+	long long int ret = 0;
+	long long int t, p, f1, f2;
+	if(k == 0)
+		for(p = i; p <= j; p++)
+			ret += a[p];
+	else
+	{
+		if(k <= j - 1 - i && 
+		  (t = f(i, j - 1, k) + a[j]) > ret)
+			ret = t;
+			
+		if(1 <= k && k - 1 <= j - 1 - i &&
+		  (t = f(i, j - 1, k - 1) * a[j]) > ret)
+			ret = t;
+
+		if(k <= j - i - 1 &&
+		  (t = f(i + 1, j, k) + a[i]) > ret)
+		  	ret = t;
+
+		if(1 <= k && k - 1 <= j - i - 1 &&
+		  (t = f(i + 1, j, k - 1) * a[i]) > ret)
+		  	ret = t;
+
+		for(p = i + 1; p < j; p++)
+		{
+			if(2 <= k && k - 2 <= p - 1 - i && k - 2 <= j - p - 1 &&
+			  (t = f(i, p - 1, k - 2) * a[p] * f(p + 1, j, k - 2)) > ret)
+			  	ret = t;
+
+			if(1 <= k && k - 1 <= p - 1 - i && k - 1 <= j - p - 1)
+			{
+				f1 = f(i, p - 1, k - 1);
+				f2 = f(p + 1, j, k - 1);
+				if((t = f1 * a[p] + f2) > ret)
+					ret = t;
+				if((t = f1 + a[p] * f2) > ret)
+					ret = t;
+			}
+
+			if(k <= p - 1 - i && k <= j - p - 1 &&
+			  (t = f(i, p - 1, k) + a[p] + f(p + 1, j, k)) > ret)
+			  	ret = t;
+		}
+	}
+	//printf("f(%d, %d, %d) = %d
+", i, j, k, ret);
+	return F[i][j][k] = ret;
+}
+int main()
+{
+	long long int n, k, i;
+	cin >> n >> k;
+	for(i = 1; i <= n; i++)
+		cin >> a[i];
+	cout << f(1, n, k) << endl;
+	return 0;
+}*/

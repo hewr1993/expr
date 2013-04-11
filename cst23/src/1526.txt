@@ -1,0 +1,139 @@
+/*
+Author: LJQ
+PROG: WC 2008. trip
+DATE: 2012.2.22
+*/
+#include<cstdio>
+
+using namespace std;
+
+const int maxn = 11;
+const int maxq = maxn * maxn;
+const int maxs = 1 << 10 | 1;
+const int INF = 0x3fffffff;
+
+struct Tstate{
+	int key;
+	int Lx, Ly, Ls;
+} f[maxn][maxn][maxs];
+
+struct Tpair{
+	int x, y;
+} que[maxq];
+
+int dx[4] = {-1, 1, 0, 0};
+int dy[4] = {0, 0, -1, 1};
+
+bool vis[maxn][maxn];
+bool chose[maxn][maxn];
+int c[maxn][maxn];
+int state[maxn][maxn];
+int head, tail;
+int n, m, cnt, ret, SS;
+
+void init()
+{
+	scanf("%d%d", &n, &m); cnt = 0;
+	for (int i = 0; i < n; i ++)
+		for (int j = 0; j < m; j ++){
+			scanf("%d", &c[i][j]);
+			if (c[i][j] == 0) state[i][j] = 1 << cnt, cnt ++;
+		}
+}
+
+inline bool check_min(int &a, int b, int c)
+{
+	if (b < INF && c < INF && b + c < a){
+		a = b + c; return 1;
+	}
+	return 0;
+}
+
+void dfs(int x, int y, int s)
+{
+	chose[x][y] = 1;
+	if (s == state[x][y]) return;
+	if (f[x][y][s].Lx == x && f[x][y][s].Ly == y){
+		dfs(x, y, f[x][y][s].Ls);
+		dfs(x, y, s ^ f[x][y][s].Ls);
+	} else dfs(f[x][y][s].Lx, f[x][y][s].Ly, f[x][y][s].Ls);
+}
+
+void work()
+{
+	SS = (1 << cnt) - 1;
+	for (int i = 0; i < n; i ++)
+		for (int j = 0; j < m; j ++)
+			for (int s = 0; s <= SS; s ++)
+				if (state[i][j] != s) f[i][j][s].key = INF;
+					else if (!s) f[i][j][s].key = c[i][j];
+	for (int s = 0; s <= SS; s ++){
+		head = 0; tail = 0;
+		for (int i = 0; i < n; i ++)
+			for (int j = 0; j < m; j ++){
+				for (int s1 = s; s1 > 0; s1 = (s1 - 1) & s)
+					if (check_min(f[i][j][s].key, f[i][j][s1].key - c[i][j], f[i][j][s^s1].key)){
+						f[i][j][s].Lx = i; f[i][j][s].Ly = j; f[i][j][s].Ls = s1;
+					} 
+				vis[i][j] = 0;
+				if (f[i][j][s].key < INF){
+					que[tail].x = i; que[tail].y = j; tail ++; 
+					if (tail == maxq) tail = 0; vis[i][j] = 1;
+				}
+			}
+		Tpair Cur; int cost, nx, ny;
+		while (head != tail){
+			Cur = que[head ++]; vis[Cur.x][Cur.y] = 0;
+			if (head == maxq) head = 0; cost = f[Cur.x][Cur.y][s].key;
+			for (int i = 0; i < 4; i ++){
+				nx = Cur.x + dx[i]; ny = Cur.y + dy[i];
+				if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+				if (c[nx][ny] || (s & state[nx][ny])){
+					if (check_min(f[nx][ny][s].key, cost, c[nx][ny])){
+						f[nx][ny][s].Lx = Cur.x;
+						f[nx][ny][s].Ly = Cur.y;
+						f[nx][ny][s].Ls = s;
+						if (!vis[nx][ny]){
+							vis[nx][ny] = 1; que[tail].x = nx; que[tail].y = ny;
+							tail ++; if (tail == maxq) tail = 0;
+						}
+					}
+				} else {
+					if (check_min(f[nx][ny][s | state[nx][ny]].key, cost, c[nx][ny]))
+						f[nx][ny][s | state[nx][ny]].Lx = Cur.x,
+						f[nx][ny][s | state[nx][ny]].Ly = Cur.y,
+						f[nx][ny][s | state[nx][ny]].Ls = s;
+				}
+			}
+		}
+	}
+	ret = INF; int rx, ry;
+	for (int i = 0; i < n; i ++)
+		for (int j = 0; j < m; j ++)
+			if (f[i][j][SS].key < ret)
+				ret = f[i][j][SS].key, rx = i, ry = j;
+	dfs(rx, ry, SS);
+}
+
+void print()
+{
+	printf("%d
+", ret);
+	for (int i = 0; i < n; i ++){
+		for (int j = 0; j < m; j ++)
+			if (state[i][j]) printf("x");
+				else if (chose[i][j]) printf("o");
+				else printf("_");
+		printf("
+");
+	}
+}
+
+int main()
+{
+	init();
+	work();
+	print();
+	return 0;
+}
+

@@ -1,0 +1,22 @@
+#include <iostream>
+using namespace std;
+
+int main(void)
+{
+    int n, m;
+    int t[10] = {0};
+    
+    cin >> n >> m;
+    
+    for (int i = 1; i <= m; i++)
+        t[i] = 1;
+        
+    for (int i = m + 1; i <= n; i++)    
+        t[i] = 2 * t[i - m] + 1;
+    
+    cout << t[n] << endl;
+        
+    //system("pause");
+    return 0;
+}
+

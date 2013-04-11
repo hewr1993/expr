@@ -1,0 +1,73 @@
+//1996noip ?á??×é??3?? 
+//×÷?????íê???
+//?±????2009?ê10??16?? 
+#include<iostream>
+#include<cmath>
+using namespace std;
+int maxn;
+int a[21],b[22],c[21];
+int search(int,int[21][21],int,int,int[21],int);
+int main()
+{
+ int n;
+ int w[21];
+ int r[21][21];
+ int i,j;
+ bool t;
+ memset(r,0,sizeof(r));
+ memset(a,0,sizeof(a));
+ memset(c,0,sizeof(c));
+ maxn=0;
+ cin>>n;
+ for (i=1;i<=n;i++)
+  cin>>w[i];
+ for (i=1;i<=n-1;i++)
+  for (j=i+1;j<=n;j++)
+   {
+    cin>>r[i][j];
+    r[j][i]=r[i][j];
+   }
+ for (i=1;i<=n;i++)
+  search(n,r,i,0,w,1);
+ cout<<b[1];
+ i=2;
+ while (b[i]!=0)
+ { 
+  cout<<"-"<<b[i];
+  i++;
+ } 
+ cout<<endl;
+ cout<<"MAX="<<maxn<<endl;         
+return 0;
+}
+
+int search(int n,int r[21][21],int k,int m,int w[21],int s)
+{
+ int i;
+ bool t;
+ t=false;
+ a[k]=1;
+ c[s]=k;
+ m=m+w[k];
+ for (i=1;i<=n;i++)
+  if ((a[i]==0)&&(r[k][i]==1))
+  {
+   search(n,r,i,m,w,s+1);
+   t=true;
+  }
+  if (t==false)
+  {
+   if (m>maxn)
+   { 
+    maxn=m;
+    memset(b,0,sizeof(b));
+    for (i=1;i<=s;i++)
+     b[i]=c[i];
+   }    
+  }
+  a[k]=0;
+  c[s]=0;
+  m=m-w[k];
+return 0;
+}
+

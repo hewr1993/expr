@@ -1,0 +1,18 @@
+
+#include <stdio.h>
+int main()
+{
+    int r;
+    const double pi=3.1415926;
+    double C,S,Sb,V;
+    scanf("%d",&r);
+    C=2*pi*r;
+    S=pi*r*r;
+    Sb=4*S;
+    V=4*pi*r*r*r/3;
+    printf("%.2f %.2f %.2f %.2f
+",C,S,Sb,V);
+    return 0;
+}
+
+

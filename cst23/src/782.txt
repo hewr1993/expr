@@ -1,0 +1,50 @@
+#include<stdio.h>
+#include<string.h>
+int tot;
+
+void decompress(int *code, int n, char dict[][110]);
+
+int main()
+{
+	char str[1100] = {0}, dict[300][110] = {0};
+	int code[1100] = {0}, i, n, p;
+	scanf("%d", &n);
+	for(i = 0; i < n; i++)
+		scanf("%d", &code[i]);
+	scanf("%d", &tot);
+
+	for(i = 0; i < tot; i++)
+		scanf("%s %d", dict[i], &p);
+	decompress(code, n, dict);
+	printf("
+");
+	return 0;
+}
+
+void decompress(int *code, int n, char dict[][110])
+{
+	int i = 0, l;
+	char oldstr[110] = {0}, s[110] = {0};
+	printf("%s", dict[code[0]]);
+	strcpy(oldstr, dict[code[0]]);
+	for(i = 1; i < n; i++)
+	{			
+		l = strlen(oldstr);
+		if(code[i] < tot)
+		{
+			printf("%s",dict[code[i]]);
+			oldstr[l] = dict[code[i]][0];
+			oldstr[l + 1] = 0;
+			strcpy(dict[tot++], oldstr);
+			strcpy(oldstr, dict[code[i]]);
+		}
+		else
+		{
+			oldstr[l] = oldstr[0];
+			oldstr[l + 1] = 0;
+			strcpy(dict[tot++], oldstr);
+			printf("%s",oldstr);
+		}
+	}
+
+}

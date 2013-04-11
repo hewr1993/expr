@@ -1,0 +1,57 @@
+#include <iostream>
+using namespace std;
+
+char a[100000];
+
+int main()
+{
+    int x = 0, y = 0;
+    for (int i = 0; i < 100000;i++)
+    {
+         cin >> a[i];
+         if(a[i] == 'E')  break;
+    } 
+    
+    for(int i = 0; i < sizeof(a); i++)
+    {
+         if(a[i] == 'W')  x++;
+         if(a[i] == 'L')  y++;
+         if((x >= 11 && (x - y) >= 2) || 
+            (y >= 11 && (y - x) >= 2 ))
+         {
+             cout << x <<":"<< y << endl;
+             x = 0;
+             y = 0;
+         }
+         if(a[i] == 'E')
+         {
+             cout << x <<":"<< y << endl;
+             cout << endl;
+             break;
+         }
+    }
+    
+    x = 0;
+    y = 0;
+    
+    for(int i = 0; i < sizeof(a); i++)
+    {
+         if(a[i] == 'W')  x++;
+         if(a[i] == 'L')  y++;
+         if((x >= 21 && (x - y) >= 2) || 
+            (y >= 21 && (y - x) >= 2 ))
+         {
+             cout << x <<":"<< y << endl;
+             x = 0;
+             y = 0;
+         }
+         if(a[i] == 'E')
+         {
+             cout << x <<":"<< y << endl;
+             break;
+         }
+    }
+    return 0;
+}
+           
+

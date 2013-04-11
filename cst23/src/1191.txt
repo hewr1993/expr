@@ -1,0 +1,38 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+int main()
+{
+    int a,b;
+    scanf("%d",&a);
+        b=a/10; 
+    switch(b)
+{
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+         printf("E");
+         break; 
+    case 6:
+         printf("D");
+         break;
+    case 7:
+         printf("C");
+         break; 
+    case 8:
+         printf("B");
+         break;
+    case 9:
+         printf("A"); 
+         break; 
+    case 10:
+         if(a==100) 
+         printf("A"); 
+         break; 
+} 
+    system("pause");
+    return 0;  
+}

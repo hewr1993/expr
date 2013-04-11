@@ -1,0 +1,10 @@
+#include <iostream.h>
+#include <math.h>
+
+int main()
+{
+    int y=sqrt(3*3+4*4);
+    cout<<y<<endl;
+    int g;
+    scanf("%d",g);
+}    

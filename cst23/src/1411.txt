@@ -1,0 +1,29 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+
+using namespace std;
+
+int n,r;
+int a[51], b[51];
+int ans;
+
+int main()
+{
+    scanf("%d", &n);
+    for(int i = 0; i < n; i++){
+            scanf("%d", &a[i]);
+            ans+=a[i];
+    }
+    for(int i = 0; i < n; i++){
+            scanf("%d", &b[i]);
+    }
+    scanf("%d", &r);
+    ans -= a[r];
+    ans *= 100;
+    ans -= a[r] * b[r];
+    printf("%d", ans);
+    return 0;
+}
+

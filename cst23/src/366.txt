@@ -1,0 +1,114 @@
+program ex1;
+type extended=real;
+const e=1e-8;
+var
+  a,b,c,d,x,y,xx,yy:array[0..1000000] of extended;
+  q:array[0..1000000] of longint;
+  k1,k2,tmp,x1,y1,h1,x2,y2,aa,bb,cc,h:extended;
+  n,i,j,k,l,t:longint;
+
+procedure swap(var a,b:extended);begin tmp:=a;a:=b;b:=tmp end;
+procedure update(var a,b:extended;c,d:extended);
+begin
+  if (d<b-e)or(abs(b-d)<e)and(c<a) then begin
+    a:=c;b:=d;
+  end;
+end;
+procedure sort(l,r:longint);var i,j:longint;
+begin
+  i:=l;j:=r;
+  k1:=a[(i+j)>>1];
+  k2:=b[(i+j)>>1];
+  repeat
+    while a[i]*k2>b[i]*k1 do inc(i);
+    while a[j]*k2<b[j]*k1 do dec(j);
+    if i<=j then begin
+      swap(a[i],a[j]);swap(b[i],b[j]);
+      swap(c[i],c[j]);inc(i);dec(j);
+    end;
+  until i>j;
+  if l<j then sort(l,j);
+  if i<r then sort(i,r);
+end;
+
+procedure sort1(l,r:longint);var i,j:longint;
+begin
+  i:=l;j:=r;
+  k1:=xx[(i+j)>>1];
+  repeat
+    while xx[i]<k1 do inc(i);
+    while xx[j]>k1 do dec(j);
+    if i<=j then begin
+      swap(xx[i],xx[j]);swap(yy[i],yy[j]);
+      inc(i);dec(j);
+    end;
+  until i>j;
+  if l<j then sort1(l,j);
+  if i<r then sort1(i,r);
+end;
+
+begin
+  readln(n);
+  for i:=1 to n do readln(xx[i],yy[i]);
+  sort1(1,n);
+  for i:=1 to n-1 do begin
+    a[i]:=yy[i]-yy[i+1];
+    b[i]:=xx[i+1]-xx[i];
+    c[i]:=a[i]*xx[i]+b[i]*yy[i];
+  end;
+  sort(1,n-1);
+  for i:=1 to n-1 do
+    d[i]:=c[i]/sqrt(a[i]*a[i]+b[i]*b[i]);
+  t:=0;
+  for i:=1 to n-1 do begin
+    while (t>1)and(a[i]*x[t]+b[i]*y[t]<c[i]+e) do dec(t);
+    j:=q[t];
+    if t<>0 then
+    if abs(a[i]*b[j]-a[j]*b[i])<e then
+    if d[i]>d[j]-e then dec(t) else continue;
+    inc(t);q[t]:=i;
+    if t>1 then begin
+      j:=q[t-1];
+      y[t]:=c[i]*a[j]-c[j]*a[i];
+      x[t]:=c[i]*b[j]-c[j]*b[i];
+      tmp:=a[i]*b[j]-a[j]*b[i];
+      y[t]:=-y[t]/tmp;
+      x[t]:=x[t]/tmp;
+    end;
+  end;
+  x1:=1e30;y1:=x1;
+  x2:=x1;y2:=x2;h1:=x1;
+  i:=2;
+  while (i<=t)and(x[i]<0) do inc(i);
+  j:=q[i-1];
+  update(x2,y2,xx[1],(c[j]-a[j]*xx[1])/b[j]);
+  j:=t;
+  while (j>1)and(x[j]>xx[n]) do dec(j);
+  update(x2,y2,xx[n],(c[q[j]]-xx[n]*a[q[j]])/b[q[j]]);
+  l:=2;
+  for i:=i to j do begin
+    update(x2,y2,x[i],y[i]);
+    while (l<n)and(x[i]>xx[l]) do inc(l);
+    aa:=yy[l-1]-yy[l];
+    bb:=xx[l]-xx[l-1];
+    cc:=aa*xx[l]+bb*yy[l];
+    h:=y[i]-(cc-aa*x[i])/bb;
+    if (h<h1-e)or(abs(h-h1)<e)and(x[i]<x1) then begin
+      x1:=x[i];y1:=y[i];
+      h1:=h;
+    end;
+  end;
+  l:=2;
+  for i:=1 to n do begin
+    while (l<=t)and(xx[i]>x[l]) do inc(l);
+    j:=q[l-1];
+    h:=(c[j]-a[j]*xx[i])/b[j]-yy[i];
+    if (h<h1-e)or(abs(h-h1)<e)and(xx[i]<x1) then begin
+      x1:=xx[i];y1:=yy[i]+h;
+      h1:=h;
+    end;
+  end;
+  writeln(x1:0:2,' ',y1:0:2);
+  writeln(x2:0:2,' ',y2:0:2);
+end.
+

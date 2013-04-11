@@ -1,0 +1,51 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+	int a,b,c,d,e,f;
+	int n;
+
+	scanf("%d",&n);
+
+    //5位数
+	for (a=1;a<=9;a++)
+
+		for (b=0;b<=9;b++)
+
+			for (c=0;c<=9;c++)
+
+				for (d=0;d<=9;d++)
+
+					for (e=0;e<=9;e++)
+					{
+						if ((a+b+c+d+e)==n&&(a==e)&&(b==d))
+						{
+							printf("%d
+",10000*a+1000*b+100*c+10*d+e);
+						}
+					}
+
+	//6位数
+	for (a=1;a<=9;a++)
+
+		for (b=0;b<=9;b++)
+
+			for (c=0;c<=9;c++)
+
+				for (d=0;d<=9;d++)
+
+					for (e=0;e<=9;e++)
+						
+						for (f=0;f<=9;f++)
+						{
+							if ((a+b+c+d+e+f)==n&&(a==f)&&(b==e)&&(c==d))
+							{
+								printf("%d
+",100000*a+10000*b+1000*c+100*d+10*e+f);
+							}
+						}
+
+
+					return 0;
+}

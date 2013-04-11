@@ -1,0 +1,47 @@
+
+#include <stdio.h>
+
+//数组a已经有序，有n个元素，把key添加到数组中，使之仍然有序 
+void insert(int *a,int n,int key)
+{
+ int i,j;
+ n=n+1;
+ if(n==1)a[0]=key;
+ else
+ {
+  for(i=0;i<n-1;i++)
+  {
+   if(key<=a[i])
+   {
+    for(j=n-2;j>=i;j--)
+    {
+     a[j+1]=a[j];
+    }
+    a[i]=key;
+    break;
+   }
+  }
+  if(key>a[n-2])a[n-1]=key;
+ }
+}
+
+int main()
+{
+    int arr[100]={0};
+    int n,t;
+    int i;
+    
+    scanf("%d",&n);
+    for(i=0;i<n;i++)   //处理每个数据 
+    {
+        scanf("%d",&t);
+        insert(arr,i,t);
+    }
+    
+    for(i=0;i<n;i++)   //输入结果 
+        printf("%d ",arr[i]);
+    printf("
+");
+    return 0;
+}
+

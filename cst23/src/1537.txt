@@ -1,0 +1,30 @@
+#include<cstdio>
+#include<cstdlib>
+#include<iostream>
+#include<cstring>
+using namespace std;
+int main()
+{
+    int n=0;
+    cin>>n;
+    int f[10000]={};
+    
+    for(int i=1;i<=n;i++)
+    {
+        cin>>f[i];
+    }
+    int len=1,j,maxn=0;
+    for(int i=1;i<=n;i++)
+    {
+        len=1;
+        j=i;
+        while(f[j]!=0)
+        {
+            len++;
+            j=f[j];
+        }
+        if(len>maxn)maxn=len;
+    }
+    cout<<maxn;
+    return 0;
+}

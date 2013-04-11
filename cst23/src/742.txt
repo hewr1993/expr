@@ -1,0 +1,10 @@
+struct dataStruct {
+	int n;
+};
+
+dataStruct getData()
+{
+int getNum(int x);
+getNum(0);
+}
+

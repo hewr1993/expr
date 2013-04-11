@@ -1,0 +1,76 @@
+#include <cstring>
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+const int maxm=100010;
+const int maxn=100010;
+
+struct node
+{
+	int color,len,x,y;
+} p[maxm];
+
+int len[maxm],xx[maxm],yy[maxm],c[maxm],f[maxn];
+int n,m,ans,need;
+
+bool cmp(const node i, const node j)
+{
+	if (i.len==j.len) return i.color<j.color;
+	else return i.len<j.len;
+}
+
+int findset(int x)
+{
+	if (f[x]==x) return x;
+	return f[x]=findset(f[x]);
+}
+
+int work(int mid)
+{
+	int res=0;
+	ans=0;
+	for (int i=1; i<=m; i++)
+	{
+		p[i].color=c[i];
+		if (c[i]==0) p[i].len=len[i]+mid;
+		else p[i].len=len[i];
+		p[i].x=xx[i]; p[i].y=yy[i];
+	}
+	for (int i=1; i<=n; i++) f[i]=i;
+	
+	sort(p+1,p+m+1,cmp);
+	for (int i=1; i<=m; i++)
+	{
+		int f1=findset(p[i].x),f2=findset(p[i].y);
+		if (f1==f2) continue;
+		if (p[i].color==0) res++; 
+		ans+=p[i].len; f[f1]=f2;
+	}
+	return res;
+}
+
+int main()
+{
+	//freopen("tree.in","r",stdin);
+	//freopen("tree.out","w",stdout);
+	scanf("%d%d%d",&n,&m,&need);
+	for (int i=1; i<=m; i++)
+	{
+		scanf("%d%d%d%d",&xx[i],&yy[i],&len[i],&c[i]);
+		xx[i]++; yy[i]++;
+	}
+	int l=-101,r=101,mid;
+	while (l+1<r)
+	{
+		mid=(l+r)>>1;
+		if (work(mid)<need) r=mid; else l=mid;
+	}
+	
+	work(l);
+	//printf("%d
+",l);
+	printf("%d
+",ans-(l*need));
+	return 0;
+}
+

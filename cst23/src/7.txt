@@ -1,0 +1,30 @@
+#include<iostream>
+using namespace std ;
+
+int main()
+{
+    int a , b , c , m , n , p , i ;
+    for ( a = 0 ; a <= 2 ; a ++ )
+        for ( b = 0 ; b <= 2 ; b ++ )
+            for ( c = 0 ; c <= 2 ; c ++ )
+            {
+
+                m = ( b > a ) + ( c == a ) ;
+                n = ( a > b ) + ( a >  c ) ; 
+                p = ( c > b ) + ( b >  a ) ;
+                if ( ( a == 2 - m ) + ( b == 2 - n ) + ( c == 2 - p ) == 3 )
+                {
+                     for ( i = 0 ; i <= 2 ; i++ )
+                     {
+                         if ( m == i )
+                            cout << 'A' << ' ' ;
+                         if ( n == i )
+                            cout << 'B' << ' ' ;
+                         if ( p == i )
+                            cout << 'C' << ' ' ;
+                     }
+                }
+            }
+            return 0 ;
+}
+

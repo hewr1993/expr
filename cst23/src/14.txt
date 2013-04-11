@@ -1,0 +1,33 @@
+//程序名称：习题5.5 
+//编写者：王鹤男 
+//时间：2009.10.27
+//程序功能：
+//修改时间：
+//修改人：
+//备注：
+#include<iostream>
+#include<cmath>
+using namespace std;
+int main()
+{
+    char info[5][20]={"百米冠军","四百米冠军","跳高冠军","跳远冠军 ","三级跳冠军"};
+    for(int a=1;a<=5;a++)
+    	for(int b=1;b<=5;b++)
+    		for(int c=1;c<=5;c++)
+    			for(int d=1;d<=5;d++)
+    				for(int e=1;e<=5;e++)
+        			{
+               		if(((b==5)+(d==3)==1)&&((a==1)+(e==3)==1)&&((c==4)+(d==2)==1)&&((b==3)+(e==5)==1))
+               		{
+                 	if(a*b*c*d*e==120) 
+               		{
+					 cout<<"A获"<<info[a-1]<<endl;
+               		 cout<<"B获"<<info[b-1]<<endl;
+               		 cout<<"C获"<<info[c-1]<<endl;
+               		 cout<<"D获"<<info[d-1]<<endl;
+               		 cout<<"E获"<<info[e-1]<<endl;}
+                 	}
+        		 	}  		
+    return 0;
+}    
+

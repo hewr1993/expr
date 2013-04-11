@@ -1,0 +1,135 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<cassert>
+#include<string>
+#include<algorithm>
+#include<fstream>
+#include<sstream>
+#include<set>
+#include<map>
+#include<vector>
+#include<queue>
+#include<deque>
+#include<complex>
+#include<numeric>
+
+using namespace std;
+
+int travel_plan(int N, int M, int R[][2], int L[], int K, int P[])
+{
+#define MAXN 100010
+#define MAXM 1000100
+    
+    struct Edge {
+        int v;
+        long long l;
+        Edge *next;
+    } ;
+    static Edge e[MAXM<<1], *ind_e[MAXN];
+    int e_tot = 0;
+    static long long d0[MAXN], d1[MAXN];
+    int q[MAXN<<1], f, r;
+    int mark[MAXN];
+    int from0[MAXN], from1[MAXN];
+    
+    memset (ind_e, 0, sizeof(ind_e));
+    memset (d0, -1, sizeof(d0));
+    memset (d1, -1, sizeof(d1));
+    memset (from0, -1, sizeof(from0));
+    memset (from1, -1, sizeof(from1));
+    f = r = 0;
+    memset (mark, 0, sizeof(mark));
+    for (int i = 0; i < M; i++)
+    {
+        int u = R[i][0], v = R[i][1], l = L[i];
+        Edge *p1 = &e[e_tot++], *p2 = &e[e_tot++];
+        p1->v = v;
+        p1->l = l;
+        p1->next = ind_e[u];
+        ind_e[u] = p1;
+        p2->v = u;
+        p2->l = l;
+        p2->next = ind_e[v];
+        ind_e[v] = p2;
+    }
+    for (int i = 0; i < K; i++)
+    {
+        d0[P[i]] = d1[P[i]] = 0;
+        q[r++] = P[i];
+        mark[P[i]] = 1;
+    }
+    while (f != r)
+    {
+        int now = q[f++];
+        mark[now] = 0;
+        if (f == (MAXN<<1))
+            f = 0;
+        for (Edge *p = ind_e[now]; p; p = p->next)
+        {
+            int v = p->v, flag;
+			long long d = d1[now]+(long long)p->l;
+            if (from0[v] == now)
+            {
+				d0[v] = d;
+				flag = 0;
+			}
+			else if (from1[v] == now)
+			{
+				d1[v] = d;
+				if (d1[v] < d0[v])
+				{
+					swap (d1[v], d0[v]);
+					swap (from1[v], from0[v]);
+				}
+				flag = 1;
+			}
+			else if (d0[v] == -1)
+			{
+				from0[v] = now;
+				d0[v] = d;
+				flag = 0;
+			}
+			else if (d1[v] == -1)
+			{
+				from1[v] = now;
+				d1[v] = d;
+				if (d1[v] < d0[v])
+				{
+					swap (d1[v], d0[v]);
+					swap (from1[v], from0[v]);
+				}
+				flag = 1;
+			}
+			else if (d < d0[v])
+			{
+				from1[v] = from0[v];
+				d1[v] = d0[v];
+				from0[v] = now;
+				d0[v] = d;
+				flag = 1;
+			}
+			else if (d < d1[v])
+			{
+				from1[v] = now;
+				d1[v] = d;
+				flag = 1;
+			}
+			else
+				flag = 0;
+            if (flag)
+            {
+                if (!mark[p->v])
+                {
+                    q[r++] = p->v;
+                    if (r == (MAXN<<1))
+                        r = 0;
+                    mark[p->v] = 1;
+                }
+            }
+        }
+    }
+    return d1[0];
+}
+

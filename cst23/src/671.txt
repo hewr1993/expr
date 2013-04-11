@@ -1,0 +1,17 @@
+#include<cstdio>
+int a[10010];
+int n,m;
+int main(){
+	scanf("%d%d",&n,&m);
+	for (int i=0;i<=n;i++)a[i]=1;
+	for (int i=1;i<=m;i++){
+		int x,y;
+		scanf("%d%d",&x,&y);
+		for (int j=x;j<=y;j++)a[j]=0;
+	}
+	int ans=0;
+	for (int i=0;i<=n;i++)ans+=a[i];
+	printf("%d
+",ans);
+	return 0;
+}

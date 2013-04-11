@@ -1,0 +1,15 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+#include <fstream>
+
+using namespace std;
+
+void printStr(char *st)
+{
+	ofstream out("output.txt");
+	out<<st;
+	out.close();
+	return;
+}
+

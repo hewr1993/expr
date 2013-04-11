@@ -1,0 +1,219 @@
+#include<cstdio>
+#include<string>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+#define N 1000010
+#define L 1000
+#define CS 10
+#define CB '0'
+struct P
+{
+	P*p,*c[CS];int v,s,u;
+	P(){p=0,v=s=0,memset(c,0,sizeof c);}
+}a[N*2],*st[N*2];int sn;
+P* newP(){return st[--sn];}
+void ext(P*&h,P*&t,int c)
+{
+	P*p=t,*np=newP();np->v=p->v+1;
+	while(p&&!p->c[c])p->c[c]=np,p=p->p;
+	if(!p)np->p=h;else
+	{
+		P*q=p->c[c];
+		if(p->v+1==q->v)np->p=q;else
+		{
+			P*nq=newP();nq->v=p->v+1;
+			memcpy(nq->c,q->c,sizeof q->c);
+			nq->p=q->p,q->p=nq,np->p=nq;
+			while(p&&p->c[c]==q)p->c[c]=nq,p=p->p;
+		}
+	}
+	t=np;
+}
+P* q[N*2];int ql,qr;
+void cal(P* h,string &s)
+{
+	int n=(int)s.length();
+	P* x=h;ql=0,qr=1,q[0]=x,x->v=-1;
+	for(int i=0;i<n;i++)
+		x=x->c[s[i]-CB],q[qr++]=x,x->v=-1,x->s=1;
+	while(ql<qr)
+	{
+		x=q[ql++];
+		if(x->p)
+		{
+			x->p->u++;
+			if(x->p->v!=-1)q[qr++]=x->p,x->p->v=-1;
+		}
+	}
+	x=h,ql=qr=0;
+	for(int i=0;i<n;i++)
+	{
+		x=x->c[s[i]-CB];
+		if(!x->u)q[qr++]=x;
+	}
+	while(ql<qr)
+	{
+		x=q[ql++];
+		if(x->p)
+		{
+			x->p->s+=x->s,x->p->u--;
+			if(!x->p->u)q[qr++]=x->p;
+		}
+	}
+}
+void del(P* x)
+{
+	if(!x->s)return;
+	for(int i=0;i<CS;x->c[i]=0,i++)if(x->c[i])del(x->c[i]);
+	x->p=0,x->v=x->s=0,st[sn++]=x;
+}
+struct T
+{
+	string s;T*le,*ri;P*h,*t;bool v;
+	T(){s="",le=ri=0,h=t=0,v=0;}
+	void clrv(){if(v)v=0,del(h),h=t=0;}
+	void blt()
+	{
+		h=t=newP();
+		for(int i=0;i<(int)s.length();i++)ext(h,t,s[i]-CB);
+		cal(h,s),v=1;
+	}
+	int ask(int n,char*y)
+	{
+		if(!v)blt();
+		P* c=h;
+		for(int i=0;i<n;i++)
+			if(!c->c[y[i]-CB])return 0;
+			else c=c->c[y[i]-CB];
+		return c->s;
+	}
+}*h;
+typedef pair<T*,int> PTI;
+#define mp make_pair
+#define fi first
+#define se second
+#define PM 1000000007
+char s[N];int p[N];
+int nextInt(){int n;scanf("%d",&n);return n;}
+char* nextString(){scanf("%s",s);return s;}
+PTI mov(int x)
+{
+	T* c;int r=0;
+	for(c=h;;c=c->ri)
+		if(x>(int)c->s.length())x-=(int)c->s.length();
+		else{r=x-(c!=h);break;}
+	return mp(c,r);
+}
+void nex(PTI&x)
+{
+	if(x.se==(int)x.fi->s.length()-1||x.fi==h)x.fi=x.fi->ri,x.se=0;
+	else x.se++;
+}
+void doInsert(int x,char* y)
+{
+	PTI w=mov(x);T*c=w.fi;int r=w.se;
+	if(c==h||r!=(int)c->s.length()-1)
+	{
+		T* d=new T();
+		if(c!=h)d->s=c->s.substr(r+1),c->s.erase(r+1,L);
+		d->ri=c->ri;if(c->ri)c->ri->le=d;
+		d->le=c,c->ri=d;if(c==h)c=d;c->clrv();
+	}
+	int n=strlen(y);
+	for(int i=0;i<n;i++)
+		if((int)c->s.length()<L)c->s+=y[i],c->clrv();else
+		{
+			T* d=new T();d->s=y[i];
+			d->ri=c->ri;if(c->ri)c->ri->le=d;
+			d->le=c,c->ri=d,c=d;
+		}
+	while(c!=h&&c->ri&&(int)c->ri->s.length()+(int)c->s.length()<=L)
+	{
+		c->ri->clrv(),
+		c->s+=c->ri->s,
+		c->ri=c->ri->ri;
+		if(c->ri)c->ri->le=c;
+	}
+}
+void doDelete(int x,int y)
+{
+	PTI w=mov(x);T*c=w.fi;int r=w.se;x=y-x;
+	if(c!=h)
+		if(x<(int)c->s.length()-r)c->s.erase(r+1,x),x=0,c->clrv();
+		else x-=(int)c->s.length()-r-1,c->s.erase(r+1,L),c->clrv();
+	while(x&&x>=(int)c->ri->s.length())
+	{
+		c->ri->clrv(),
+		x-=(int)c->ri->s.length(),
+		c->ri=c->ri->ri;
+		if(c->ri)c->ri->le=c;
+	}
+	if(x)c->ri->clrv(),c->ri->s.erase(0,x);
+	while(c!=h&&c->ri&&(int)c->ri->s.length()+(int)c->s.length()<=L)
+	{
+		c->ri->clrv(),
+		c->s+=c->ri->s,
+		c->ri=c->ri->ri;
+		if(c->ri)c->ri->le=c;
+	}
+}
+#define run \
+	S+=T==U,nex(wx),nex(wy),x--,\
+	((U*=PM)-=wx.fi->s[wx.se]*p[n])+=wy.fi->s[wy.se]
+int doAsk(int x,int y,char*z)
+{
+	int n=strlen(z);
+	if(y-x<n)return 0;
+	PTI wx=mov(x);x=y-x-n+1;
+	int S=0,T=0,U=0;
+	for(int i=0;i<n;i++)(T*=PM)+=z[i];
+	PTI wy=wx;
+	for(int i=0;i<n;i++)
+		nex(wy),(U*=PM)+=wy.fi->s[wy.se];
+	while(x&&wx.se!=(int)wx.fi->s.length()-1)run;
+	while(x>=(int)wy.fi->s.length()-wy.se)
+	{
+		if(wx.fi->ri==wy.fi)
+			if((int)wy.fi->s.length()<n*2)for(PTI y0=wy;wy.fi==y0.fi;run);else
+			{
+				S+=wy.fi->ask(n,z),
+				x-=(int)wy.fi->s.length()-wy.se,
+				wx=wy,wx.se=(int)wy.fi->s.length()-n,wy=wx,U=0;
+				for(int i=0;i<n;i++)nex(wy),(U*=PM)+=wy.fi->s[wy.se];
+			}
+		else run;
+		while(x&&wx.se!=(int)wx.fi->s.length()-1)run;
+	}
+	while(x)run;
+	return S;
+}
+int main()
+{
+	for(int i=0;i<N*2-2;i++)st[sn++]=a+i;
+	p[0]=1;for(int i=0;i<N-5;i++)p[i+1]=p[i]*PM;
+	h=new T(),h->ri=new T(),h->ri->s=" ",h->ri->le=h;bool FFF=0;
+	for(int n=nextInt();n--;)
+	{
+		int w=nextInt();
+		if(w==0)
+		{
+			int x=nextInt();char*y=nextString();
+			doInsert(x,y);
+		}else
+		if(w==1)
+		{
+			int x=nextInt(),y=nextInt();
+			doDelete(x,y);
+		}else
+		if(w==2)
+		{
+			int x=nextInt(),y=nextInt();char*z=nextString();
+			int S=doAsk(x,y,z);
+			printf("%d
+",S);
+		}
+	}
+	return 0;
+}
+

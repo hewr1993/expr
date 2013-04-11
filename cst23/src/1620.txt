@@ -1,0 +1,25 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<iostream>
+#define rep(i,u,v) for (int i=u;i<=v;i++)
+#define dto(i,u,v) for (int i=u;i>=v;i--)
+#define N 10010
+using namespace std;
+struct node
+{  int a,b,g,k;
+}c[N];
+int n,ans=-1;
+int main()
+{    int x,y;
+	 scanf("%d",&n);
+	 rep(i,1,n)scanf("%d%d%d%d",&c[i].a,&c[i].b,&c[i].g,&c[i].k);
+	 scanf("%d%d",&x,&y);
+	 dto(i,n,1)
+	 {    if (c[i].a<=x&&c[i].b<=y&&c[i].a+c[i].g>=x&&c[i].b+c[i].k>=y)
+	       {    ans=i;break;
+	       }  
+	 }
+	 printf("%d
+",ans);
+}

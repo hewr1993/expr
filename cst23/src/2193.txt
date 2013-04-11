@@ -1,0 +1,43 @@
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int inf=2147483647;
+struct prob{
+    int from,lv,cost;
+}   c[210000];
+int n,k,a1,a,x,y,m,cnt=0,ans=0;
+bool cmp(prob a,prob b){
+    if(a.lv!=b.lv)return a.lv<b.lv;
+    return a.cost<b.cost;
+}
+int main(){
+    //freopen("AC.in","r",stdin);
+    //freopen("AC.out","w",stdout);
+    scanf("%d",&n);
+    for(int i=1;i<=n;i++){
+        scanf("%d%d%d%d%d",&k,&a1,&x,&y,&m);
+        int last=-inf,lv=0;
+        for(int j=1;j<=k;j++){
+            if(j==1)a=a1;
+            else a=(1LL*a*x+y)%m;
+            if(a<last)lv++;
+            if(cnt<=200000){
+                c[++cnt].cost=a;
+                c[cnt].from=i;
+                c[cnt].lv=lv;
+            }
+            last=a;
+        }
+        ans=max(ans,lv);
+    }
+    cout<<ans<<endl;
+    if(cnt<=200000){
+        sort(c+1,c+cnt+1,cmp);
+        for(int i=1;i<=cnt;i++)
+            printf("%d %d
+",c[i].cost,c[i].from);
+    }
+    return 0;
+}

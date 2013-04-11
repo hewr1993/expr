@@ -1,0 +1,131 @@
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+using namespace std;
+
+const int n = 9;
+int matrix[n][n];
+int x[n] = {}, y[n] = {};
+int nine[3][3] = {};
+int empty = 0;
+
+void readData()
+{
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)
+		{
+			cin >> matrix[i][j];
+			if (!matrix[i][j])
+			{
+				empty++;
+				continue;
+			}
+			x[i] += 1 << (matrix[i][j] - 1);
+			y[j] += 1 << (matrix[i][j] - 1);
+			nine[i / 3][j / 3] += 1 << (matrix[i][j] - 1);
+		}
+}
+
+int min(int a, int b, int c, int d)
+{
+	int ret = a;
+	if (ret > b)
+		ret = b;
+	if (ret > c)
+		ret = c;
+	if (ret > d)
+		ret = d;
+	return ret;
+}
+
+int score()
+{
+	int ret = 0;
+	
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)
+			ret += (min(i, j, n - i - 1, n - j - 1) + 6) * matrix[i][j];
+	
+	return ret;
+}
+
+int ans = -1;
+
+void dfs(int p)
+{
+	/*for (int i = 0; i < n; ++i)
+		cout << x[i] << " ";
+	cout << endl;
+	for (int i = 0; i < n; ++i)
+		cout << y[i] << " ";
+	cout << endl;
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+			cout << nine[i][j] << " ";
+		cout << endl;
+	}*/
+	
+	if (p == empty)
+	{
+		ans = max(ans, score());
+		/*for (int i = 0; i < n; ++i)
+		{
+			for (int j = 0; j < n; ++j)
+				cout << matrix[i][j] << " ";
+			cout << endl;
+		}*/
+		return;
+	}
+	
+	int mini = 0, minj = 0;
+	int min = 10;
+	int canuse = 0;
+	
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)
+			if (!matrix[i][j])
+			{
+				int _canuse = x[i] | y[j] | nine[i / 3][j / 3];
+				int t = 0;
+				for (int k = 0; k < n; ++k)
+					if (!(_canuse & (1 << k)))
+						t++;
+				if (t < min)
+				{
+					min = t;
+					mini = i;
+					minj = j;
+					canuse = _canuse;
+				}
+			}
+	
+	/*cout << mini << " " << minj << " " << canuse << " " << min << " " << matrix[mini][minj] << endl;
+	system("pause");*/
+		
+	for (int i = 0; i < n; ++i)
+		if (!(canuse & (1 << i)))
+		{
+			matrix[mini][minj] = i + 1;
+			x[mini] += 1 << i;
+			y[minj] += 1 << i;
+			nine[mini / 3][minj / 3] += 1 << i;
+			dfs(p + 1);
+			x[mini] -= 1 << i;
+			y[minj] -= 1 << i;
+			nine[mini / 3][minj / 3] -= 1 << i;
+		}
+		
+	matrix[mini][minj] = 0;
+}
+
+int main()
+{
+	readData();
+	dfs(0);
+	cout << ans << endl;
+	return 0;
+}
+

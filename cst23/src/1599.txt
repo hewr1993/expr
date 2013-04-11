@@ -1,0 +1,67 @@
+program tjdcgs(input,output);
+const
+	maxp=210;
+	maxk=40;
+var
+	f:array[0 .. maxk,0 .. maxp]of longint;
+	num:array[0 .. maxp,0 .. maxp]of longint;
+	str,tmp:string;
+	word:array[0 .. 6]of string;
+	n,m,s,i:longint;
+function max(a,b:longint):longint;
+begin
+	if a>b then exit(a);
+	exit(b);
+end;
+procedure prework;
+var
+	i,j,k,l,r:longint;
+	ok:boolean;
+begin
+	for i:=n downto 1 do begin
+	for j:=i+1 to n do num[i,j]:=num[i+1,j];
+	for j:=i to n do begin
+	num[i,j]:=max(num[i,j],num[i,j-1]);
+	for k:=1 to s do
+	if length(word[k])<=j-i+1 then begin
+	ok:=true;
+	for l:=1 to length(word[k]) do
+	if str[i+l-1]<>word[k][l] then ok:=false;
+	if ok then num[i,j]:=max(num[i,j],num[i+1,j]+1);
+	end;
+	end;
+	end;
+	{for i:=1 to n do
+	for j:=i to n do
+	for r:=i to j do
+	for k:=1 to s do
+	if length(word[k])<=j-r+1 then begin
+	ok:=true;
+	for l:=1 to length(word[k]) do
+	if str[r+l-1]<>word[k][l] then ok:=false;
+	if ok then begin inc(num[i,j]); break;
+	end;
+	end;}
+end;
+procedure dp;
+var
+	i,j,k:longint;
+begin
+	for i:=1 to m do
+	for j:=i+1 to n do
+	for k:=i-1 to j-1 do
+	f[i,j]:=max(f[i,j],f[i-1,k]+num[k+1,j]);
+end;
+begin
+	readln(n,m);
+	for i:=1 to n do begin
+	readln(tmp);
+	str:=str+tmp;
+	end;
+	n:=n*20;
+	readln(s);
+	for i:=1 to s do readln(word[i]);
+	prework;
+	dp;
+	writeln(f[m,n]);
+end.

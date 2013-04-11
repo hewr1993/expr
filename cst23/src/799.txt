@@ -1,0 +1,64 @@
+#include <iostream>
+
+using namespace std ;
+
+void kuaipai(int a[], int zz, int yy) ;
+
+int main()
+{
+	int n = 0, i = 0, num = 0 ;
+	cin >> n ;
+
+	int a[250000] ;
+	for(i = 1; i <= n; i++)
+	{
+		cin >> a[i] ;
+	}
+	
+	kuaipai(a, 1, n) ;
+
+	num = 1 ;
+	for(i = 1; i <= n; i++)
+	{
+		if(a[i] == a[i+1])
+			num ++ ;
+		else
+		{
+			cout << a[i] << ' ' << num << endl ;
+			num = 1 ;
+		}
+	}
+	return 0 ;
+
+}
+
+void kuaipai(int a[], int zz, int yy)
+{
+	int z = 0, y = 0, k = 0 ;
+	if(zz < yy)
+	{
+		z = zz ;
+		y = yy ;
+		k = a[z] ;
+		do{
+			while((z < y) && (a[y] >= k)) y-- ;
+
+			if(z < y)
+			{
+				a[z] = a[y] ;
+				z ++ ;
+			}
+			while((z < y) && (a[z] <= k)) z++ ;
+
+			if(z < y)
+				a[y] = a[z] ;
+
+		}  while( z != y ) ;
+
+		a[z] = k ;
+
+		kuaipai(a, zz, z-1) ;
+		kuaipai(a, z+1, yy) ;
+	}
+}
+

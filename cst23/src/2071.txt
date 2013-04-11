@@ -1,0 +1,260 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+#define MAXN 300010
+#define MAXL 200010
+
+inline void InputInt (int &x)
+{
+	char c;
+	while (1)
+	{
+//		fscanf (fin, "%c", &c);
+		c = getchar ();
+		if ('0' <= c && c <= '9')
+		{
+			x = c-'0';
+			break;
+		}
+	}
+	while (1)
+	{
+//		fscanf (fin, "%c", &c);
+		c = getchar ();
+		if ('0' <= c && c <= '9')
+			x = x*10 + c-'0';
+		else
+			break;
+	}
+}
+
+inline void OutputLL (long long x)
+{
+	if (!x)
+	{
+//		fprintf (fout, "0");
+		putchar ('0');
+		return;
+	}
+	long long m = 1;
+	while (m <= x) m *= 10;
+	m /= 10;
+	while (m)
+	{
+//		fprintf (fout, "%c", x/m + '0');
+		putchar (x/m + '0');
+		x %= m;
+		m /= 10;
+	}
+}
+
+int N, Q;
+int a[MAXN];
+int sort_a[MAXN];
+struct Question {
+	int a, b, v;
+	int id;
+	long long ans;
+} q[MAXN];
+int father[MAXN], mark[MAXN];
+
+struct Node {
+	int lb, rb;
+	Node *l, *r;
+	long long cnt;
+	int deltk;
+	long long delth;
+} node[MAXL<<1], *root;
+int n_tot;
+
+Node *BuildTree (int lb, int rb)
+{
+	Node *p = &node[n_tot++];
+	p->lb = lb; p->rb = rb;
+	p->cnt = 0;
+	p->deltk = p->delth = 0;
+	if (lb == rb)
+	{
+		p->l = p->r = 0;
+		return p;
+	}
+	int mid = (lb+rb)>>1;
+	p->l = BuildTree (lb, mid);
+	p->r = BuildTree (mid+1, rb);
+	return p;
+}
+
+int deltk;
+long long delth;
+
+void Insert (int lb, int rb, Node *x = root)
+{
+	if (lb <= x->lb && x->rb <= rb)
+	{
+		x->deltk += deltk;
+		x->delth += delth;
+		return;
+	}
+	x->cnt += ((rb-lb+1)*(lb+rb)>>1)*deltk + (rb-lb+1)*delth;
+	int mid = (x->lb+x->rb)>>1;
+	if (lb <= mid) Insert (lb, min (rb, mid), x->l);
+	if (rb > mid) Insert (max (lb, mid+1), rb, x->r);
+}
+
+void Down (Node *x)
+{
+	if (!x) return;
+	x->cnt += ((x->rb - x->lb + 1) * (x->lb + x->rb) * x->deltk) >> 1;
+	x->cnt += (x->rb - x->lb + 1) * x->delth;
+	if (x->l)
+	{
+		x->l->deltk += x->deltk;
+		x->l->delth += x->delth;
+	}
+	if (x->r)
+	{
+		x->r->deltk += x->deltk;
+		x->r->delth += x->delth;
+	}
+	x->deltk = x->delth = 0;
+}
+
+long long sum;
+
+void Sum (int lb, int rb, Node *x = root)
+{
+	Down (x);
+	if (lb <= x->lb && x->rb <= rb)
+	{
+		sum += x->cnt;
+		return;
+	}
+	int mid = (x->lb+x->rb)>>1;
+	if (lb <= mid) Sum (lb, rb, x->l);
+	if (rb > mid) Sum (lb, rb, x->r);
+}
+
+int Find (int x)
+{
+	if (father[x] < 0)
+		return x;
+	return (father[x] = Find (father[x]));
+}
+void Union (int x, int y)
+{
+	x = Find (x);
+	y = Find (y);
+	if (father[x] > father[y])
+		swap (x, y);
+	father[x] += father[y];
+	father[y] = x;
+}
+
+bool Cmp1 (const Question &i, const Question &j)
+{
+	return i.v > j.v;
+}
+
+bool Cmp2 (const int &i, const int &j)
+{
+	return a[i] > a[j];
+}
+
+void Init ()
+{
+	InputInt (N);
+	InputInt (Q);
+//	fscanf (fin, "%d %d", &N, &Q);
+	for (int i = 1; i <= N; i++)
+	{
+		InputInt (a[i]);
+//		fscanf (fin, "%d", &a[i]);
+		sort_a[i] = i;
+	}
+	for (int i = 0; i < Q; i++)
+	{
+//		fscanf (fin, "%d %d %d", &q[i].v, &q[i].a, &q[i].b);
+		InputInt (q[i].v);
+		InputInt (q[i].a);
+		InputInt (q[i].b);
+		q[i].id = i;
+	}
+	
+	sort (q, q+Q, Cmp1);
+	sort (sort_a+1, sort_a+N+1, Cmp2);
+	
+	root = 0;
+	n_tot = 0;
+	
+	memset (mark, 0, sizeof(mark));
+	memset (father, -1, sizeof(father));
+}
+
+long long ans[MAXN];
+
+void Solve ()
+{
+	int ind = 1;
+	for (int i = 0; i < Q; i++)
+	{
+		while (ind <= N && q[i].v <= a[sort_a[ind]])
+		{
+			int x = sort_a[ind], len;
+			mark[x] = 1;
+			if (mark[x-1])
+			{
+				len = -father[Find (x-1)];
+				deltk = 1;
+				delth = -len-1;
+				Insert (1, min (len, MAXL));
+				Union (x-1, x);
+			}
+			if (mark[x+1])
+			{
+				len = -father[Find (x+1)];
+				deltk = 1;
+				delth = -len-1;
+				Insert (1, min (len, MAXL));
+				Union (x+1, x);
+			}
+			len = -father[Find (x)];
+			deltk = -1;
+			delth = len+1;
+			Insert (1, min (len, MAXL));
+			ind++;
+		}
+		sum = 0;
+		Sum (q[i].a, q[i].b);
+		q[i].ans = sum;
+	}
+	
+	for (int i = 0; i < Q; i++)
+		ans[q[i].id] = q[i].ans;
+	for (int i = 0; i < Q; i++)
+	{
+//		fprintf (fout, "%I64d
+", ans[i]);
+		OutputLL (ans[i]);
+//		fprintf (fout, "
+");
+		putchar ('
+');
+	}
+}
+
+int main ()
+{
+	Init ();
+//	cerr << clock () << endl;
+	root = BuildTree (1, min (N, MAXL));
+//	cerr << clock () << endl;
+	Solve ();
+//	cerr << clock () << endl;
+//	system ("pause");
+	return 0;
+}
+

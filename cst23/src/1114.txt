@@ -1,0 +1,38 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <iostream>
+using namespace std;
+int n,a,b,x;
+double r;
+
+double f[101][10000];
+int main()
+{
+    int i,j;
+    cin>>n>>a>>b>>x;
+    r=1.0/(b-a+1);
+    for(j=0;j<n*b;j++)
+    {
+        if(j<a || j>b) f[1][j]=0;
+        else f[1][j]=r;
+    }
+    for(i=2;i<=n;i++)
+    {
+        
+        for(j=0;j<n*b;j++)
+        {
+            double t=0.0;
+            for(int k=a;k<=b;k++)
+                if(j-k>=0)
+                    t=t+f[i-1][j-k];
+            f[i][j]=t*r;
+        }
+    }
+    printf("%.4f
+",f[n][x]);
+
+    return 0;
+}
+

@@ -1,0 +1,34 @@
+#include <stdio.h>
+
+int main()  //求加解密的程序
+{
+    char    str[103], str1[103];    /*str用来储存输入字符串,str1来储存加解密后的字符串 */
+    int     i, code, num;           /* i是循环变量,code是输入的控制变量,num是输入字符串长度 */
+    for (i = 0; i < 102; i++)
+        str[i] = '1';
+    scanf("%d/n", &code);
+    scanf("%s", str);
+    for (i = 0; str[i] != '1'; i++);    //计算字符串长度
+    num = i - 1;
+    for (i = 0; i < num; i++)
+    {
+        str1[i] = str[i] + code;
+        if (str1[i] > 90)           //实现字母的循环
+                    str1[i] = str1[i] - 26;
+    }
+    
+    for (i = 0; i < num; i++)
+        printf("%c", str1[i]);
+    printf("
+");
+    for (i = 0; i < num; i++)
+    {
+        str1[i] = str[i] - code;    //实现字母的循环
+        if (str1[i] < 65)
+            str1[i] = str1[i] + 26;
+    }
+    for (i = 0; i < num; i++)
+        printf("%c", str1[i]);
+    return 0;
+}
+

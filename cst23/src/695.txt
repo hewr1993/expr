@@ -1,0 +1,139 @@
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+
+const int kLenMax = 10000;
+const int kInf = 0x3f3f3f3f;
+
+char msg[kLenMax];
+
+const char prefix[][10] = {
+	"every", "no", "any", "alg", 
+	"en", "pos", "spe", "vis",
+	"ins", "inc", "opt", "com",
+	"not", "exp", "def", "prob", "don", 
+	"val", "var", "dir", "pl", "bl", "ex",
+	"det", "rec", "does", "ge", "se", "ap", "bu", "$"
+};
+
+const char suffix[][10] = {
+	"ple", "ble", "cal", "th", "s", 
+	"ball", "ly", "tion", "ter", 
+	"fy", "ever", "ed", "ing", "tor", 
+	"ter", "ready", "mal", "tory", "er",
+	"ry", "ke", "pe", "le", "te", "me", "ture", 
+	"mium", "es", "es", "rent", "ied", "ing", "$"
+};
+
+const char keyword[][15] = {
+	"the", "a", "an", "i", "i", "i", "i", "me", "me", "this", "that",
+	"everything", "anything", "anyone", "everyone", 
+	"none", "nobody", "help", "is", "are", "was", "were",
+	"will", "shall", "should", "must", "be", "may", "might", 
+	"can", "could", "do", "does", "did", "done", "he", "she",
+	"they", "we", "him", "them", "her", "us", "need",
+	"dare", "to", "from", "at", "on", "in", "below", "upon",
+	"above", "left", "right", "up", "down", "good", "better",
+	"best", "bad", "worse", "worst", 
+	"one", "two", "three", "four", "five", "six", "seven", "eight",
+	"nine", "ten", "1st", "2nd", "3rd", "first", "second", "third",
+	"since", "but", "while", "if", "case", "ago", "before",
+	"day", "week", "month", "year", "same", "different", "go",
+	"ever", "never", "ahead", "back", "help", "all", "all", "all", 
+	"get", "get", "give", "for", "by", "second", "minute", 
+	"when", "how", "where", "what", "who", "around", "you",
+	"your", "with", "as", "as", "as", "soon", "and", "or",
+	"or", "it", "it", "$"
+};
+
+char word[100];
+int eval(int n) {
+	int ret = 0;
+	for ( int i = 0; keyword[i][0] != '$'; i ++ )
+		if ( strcmp(keyword[i], word) == 0 ) 
+			return strlen(keyword[i]) * 2;
+	
+	bool noVol = true;
+	for ( int i = 0; i < n; i ++ )
+		noVol &= word[i] != 'a' && word[i] != 'e'
+			&& word[i] != 'i' && word[i] != 'o'
+			&& word[i] != 'u' && word[i] != 'y';
+	if ( noVol )
+		ret -= 1;
+
+	for ( int i = 0; prefix[i][0] != '$'; i ++ )
+		if ( strncmp(prefix[i], word, strlen(prefix[i])) == 0 ) 
+			ret += strlen(prefix[i]);
+	for ( int i = 0; suffix[i][0] != '$'; i ++ ) {
+		bool suc = true;
+		for ( int j = 0, l = strlen(suffix[i]); j < l; j ++ )
+		   suc &= suffix[i][j] == word[n-l+j];
+		if ( suc ) ret += strlen(suffix[i]);
+	}
+	return ret;
+}
+
+int calcSimilarity(char *text, int n) {
+	int ret = 0;
+	if ( strstr(text, "I'm") != NULL ) 
+		ret += 20;
+	for ( int i = 0; i < n; i ++ )
+		if ( isalpha(text[i]) ) {
+			int st = i;
+			while ( i + 1 < n && (isalpha(text[i+1]) || isdigit(text[i+1])) )
+				i++;
+			int en = i;
+			int t = 0;
+			memset(word, 0, sizeof(word));
+			for ( int k = st; k <= en; k ++ )
+				word[t++] = tolower(text[k]);
+			ret += eval(t);
+		}
+	return ret;
+}
+
+int main() {
+	//freopen("msg.in", "r", stdin);
+	//freopen("msg.out", "w", stdout);
+
+	for ( int tst = 0; tst < 10; tst ++ ) {
+		memset(msg, 0, sizeof(msg));
+		gets(msg);
+		int best = -kInf, bestDelta;
+		for ( int delta = 0; delta < 26; delta ++ ) {
+			int tmp = 0;
+			static char ts[kLenMax];
+			int len = strlen(msg);
+			memset(ts, 0, sizeof(ts));
+			for ( int i = 0; i < len; i ++ ) {
+				if ( 'a' <= msg[i] && msg[i] <= 'z' )
+					ts[i] = (msg[i]-'a'+delta)%26+'a';
+				else if ( 'A' <= msg[i] && msg[i] <= 'Z' )
+					ts[i] = (msg[i]-'A'+delta)%26+'A';
+				else 
+					ts[i] = msg[i];
+			}
+			tmp += calcSimilarity(ts, len);
+			if ( tmp > best ) {
+				best = tmp;
+				bestDelta = delta;
+			}
+		}
+
+		int delta = bestDelta;
+		static char ts[kLenMax];
+		memset(ts, 0, sizeof(ts));
+		int len = strlen(msg);
+		for ( int i = 0; i < len; i ++ ) {
+			if ( 'a' <= msg[i] && msg[i] <= 'z' )
+				ts[i] = (msg[i]-'a'+delta)%26+'a';
+			else if ( 'A' <= msg[i] && msg[i] <= 'Z' )
+				ts[i] = (msg[i]-'A'+delta)%26+'A';
+			else 
+				ts[i] = msg[i];
+		}
+		printf("%s
+", ts);
+	}
+}
+

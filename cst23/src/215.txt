@@ -1,0 +1,32 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+
+int main() 
+{ 
+    int a, b, n, next, current=0, previous=1, p, q; 
+    scanf("%d,%d", &a, &b); 
+         
+    for (n=0; n < a; ++n) 
+    {    
+        next = current + previous; 
+        previous = current; 
+        current = next; 
+        p = next; 
+    } 
+
+    current = 0; 
+    previous = 1;  
+
+    for (n=0; n < b; ++n) 
+    {    
+        next = current + previous; 
+        previous = current; 
+        current = next; 
+        q = next; 
+    } 
+
+    printf("%d,%d
+", p,q); 
+    return 0; 
+}
+

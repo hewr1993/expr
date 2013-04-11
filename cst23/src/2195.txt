@@ -1,0 +1,119 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int maxn = 100010;
+int n, l, r, a, b, c, cnt, depth, s[maxn], w[maxn];
+int head[maxn], next[maxn * 2], px[maxn * 2], pw[maxn * 2];
+bool forbid[maxn * 2], Ts[maxn];
+pair<int, int> d[maxn], empty;
+struct node{pair<int, int> v; bool s;} T[maxn * 4];
+
+inline int pa(int x){return (x & 1) ? x + 1 : x - 1;}
+
+void size(int x, int fa){
+	s[x] = 1;
+	for (int ptr = head[x]; ptr; ptr = next[ptr])
+		if (!forbid[ptr] && px[ptr] != fa) size(px[ptr], x), s[x] += s[px[ptr]];
+}
+
+int find(int x, int fa, int all){
+	int sum = 1;
+	for (int ptr = head[x]; ptr; ptr = next[ptr])
+		if (!forbid[ptr] && px[ptr] != fa){
+			int y = find(px[ptr], x, all);
+			if (y > 0) return y;
+			if (s[px[ptr]] + s[px[ptr]] > all) return -1;
+			sum += s[px[ptr]];
+		}
+	if (2 * (all - sum) > all) return -1; else return x;
+}
+
+void update(int x, int l, int r, int p, pair<int, int> v){
+	if (l == r) T[x].v = max(T[x].v, v), T[x].s = false;
+	else{
+		int m = (l + r) >> 1, t = x << 1;
+		if (T[x].s){
+			T[t].s = T[t + 1].s = true;
+			T[t].v = T[t + 1].v = empty;
+			T[x].s = false;
+		}
+		if (p <= m) update(t, l, m, p, v);
+		else update(t + 1, m + 1, r, p, v);
+		T[x].v = max(T[t].v, T[t + 1].v);
+	}
+}
+
+pair<int, int> query(int x, int rl, int rr, int l, int r){
+	if (l > r || T[x].s) return empty;
+	if (rl == l && rr == r) return T[x].v;
+	int m = (rl + rr) >> 1, t = x << 1;
+	if (r <= m) return query(t, rl, m, l, r);
+	else if (l > m) return query(t + 1, m + 1, rr, l, r);
+	else return max(query(t, rl, m, l, m), query(t + 1, m + 1, rr, m + 1, r));
+}
+
+void dfs(int x, int fa, int v, int s, int dep){
+	if (dep > r) return;
+	d[dep] = max(d[dep], make_pair(s, x));
+	depth = max(depth, dep);
+	for (int ptr = head[x]; ptr; ptr = next[ptr])
+		if (!forbid[ptr] && px[ptr] != fa) dfs(px[ptr], x, v, s + (pw[ptr] >= v ? 1 : -1), dep + 1);
+}
+
+bool calc(int x, int v){
+	size(x, 0);
+	int center = find(x, 0, s[x]);
+	if (s[x] <= l) return false;
+	T[1].s = true; T[1].v = empty;
+	update(1, 0, n, 0, make_pair(0, center));
+	d[0].first = 0; d[0].second = center;
+	for (int ptr = head[center]; ptr; ptr = next[ptr])
+		if (!forbid[ptr]){
+			depth = 0;
+			dfs(px[ptr], center, v, pw[ptr] >= v ? 1 : -1, 1);
+			for (int i = 0; i <= depth; i++){
+				pair<int, int> t = query(1, 0, n, max(0, l - i), r - i);
+				if (d[i].first + t.first >= 0){
+					a = d[i].second; b = t.second;
+					return true;
+				}
+			}
+			for (int i = 1; i <= depth; i++) update(1, 0, n, i, d[i]), d[i] = empty;
+		}
+	for (int ptr = head[center]; ptr; ptr = next[ptr])
+		if (!forbid[ptr]){
+			forbid[ptr] = forbid[pa(ptr)] = true;
+			if (calc(px[ptr], v)) return true;
+		}
+
+	return false;
+}
+
+inline bool ok(int v){
+	memset(forbid, false, sizeof(forbid));
+	memset(d, 200, sizeof(d));
+	return calc(1, v);
+}
+
+int main(){
+	scanf("%d%d%d", &n, &l, &r);
+	for (int i = 1; i < n; i++){
+		scanf("%d%d%d", &a, &b, &c); w[i] = c;
+		px[++cnt] = b; pw[cnt] = c; next[cnt] = head[a]; head[a] = cnt;
+		px[++cnt] = a; pw[cnt] = c; next[cnt] = head[b]; head[b] = cnt;
+	}
+	sort(w + 1, w + n);
+	empty.first = empty.second = -1e9;
+	int vl = 1, vr = n - 1;
+	while (vl < vr){
+		int vm = (vl + vr + 1) >> 1;
+		if (ok(w[vm])) vl = vm; else vr = vm - 1;
+	}
+	ok(w[vl]);
+	printf("%d %d
+", a, b);
+}
+

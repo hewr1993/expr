@@ -1,0 +1,39 @@
+#include<cstdio>
+#define min(x,y) ((x<y)?(x):(y))
+const int M=20101009;
+long long miu[10000001];
+int mindiv[10000001],pr[1000000];
+int n,m,l,np;
+long long ans;
+int main(){
+	scanf("%d%d",&n,&m);
+	l=min(n,m);
+	for(int i=2;i<=l;i++){
+		if(mindiv[i]==0)mindiv[i]=i,pr[++np]=i;
+		for(int j=1;j<=np&&pr[j]*i<=l;j++){
+			mindiv[pr[j]*i]=pr[j];
+			if(mindiv[i]==pr[j])break;
+		}
+	}
+	miu[1]=1;
+	for(int i=2;i<=l;i++){
+		int t=i/mindiv[i];
+		if(mindiv[t]==mindiv[i])miu[i]=0;else miu[i]=miu[t]*(-1);
+	}
+	for(int i=2;i<=l;i++)
+		miu[i]=(miu[i-1]+miu[i]*i*i)%M;
+	for(long long i=1;i<=l;){
+		long long a=n/i,b=m/i,y=0,r=min(n/a,m/b);
+			for(int j=1;j<=min(a,b);){
+				long long a1=a/j,b1=b/j,x=(a1*(a1+1)/2)%M*(b1*(b1+1)/2)%M;
+				int rr=min(a/a1,b/b1);
+				y=(y+x*(miu[rr]-miu[j-1]))%M,j=rr+1;
+			}
+		(y<0)?(y+=M):(1);
+		ans=(ans+(i+r)*(r-i+1)/2*y)%M;
+		i=r+1;
+	}
+	printf("%d
+",ans);
+}
+

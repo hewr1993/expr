@@ -1,0 +1,26 @@
+#include<iostream>
+using namespace std;
+int main()
+{   
+    int a,b,result; 
+    char symbol; 
+    cin>>a>>b>>symbol; 
+    switch(symbol)
+    {
+                  case '+': result=a+b;cout<<result<<endl; break; 
+                  case '-': result=a-b;cout<<result<<endl; break;
+                  case '*': result=a*b;cout<<result<<endl; break;
+                  case '/': result=a/b;cout<<result<<endl; break;
+                  case '%': result=a%b;cout<<result<<endl; break;
+    }  
+    
+   
+    
+    
+     
+    return 0; 
+ 
+ 
+
+ 
+ }

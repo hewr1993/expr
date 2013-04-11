@@ -1,0 +1,52 @@
+#include <iostream>
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+using namespace std;
+const int MAXN = 100;
+const int MAXV = MAXN * 255;
+const int MAXQ = MAXN * MAXV;
+int a[MAXQ + 1];
+char b[MAXQ + 1], c[MAXV + 2];
+int x[MAXN + 1];
+int main()
+{
+    int n, m, i;
+    int t, w;
+    int tmp, ta, tb;
+    memset(c, 0x7f, sizeof(c));
+    cin >> n >> m;
+    for(i = 1; i <= m; i++)
+        cin >> x[i];
+    sort(x + 1, x + m + 1);
+    for(i = 1; i <= m; i++)
+    {
+        a[i] = x[i];
+        b[i] = c[x[i]] = 1;
+    }
+    t = 1;
+    w = (x[1] == 1) ? m : 0;
+    while(t <= w)
+    {
+        ta = a[t];
+        tb = b[t];
+        t++;
+        if(tb < n && tb <= c[ta])
+		{
+			tb++;
+            for(i = 1; i <= n; i++)
+            {
+                tmp = ta + x[i];
+                if(tb < c[tmp])
+                {
+                    w++;
+                    a[w] = tmp;
+                    c[tmp] = b[w] = tb;
+                }
+            }
+		}
+    }
+    for(i = 1; c[i] <= n; i++);
+    cout << i - 1 << endl;
+    return EXIT_SUCCESS;
+}

@@ -1,0 +1,20 @@
+#include <iostream>
+#include <cstdio>
+
+using namespace std;
+
+int main()
+{
+ printf("8
+00000000
+00000000
+00000000
+11111000
+00111000
+");
+ printf("3
+00000000
+10100000
+10100000");
+ return 0;
+}

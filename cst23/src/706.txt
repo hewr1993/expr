@@ -1,0 +1,77 @@
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+
+const int N = 40000+1;
+int A[N], K[N];
+
+struct Tree *pit;
+struct Tree
+{
+    int L, R, v1, v2, d1, d2;
+    Tree *left, *right;
+    Tree() {}
+    Tree(int L, int R) : L(L), R(R), d1(0), d2(0) {
+        if (L == R-1)
+            v1 = v2 = A[L];
+        else {
+            left = new Tree(L, L+R >> 1);
+            right = new Tree(L+R >> 1, R);
+            update();
+        }
+    }
+    void *operator new(size_t) { return pit++; }
+    void update() { v1 = max(left->v1, right->v1) + d1; v2 = min(left->v2, right->v2) + d2; }
+    int query1(int RR) {
+        if (R <= RR) return v1;
+        int ret = left->query1(RR);
+        if (L+R >> 1 < RR) ret = max(ret, right->query1(RR));
+        return ret + d1;
+    }
+    int query2(int LL) {
+        if (LL <= L) return v2;
+        int ret = right->query2(LL);
+        if (LL < L+R >> 1) ret = min(ret, left->query2(LL));
+        return ret + d2;
+    }
+    void insert1(int LL, int v) {
+        if (LL <= L) v1 -= v, d1 -= v;
+        else {
+            right->insert1(LL, v);
+            if (LL < L+R >> 1) left->insert1(LL, v);
+            update();
+        }
+    }
+    void insert2(int LL, int v) {
+        if (LL <= L) v2 -= v, d2 -= v;
+        else {
+            right->insert2(LL, v);
+            if (LL < L+R >> 1) left->insert2(LL, v);
+            update();
+        }
+    }
+} pool[N*2];
+
+int main()
+{
+    int n, x, y, z, P, m;
+    scanf("%d%d%d%d%d", &n, &x, &y, &z, &P);
+    for (int i = 1; i <= n; i++)
+        A[i] = A[i-1] + ((i-x)*(i-x)+(i-y)*(i-y)+(i-z)*(i-z))%P;
+    scanf("%d%d%d%d%d%d%d", &m, &K[1], &K[2], &x, &y, &z, &P);
+    for (int i = 3; i <= m; i++)
+        K[i] = (x*K[i-1]+y*K[i-2]+z) % P;
+
+    pit = pool;
+    new Tree(0, n+1);
+    for (int i = 1; i <= m; i++) {
+        int L, R;
+        scanf("%d%d", &L, &R);
+        int ans = min(K[i], pool->query2(R) - pool->query1(L));
+        printf("%d
+", ans);
+        pool->insert1(L, ans);
+        pool->insert2(R, ans);
+    }
+}
+

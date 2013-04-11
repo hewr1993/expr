@@ -1,0 +1,28 @@
+#include <stdio.h>
+int main()
+{
+ int a, b;
+ scanf("%d",&a);
+ scanf("%d",&b);
+ printf("The program gets two integers, and computes 
+");
+ printf("their sum, difference, product and quotient.
+");
+ printf("The first number:
+");
+ printf("The second number:
+");
+ printf("Results are as follows:
+");
+ printf("%d+%d=%d
+",a,b,a+b);
+ printf("%d-%d=%d
+",a,b,a-b);
+ printf("%d*%d=%d
+",a,b,a*b);
+ printf("%d/%d=%d
+",a,b,a/b);
+ return 0;
+}
+
+

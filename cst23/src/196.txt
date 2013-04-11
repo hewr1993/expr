@@ -1,0 +1,42 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+int main()
+{
+
+    char h[101];
+    cin>>h;
+    int la;
+    la=strlen(h); 
+    for(int i=0;i<la;i++)
+    {
+if(h[i]=='A'||h[i]=='a') cout <<"# ━" << " ";
+if(h[i]=='B'||h[i]=='b') cout <<"━ # # #" << " ";
+if(h[i]=='C'||h[i]=='c') cout <<"━ # ━ #" << " ";
+if(h[i]=='D'||h[i]=='d') cout <<"━ # #" << " ";
+if(h[i]=='E'||h[i]=='e') cout <<"#" << " ";
+if(h[i]=='F'||h[i]=='f') cout <<"# # ━ #" << " ";
+if(h[i]=='G'||h[i]=='g') cout <<"━ ━ #" << " ";
+if(h[i]=='H'||h[i]=='h') cout <<"# # # #" << " ";
+if(h[i]=='I'||h[i]=='i') cout << "# #" << " ";
+if(h[i]=='J'||h[i]=='j') cout <<"# ━ ━ ━" << " ";
+if(h[i]=='K'||h[i]=='k') cout <<"━ # ━" << " ";
+if(h[i]=='L'||h[i]=='l') cout <<"# ━ # #" << " ";
+if(h[i]=='M'||h[i]=='m') cout <<"━ ━" << " ";
+if(h[i]=='N'||h[i]=='n') cout << "━ #" << " ";
+if(h[i]=='O'||h[i]=='o') cout << "━ ━ ━" << " ";
+if(h[i]=='P'||h[i]=='p') cout << "# ━ ━ # " << " ";
+if(h[i]=='Q'||h[i]=='q') cout << "━ ━ # ━" << " ";
+if(h[i]=='S'||h[i]=='s') cout <<"# # #" << " ";
+if(h[i]=='T'||h[i]=='t') cout <<"━" << " ";
+if(h[i]=='R'||h[i]=='r') cout <<" # ━ #" << " ";
+if(h[i]=='U'||h[i]=='u') cout <<"# # ━" << " ";
+if(h[i]=='V'||h[i]=='v') cout <<"# # # ━" << " ";
+if(h[i]=='W'||h[i]=='w') cout <<"# ━ ━" << " ";
+if(h[i]=='X'||h[i]=='x') cout <<"━ # # ━" << " ";
+if(h[i]=='Y'||h[i]=='y') cout <<"━ # ━ ━" << " ";
+if(h[i]=='Z'||h[i]=='z') cout <<"━ ━ # #" << " ";
+    }
+    return 0;
+}
+

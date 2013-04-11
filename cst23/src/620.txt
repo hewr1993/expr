@@ -1,0 +1,32 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+int main()
+{
+
+    int a, b, i, j, n, lebal, lebal2 = 1;
+    cin >> a >> b;
+    n = a;
+    if (b > a) 
+        n = b;
+    
+    for (i = 2; i <= n; ++i)
+        if (a%i == 0 && b%i == 0)
+        {
+            lebal = 1;
+            for (j = 2; j <= int(sqrt(i)); ++j)
+                if (i % j == 0)
+                {
+                    lebal = 0;
+                    break;
+                }
+            if (lebal) 
+            {cout << i << " ";
+                lebal2 = 0;
+            }
+        }
+    if (lebal2) cout << 0;
+
+    return 0;
+}
+

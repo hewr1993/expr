@@ -1,0 +1,105 @@
+//program 2143
+
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<queue>
+
+using namespace std;
+
+struct Node
+{
+  int X,Y,H,Dist;
+};
+
+bool operator <(Node A,Node B)
+{
+  return A.Dist>B.Dist;
+}
+
+const int inf=1000000000;
+const int V[5][2]={{-1,0},{0,-1},{0,0},{0,1},{1,0}};
+
+int M,N;
+int Cost[150][150],Force[150][150];
+int Dist[150][150][300];
+
+void Dijkstra(int Ax,int Ay,int Bx,int By,int Cx,int Cy)
+{
+  static bool Visited[150][150][300];
+  memset(Visited,0,sizeof(Visited));
+  for(int i=0;i<M;i++)
+    for(int j=0;j<N;j++)
+      for(int k=0;k<M+N;k++)
+        Dist[i][j][k]=inf;
+  Dist[Ax][Ay][0]=0;
+  priority_queue<Node> All;
+  All.push((Node){Ax,Ay,0,0});
+  while(!All.empty()&&(!Visited[Bx][By][0]||!Visited[Cx][Cy][0]))
+    {
+      Node T=All.top();All.pop();
+      int X=T.X,Y=T.Y,H=T.H;
+      if(Visited[X][Y][H])continue;
+      Visited[X][Y][H]=true;
+      if(H)
+        for(int D=0;D<=4;D++)
+          {
+            int x=X+V[D][0],y=Y+V[D][1];
+            if(x<0||x>=M||y<0||y>=N)continue;
+            if(Dist[X][Y][H]<Dist[x][y][H-1])
+              {
+                Dist[x][y][H-1]=Dist[X][Y][H];
+                All.push((Node){x,y,H-1,Dist[x][y][H-1]});
+              }
+          }
+      else
+        if(Dist[X][Y][0]+Cost[X][Y]<Dist[X][Y][Force[X][Y]])
+          {
+            Dist[X][Y][Force[X][Y]]=Dist[X][Y][0]+Cost[X][Y];
+            All.push((Node){X,Y,Force[X][Y],Dist[X][Y][Force[X][Y]]});
+          }
+    }
+}
+
+int main()
+{
+  scanf("%d%d",&M,&N);
+  for(int i=0;i<M;i++)
+    for(int j=0;j<N;j++)
+      {
+        scanf("%d",&Force[i][j]);
+        Force[i][j]=min(Force[i][j],M+N-1);
+      }
+  for(int i=0;i<M;i++)
+    for(int j=0;j<N;j++)
+      scanf("%d",&Cost[i][j]);
+  int Ax,Ay,Bx,By,Cx,Cy;
+  scanf("%d%d%d%d%d%d",&Ax,&Ay,&Bx,&By,&Cx,&Cy);
+  Ax--;Ay--;Bx--;By--;Cx--;Cy--;
+  int X=0,Y=0,Z=0;
+  Dijkstra(Ax,Ay,Bx,By,Cx,Cy);
+  Y+=Dist[Bx][By][0];Z+=Dist[Cx][Cy][0];
+  Dijkstra(Bx,By,Cx,Cy,Ax,Ay);
+  Z+=Dist[Cx][Cy][0];X+=Dist[Ax][Ay][0];
+  Dijkstra(Cx,Cy,Ax,Ay,Bx,By);
+  X+=Dist[Ax][Ay][0];Y+=Dist[Bx][By][0];
+  if(X>=inf&&Y>=inf&&Z>=inf)
+    printf("NO
+");
+  else if(X<=Y&&X<=Z)
+    printf("X
+%d
+",X);
+  else if(Y<=Z)
+    printf("Y
+%d
+",Y);
+  else
+    printf("Z
+%d
+",Z);
+  return 0;
+}
+

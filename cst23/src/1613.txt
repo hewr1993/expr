@@ -1,0 +1,99 @@
+/* 
+ * tsinsen/1129/1129.cpp
+ *
+ * Copyright (c) 2012  Tung Cheng
+ *
+ */
+
+#include <iostream>
+#include <string.h>
+#include <math.h>
+
+using namespace std;
+
+const int P_MAX = 100000;
+const int oo = 100000000;
+
+int main()
+{
+	int pe;
+	int s[P_MAX];
+	int d;
+	int p_min, p_max;
+	double d_bound, d_inf = -oo, d_sup = oo;
+	int d_min, d_max;
+	int decay;
+	int i, j;
+	int p;
+
+	cin >> pe;
+	cin >> p_min;
+	cin >> s[p_min];
+	p_max = p_min;
+	cin >> p;
+	while (p != -1) {
+		if (p > p_max)
+			p_max = p;
+		cin >> s[p];
+		cin >> p;
+	}
+	cin >> p;
+	cin >> decay;
+
+	for (p = p_min; p <= p_max; p ++)
+		if (s[p] == 0) {
+			i = p - 1;
+			for (j = p + 1; s[j] == 0; j ++);
+			for (; p < j; p ++)
+				s[p] = s[i] + ((s[j] - s[i]) / (j - i)) * (p - i);
+		}
+	for (p = p_max + 1; s[p - 1] - decay > 0; p ++) {	// geq?
+		s[p] = s[p - 1] - decay;
+		p_max = p;
+	}
+//	p_max = 
+
+	if (pe < p_min || p_max < pe) {
+		cout << "NO SOLUTION" << endl;
+		return 0;
+	}
+
+	for (p = p_min; p <= p_max; p ++) {
+		if (p == pe)
+			continue;
+
+		if (s[pe] != s[p]) {
+			d_bound = (double)((p - p_min) * s[p] - (pe - p_min) * s[pe]) 
+					/ (double)(s[pe] - s[p]);
+			if (s[pe] > s[p])
+				d_inf = d_bound > d_inf ? d_bound : d_inf;
+			else
+				d_sup = d_bound < d_sup ? d_bound : d_sup;
+		}
+		else {
+			if ((p - p_min) * s[p] - (pe - p_min) * s[pe] > 0) {
+				cout << "NO SOLUTION" << endl;
+				return 0;
+			}
+		}
+	}
+
+	d_min = ceil(d_inf);
+	d_max = floor(d_sup);
+
+	if (d_min <= d_max) {
+		if (d_max < 0)
+			cout << d_max << endl;
+		else if (d_min > 0)
+			cout << d_min << endl;
+		else
+			cout << 0 << endl;
+	}
+	else {
+		cout << "NO SOLUTION" << endl;
+	}
+
+	return 0;
+}
+
+

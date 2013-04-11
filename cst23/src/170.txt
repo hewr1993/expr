@@ -1,0 +1,21 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+
+using namespace std;
+
+int countLabel(char *txt)
+{
+int flag=0;
+    ifstream fin(txt);
+	char a;
+	while(fin){
+		fin>>a;
+		if(a==char(60)){
+			flag++;
+		}
+	}
+	return flag;
+}
+

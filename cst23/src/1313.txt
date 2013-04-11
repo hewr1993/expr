@@ -1,0 +1,45 @@
+#include <set>
+#include <map>
+#include <list>
+#include <cmath>
+#include <ctime>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <cctype>
+#include <cstdio>
+#include <string>
+#include <vector>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main() 
+{
+	int a[55], n, m, k;
+	while (scanf("%d%d", &n, &m) != EOF) {
+		for (int i = 1; i <= n; i++)
+			scanf("%d", &a[i]);
+		int lt = 0, rt = 5000000002, mid, ans;
+		while (lt <= rt) {
+			mid = (lt + rt) / 2;
+			__int64 sum = 0;
+			for (int i = 1; i <= n; i++) {
+				if (a[i] <= mid) sum += a[i];
+				else sum += mid;
+			}
+			__int64 tol = (__int64)n * (__int64)mid;
+			if (sum + min(mid, m) >= tol)
+				lt = mid + 1, ans = mid;
+			else rt = mid - 1;
+		}
+		printf("%d
+", ans);
+	}
+	return 0;
+}
+

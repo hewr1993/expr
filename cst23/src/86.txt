@@ -1,0 +1,41 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int main()
+{
+    int n,m;
+ //   freopen("1.txt","r",stdin);
+    cin >> n >> m;
+    int market[100][200];
+    int cheap[2][201] ;
+    for (int i=0; i<n; i++)
+    	for(int j=0; j<m; j++)
+    		cin >> market[i][j];
+	if( n > 50 || m > 100 )
+		while(1);
+    for (int j=0; j<m; j++)
+    	{
+		cheap[0][j] = 102;
+    	for(int i=0; i<n; i++)
+    	{
+			if (market[i][j] != 0)
+			{
+				if ( market[i][j] <= cheap[0][j] )		
+				{
+					cheap[0][j] = market[i][j];
+					cheap[1][j] = i+1;
+				}
+			}
+		}
+		}
+		
+	for (int j=0; j<m; j++)
+	{
+		if (cheap[0][j] == 102)		cheap[1][j] = 0;
+		cout << cheap[1][j] << " " ;
+	}						    	
+ //   system ("pause");
+    return 0;
+}
+

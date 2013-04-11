@@ -1,0 +1,9 @@
+struct dataStruct {
+	int n;
+};
+
+void getData(dataStruct & v)
+{
+    v.n = 0;
+}
+

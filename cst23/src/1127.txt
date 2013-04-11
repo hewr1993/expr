@@ -1,0 +1,76 @@
+#include <iostream>
+using namespace std;
+int s;
+int n[100];
+int amount[100][6];
+int goods[100][6];
+int price[100];
+int b;
+int c[6];
+int k[6];
+int p[6];
+int data[100][1000]={};
+int dp[6][6][6][6][6];
+int number[1000];
+bool unavalaible[100]={};
+int goods2[100][6];
+int amount2[100][6]={};
+void init()
+{
+	cin>>s;
+	for (int i=0;i<s;i++)
+	{
+		cin>>n[i];
+		for (int j=0;j<n[i];j++)
+			cin>>goods[i][j]>>amount[i][j];
+		cin>>price[i];
+		}
+	cin>>b;
+	for (int i=0;i<1000;i++)
+		number[i]=-1;
+	for (int i=0;i<b;i++)
+	{
+		cin>>c[i]>>k[i]>>p[i];
+		number[c[i]]=i;
+		}
+	for (int i=0;i<s;i++)
+		for (int j=0;j<n[i];j++)
+		{
+			if (number[goods[i][j]]>-1)
+			{
+				amount2[i][number[goods[i][j]]]=amount[i][j];
+				goods2[i][number[goods[i][j]]]=goods[i][j];
+				}
+			else
+			{
+				unavalaible[i]=true;
+				}
+			}
+	}
+
+int ans=2147483647;
+int main()
+{
+	init();
+	for (int a0=0;a0<=k[0];a0++)
+		for (int a1=0;a1<=k[1];a1++)
+			for (int a2=0;a2<=k[2];a2++)
+				for (int a3=0;a3<=k[3];a3++)
+					for (int a4=0;a4<=k[4];a4++)
+					{
+						dp[a0][a1][a2][a3][a4]=a0*p[0]+a1*p[1]+a2*p[2]+a3*p[3]+a4*p[4];
+						}
+	for (int i=0;i<s;i++)
+		if (!unavalaible[i])
+			for (int a0=amount2[i][0];a0<=k[0];a0++)
+				for (int a1=amount2[i][1];a1<=k[1];a1++)
+					for (int a2=amount2[i][2];a2<=k[2];a2++)
+						for (int a3=amount2[i][3];a3<=k[3];a3++)
+							for (int a4=amount2[i][4];a4<=k[4];a4++)
+								dp[a0][a1][a2][a3][a4]=min(dp[a0][a1][a2][a3][a4],dp[a0-amount2[i][0]][a1-amount2[i][1]][a2-amount2[i][2]][a3-amount2[i][3]][a4-amount2[i][4]]+price[i]);
+//	dp[a0][a1][a2][a3][a4]; 
+	cout<<dp[k[0]][k[1]][k[2]][k[3]][k[4]];
+//	system("pause");
+	return 0;
+	}
+

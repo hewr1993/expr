@@ -1,0 +1,33 @@
+#include<string>
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+#include<cstring>
+#include<stdlib.h>
+using namespace std;
+
+int main()
+{
+    int p,q,i,j,k,num,l;
+    string str[10001];
+    for(i=1;i<=100;i++)
+	cin>>str[i];
+	num=0;
+	for(j=1;j<=100;j++)
+	{
+    l=str[j].size();
+    
+    for(i=0;i<=l-1;i++)
+    {
+        if(str[j][i]<0)
+        {
+            i++;
+            num=num+1;
+        }
+    }
+	}
+    cout<<num<<endl;
+
+    return 0;
+	
+}

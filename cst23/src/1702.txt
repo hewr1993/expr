@@ -1,0 +1,274 @@
+Program Weight;
+
+
+Const
+  MaxN=410;
+  MaxM=200;
+  MaxNum=100000000;
+
+Type
+  TLinkPo=^TLinkNode;
+  TLinkNode=Record
+    X,Now,Max:Longint;
+    Next,Other:TLinkPo;
+  End;
+
+Var
+  G                     :Array[0..MaxM] Of TLinkPo;
+  V,W                   :Array[0..MaxN,1..2] Of Longint;
+  D                     :Array[0..MaxM] of Longint;
+  Ans                   :Array[0..MaxN,1..2] Of Longint;
+  N,M                   :Longint;
+
+  Function TryIt:Boolean;
+  Var
+    E,H                 :Array[0..MaxM] Of Longint;
+    Cu                  :Array[0..MaxM] Of TLinkPo;
+
+    Procedure GenGraph;
+    Var
+      I                 :Longint;
+      S                 :Array[0..MaxM] Of Longint;
+
+      Procedure NewLine(X,Y,Max:Longint);
+      Var
+        P               :TlinkPo;
+      Begin
+        New(P);
+        P^.X:=Y;
+        P^.Max:=Max;
+        P^.Now:=0;
+        P^.Next:=G[X];
+        G[X]:=P;
+        New(P);
+        P^.X:=X;
+        P^.Max:=0;
+        P^.Now:=0;
+        P^.Next:=G[Y];
+        G[Y]:=P;
+        G[X]^.Other:=G[Y];
+        G[Y]^.Other:=G[X];
+      End;
+
+    Begin
+      For I:=0 To M+3 Do
+        G[I]:=Nil;
+      Fillchar(S,Sizeof(S),0);
+      For I:=1 To M Do Begin
+        S[I]:=-D[I];
+        If D[I]>0 Then
+          Inc(S[M+2],D[I])
+        Else
+          Inc(S[M+1],D[I]);
+      End;
+      For I:=1 To N Do Begin
+        Inc(S[W[I,1]],V[I,1]);
+        Dec(S[W[I,2]],V[I,1]);
+        NewLine(W[I,2],W[I,1],V[I,2]-V[I,1]);
+      End;
+      NewLine(M+2,M+1,MaxNum);
+      For I:=1 To M+2 Do
+        If S[I]>0 Then
+          NewLine(0,I,S[I])
+        Else
+          NewLine(I,M+3,-S[I]);
+    End;
+
+    Procedure DoneFlow;
+    Type
+      TLink2Po=^TLink2Node;
+      TLink2Node=Record
+        X:Longint;
+        Next:TLink2Po;
+      End;
+    Var
+      Head,R,P                  :TLink2Po;
+      I,Old                     :Longint;
+
+      Procedure Flow_Init;
+      Var
+        P                       :TLinkPo;
+        D,I                     :Longint;
+      Begin
+        Fillchar(E,Sizeof(E),0);
+        Fillchar(H,Sizeof(H),0);
+        H[0]:=M+4;
+        P:=G[0];
+        While P<>Nil Do Begin
+          D:=P^.Max-P^.Now;
+          Inc(E[P^.X],D);
+          Dec(E[0],D);
+          Inc(P^.Now,D);
+          Dec(P^.Other^.Now,D);
+          P:=P^.Next;
+        End;
+        For I:=0 To M+3 Do
+          Cu[I]:=G[I];
+      End;
+
+      Procedure Charge(U:Longint);
+
+        Procedure Relabel(U:Longint);
+        Var
+          P                     :TLinkPo;
+          Min                   :Longint;
+        Begin
+          Min:=MaxNum;
+          P:=G[U];
+          While P<>Nil Do Begin
+            If (P^.Max-P^.Now>0) And (Min>H[P^.X]) Then
+              Min:=H[P^.X];
+            P:=P^.Next;
+          End;
+          H[U]:=Min+1;
+          Cu[U]:=G[U];
+        End;
+
+        Procedure Push(U,V:Longint;Var P:TLinkPo);
+        Var
+          D                     :Longint;
+        Begin
+          D:=E[U];
+          If P^.Max-P^.Now<D Then D:=P^.Max-P^.Now;
+          Inc(E[V],D);
+          Dec(E[U],D);
+          Inc(P^.Now,D);
+          Dec(P^.Other^.Now,D);
+        End;
+
+      Begin
+        While E[U]>0 Do Begin
+          If Cu[U]=Nil Then Begin
+            Relabel(U);
+            Continue;
+          End
+          Else If (Cu[U]^.Max>Cu[U]^.Now) And (H[U]=H[Cu[U]^.X]+1) Then
+            Push(U,Cu[U]^.X,Cu[U]);
+          Cu[U]:=Cu[U]^.Next;
+        End;
+      End;
+
+    Begin
+      Flow_Init;
+      New(Head);Head^.Next:=Nil;P:=Head;
+      For I:=1 To M+2 Do Begin
+        New(P^.Next);
+        P:=P^.Next;
+        P^.X:=I;
+        P^.Next:=Nil;
+      End;
+      P:=Head;R:=P;
+      While P^.Next<>Nil Do Begin
+        P:=P^.Next;
+        Old:=H[P^.X];
+        Charge(P^.X);
+        If Old<>H[P^.X] Then Begin
+          R^.Next:=P^.Next;
+          P^.Next:=Head^.Next;
+          Head^.Next:=P;
+        End;
+        R:=P;
+      End;
+    End;
+
+    Function Check:Boolean;
+    Var
+      P                 :TLinkPo;
+    Begin
+      Check:=True;
+      P:=G[0];
+      While P<>Nil Do Begin
+        If P^.Max<>P^.Now Then Begin
+          Check:=False;
+          Exit;
+        End;
+        P:=P^.Next;
+      End;
+    End;
+
+  Begin
+    GenGraph;
+    DoneFlow;
+    TryIt:=Check;
+  End;
+
+  Procedure Init;
+  Var
+    I,J,A,B,X           :Longint;
+  Begin
+    Readln(N,M);
+    For I:=1 To N Do
+      Read(V[I,1],V[I,2]);
+    Readln;
+    For I:=1 To N Do Begin
+      W[I,1]:=M+2;W[I,2]:=M+1;
+    End;
+    For I:=1 To M Do Begin
+      Read(A,B,D[I]);
+      For J:=1 To A Do Begin
+        Read(X);
+        W[X,1]:=I;
+      End;
+      For J:=1 To B Do Begin
+        Read(X);
+        W[X,2]:=I;
+      End;
+      Readln;
+    End;
+  End;
+
+  Procedure Work;
+  Var
+    I                           :Longint;
+
+    Function Find(I,L,R,Mode:Longint):Longint;
+    Var
+      Mid,Temp                  :Longint;
+      B                         :Boolean;
+    Begin
+      If L=R Then Begin
+        Find:=L;
+        Exit;
+      End;
+      Mid:=(L+R+Mode) Shr 1;
+      If Mode=1 Then Begin
+        Temp:=V[I,2];
+        V[I,2]:=Mid;
+        B:=TryIt;
+        V[I,2]:=Temp;
+        If B Then Find:=Find(I,L,Mid-1,Mode) Else Find:=Find(I,Mid,R,Mode);
+      End
+      Else Begin
+        Temp:=V[I,1];
+        V[I,1]:=Mid;
+        B:=TryIt;
+        V[I,1]:=Temp;
+        If B Then Find:=Find(I,Mid+1,R,Mode) Else Find:=Find(I,L,Mid,Mode);
+      End;
+    End;
+
+  Begin
+    For I:=1 To N Do Begin
+      Ans[I,1]:=Find(I,V[I,1]-1,V[I,2],1)+1;
+      Ans[I,2]:=Find(I,V[I,1],V[I,2]+1,0)-1;
+      If Ans[I,1]>Ans[I,2] Then Begin
+        Writeln(-1);
+        Halt;
+      End;
+    End;
+  End;
+
+  Procedure Out;
+  Var
+    I                           :Longint;
+  Begin
+    For I:=1 To N Do
+      Write(Ans[I,1],' ',Ans[I,2],' ');
+    Writeln;
+  End;
+
+Begin
+  Init;
+  Work;
+  Out;
+End.

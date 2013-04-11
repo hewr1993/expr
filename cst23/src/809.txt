@@ -1,0 +1,265 @@
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+using namespace std;
+
+string exp;
+bool flag;
+
+long calc(int begin, int end)
+{
+	int res = 5024; // result;
+	int i, j;
+	string num;
+	int num1, num2;
+	int left, right;
+	int oprloc; //location of operators
+
+	oprloc = -1;
+	for (i=begin; i<end; i++)
+	{
+		if (exp[i] == '*' || exp[i] == '/')
+		{
+			oprloc = i;
+			break;
+		}
+	}
+	if (oprloc == begin)
+	{
+		return -1;
+	}
+	while (oprloc > 0)
+	{
+		//extract the first number
+		num = "";
+		num1 = 0;
+		for (i=oprloc-1; i>=begin; i--)
+		{
+			if (exp[i]>='0' && exp[i]<='9')
+			{
+				num = exp[i] + num;	
+			}
+			else
+			{
+				break;
+			}
+		}
+		left = i+1;
+		istringstream sin(num);
+		sin >> num1;
+		//extract the second number
+		num = "";
+		num2 = 0;
+		for (i=oprloc+1; i<=end; i++)
+		{
+			if (exp[i]>='0' && exp[i]<='9')
+			{
+				num = num + exp[i];	
+			}
+			else
+			{
+				break;
+			}
+		}
+		right = i-1;
+		istringstream sin2(num);
+		sin2 >> num2;
+		if (left >= right)
+		{
+			return -1;
+		}
+		ostringstream sout;
+		if (exp[oprloc] == '*')
+		{
+			sout << num1 * num2;
+		}
+		else
+		{
+			sout << num1 / num2;
+		}
+
+		string soutres;
+		soutres = sout.str();
+		exp.replace(left, right - left + 1, soutres);
+		end = end -(right - left + 1 - soutres.length());
+		//start a new
+		oprloc = -1;
+		for (i=begin; i<end; i++)
+		{
+			if (exp[i] == '*' || exp[i] == '/')
+			{
+				oprloc = i;
+				break;
+			}
+		}
+
+	}
+	
+	oprloc = -1;
+	for (i=begin; i<end; i++)
+	{
+		if (exp[i] == '+' || exp[i] == '-')
+		{
+			oprloc = i;
+			break;
+		}
+	}
+	if (oprloc == begin)
+	{
+		return -1;
+	}
+	while (oprloc > 0)
+	{
+		//extract the first number
+		num = "";
+		num1 = 0;
+		for (i=oprloc-1; i>=begin; i--)
+		{
+			if (exp[i]>='0' && exp[i]<='9')
+			{
+				num = exp[i] + num;	
+			}
+			else
+			{
+				break;
+			}
+		}
+		left = i+1;
+		istringstream sin(num);
+		sin >> num1;
+		//extract the second number
+		num = "";
+		num2 = 0;
+		for (i=oprloc+1; i<=end; i++)
+		{
+			if (exp[i]>='0' && exp[i]<='9')
+			{
+				num = num + exp[i];	
+			}
+			else
+			{
+				break;
+			}
+		}
+		right = i-1;
+		istringstream sin2(num);
+		sin2 >> num2;
+		if (left >= right)
+		{
+			return -1;
+		}
+		ostringstream sout;
+		if (exp[oprloc] == '+')
+		{
+			sout << num1 + num2;
+		}
+		else
+		{
+			if (num1 >= num2)
+			{
+				sout << num1 - num2;
+			}
+			else
+			{
+				sout << num2 - num1;
+				for (j=left; j>=0; j--)
+				{
+					if (exp[j] == '+')
+					{
+						exp[j] = '-';
+						break;
+					}
+				}
+			}
+		}
+
+		string soutres;
+		soutres = sout.str();
+		exp.replace(left, right - left + 1, soutres);
+		end = end -(right - left + 1 - soutres.length());
+		//start a new
+		oprloc = -1;
+		for (i=begin; i<end; i++)
+		{
+			if (exp[i] == '+' || exp[i] == '-')
+			{
+				oprloc = i;
+				break;
+			}
+		}
+	}
+
+	string bigres = "";
+	for (i=begin; i<=end; i++)
+	{
+		bigres = bigres + exp[i];
+	}
+	istringstream s_in(bigres);
+	s_in >> res;
+	return res;
+}
+
+int main()
+{
+	flag = false;
+	getline(cin, exp);
+	int iPos;
+	int iPos2;
+	int iRes;
+	int i;
+	
+	iPos = exp.find(' ');
+	while (iPos >= 0)
+	{
+		exp.erase(exp.begin()+iPos, exp.begin()+iPos+1);
+		iPos = exp.find(' ');
+	}
+	bool num = false;
+	for (i=0; i<=exp.length(); i++)
+	{
+		if ((exp[i]<'0' || exp[i]>'9') && (exp[i]!='(' && exp[i]!=')'))
+		{
+			if (!num)
+			{
+				cout << "Invalid expression
+";
+				return 0;
+			}
+			num = false;
+		}
+		else
+		{
+			num = true;
+		}
+	}
+
+	iPos = exp.find('(');
+	iPos2 = exp.find(')');
+	while (iPos >= 0 || iPos2 >= 0)
+	{
+		ostringstream sout;
+		if (iPos2-iPos<1 || iPos == exp.length()-1 || iPos2 <= 1)
+		{
+			cout << "Invalid expression
+";
+			return 0;
+		}
+		iRes = calc(iPos+1, iPos2-1);
+		if (iRes == -1)
+		{
+			cout << "Invalid expression
+";
+			return 0;
+		}
+		sout << iRes;
+		iPos2 = exp.find(')');
+		exp.replace(iPos, iPos2-iPos+1, sout.str());
+		iPos = exp.find('(');
+		iPos2 = exp.find(')');
+	}
+	iRes = calc(0, exp.length()-1);
+
+	cout << exp << endl;
+	return 0;
+}

@@ -1,0 +1,113 @@
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
+#include <vector>
+#include <string>
+#include <stack>
+#include <queue>
+#include <map>
+#include <set>
+#include <utility>
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <iterator>
+
+using namespace std;
+
+typedef long long LL;
+typedef vector< string > VS;
+typedef vector< int > VI;
+typedef pair< int, int > PRII;
+typedef pair< double, double > PRDD;
+
+#define p_b push_back
+#define m_p make_pair
+#define x first
+#define y second
+
+#define Size(a) ((int)a.size())
+#define sqr(x) ((x)*(x))
+
+#define oo 1000000000
+#define eps 1e-9
+const double pi = acos(-1.0);
+
+#define maxm 30 + 5
+
+int m,n;
+double x;
+
+struct Func
+{
+    double f[maxm],g[maxm],h[maxm];
+    
+    void clear()
+        {
+            memset(f,0,sizeof f);
+            memset(g,0,sizeof g);
+            memset(h,0,sizeof h);
+        }
+        
+    void init()
+        {
+            clear();
+            f[1] = sin(x);
+            g[1] = cos(x);
+        }
+}a,b,c;
+
+void mul( Func &c, Func a, Func b )
+{
+    int i,j;
+    
+    c.clear();
+    for( i = 1 ; i <= m ; ++i )
+        for( j = 1 ; j <= i ; ++j )
+            {
+                c.f[i] += a.f[j]*b.f[i-j] + a.f[j]*b.g[i-j+1] + a.g[j]*b.f[i-j+1];
+                c.g[i] += a.f[j]*b.g[i-j];
+                if( j < i )
+                    c.g[i] += a.f[j]*b.h[i-j+1] + a.g[j]*b.g[i-j+1];
+                else c.g[i] += a.g[i]*b.g[1] - a.f[i]*b.f[1];
+                c.h[i] += a.g[j]*b.g[i-j];
+                if( j == 1 )
+                    c.h[i] += a.g[1]*b.h[i] - a.f[1]*b.g[i];
+                else if( j == i )
+                    c.h[i] += a.h[i]*b.g[1] - a.g[i]*b.f[1];
+                else c.h[i] += a.g[j]*b.h[i-j+1] + a.h[j]*b.g[i-j+1];
+            }
+}
+
+void recursion( int n )
+{
+    if( n == 1 )
+        {
+            a.init();
+            c.init();
+            return;
+        }
+    recursion(n/2);
+    mul(b,a,a);
+    if( n&1 )
+        mul(a,b,c);
+    else a = b;
+}
+
+int main()
+{
+    int T;
+    
+    cin>>T;
+    while( T-- )
+        {
+            cin>>m>>n>>x;
+            recursion(n);
+            cout<<a.f[m]<<endl;
+        }
+        
+    return 0;
+}
+

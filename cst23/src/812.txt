@@ -1,0 +1,35 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+long long pow(int m,int n)
+{
+    int p=1;
+    for(int i=0;i<=n-1;i++)
+    {
+            p=p*m;
+    }
+    return p;
+}
+int main()
+{
+    char a[8];
+    cin>>a;
+    int len=strlen(a);
+    int b[len];
+    for(int i=0;i<=len-1;i++)
+    {
+            if((a[i]=='A')||(a[i]=='B')||(a[i]=='C')||(a[i]=='D')||(a[i]=='E')||(a[i]=='F'))
+              b[i]=a[i]-'A'+10;
+            else
+              b[i]=(int)(a[i]-'0');
+    }
+    long long value=0;
+    for(int i=0;i<=len-1;i++)
+    {
+            value=value+b[i]*pow(16,len-1-i);
+    }
+    cout<<value<<endl;
+//    system("pause");
+    return 0;
+}
+

@@ -1,0 +1,145 @@
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<cmath>
+#include<algorithm>
+#include<iostream>
+using namespace std;
+struct node{
+	int a[6][8]/*,bo[6][8][5]*/,left;
+	node() {
+		left=0;
+		memset(a,0,sizeof(a));
+		//memset(bo,0,sizeof(bo));
+	}
+};
+struct savenode{
+	int x,y,d;
+} ans[6],save[6];
+int n;
+void print(node now)
+{
+	int i,j;
+	printf("%d
+",now.left);
+	for (i=1; i<=7; i++) {
+		for (j=1; j<=5; j++) printf("%d ",now.a[j][7-i+1]);
+		printf("
+");
+	}
+}
+void check(node &now,int x,int y)
+{
+	int nowxl,nowxr,nowyu,nowyd,i,j;
+	if (now.a[x][y]==0) return;
+	for (nowxl=x; (now.a[nowxl-1][y]==now.a[nowxl][y]&&now.a[nowxl-1][y]!=0)&&nowxl>1; nowxl--);
+	for (nowxr=x; (now.a[nowxr+1][y]==now.a[nowxr][y]&&now.a[nowxr+1][y]!=0)&&nowxr<5; nowxr++);
+	for (nowyu=y; (now.a[x][nowyu+1]==now.a[x][nowyu]&&now.a[x][nowyu+1]!=0)&&nowyu<7; nowyu++);
+	for (nowyd=y; (now.a[x][nowyd-1]==now.a[x][nowyd]&&now.a[x][nowyd-1]!=0)&&nowyd>1; nowyd--);
+	bool erax=false,eray=false;
+	if (nowxr-nowxl+1>=3) {
+		for (i=nowxl; i<=nowxr; i++) {
+			for (j=y; j<7; j++) now.a[i][j]=now.a[i][j+1];
+			now.a[i][7]=0;
+		}
+		erax=true;
+	}
+	if (nowyu-nowyd+1>=3) {
+		for (i=nowyd; i<=7-(nowyu-nowyd+1); i++) now.a[x][i]=now.a[x][i+nowyu-nowyd+1];
+		for (i=7-(nowyu-nowyd+1)+1; i<=7; i++) now.a[x][i]=0;
+		eray=true;
+	}
+	if (erax&&!eray) {
+		for (i=nowxl; i<=nowxr; i++) check(now,i,y);
+		now.left-=nowxr-nowxl+1;
+	}
+	if (!erax&&eray) {
+		for (i=nowyd; i<=nowyu; i++) check(now,x,i);
+		now.left-=nowyu-nowyd+1;
+	}
+	if (erax&&eray) {
+		for (i=nowxl; i<=nowxr; i++) check(now,i,y);
+		for (i=nowyd; i<=nowyu; i++) check(now,x,i);
+		now.left-=nowxr-nowxl+1+nowyu-nowyd;
+	}
+}
+void change(node &now,int x,int y,int d)
+{
+	int nowy,nowx,i,j;
+	if (now.a[x+d][y]) {
+		int t=now.a[x+d][y]; now.a[x+d][y]=now.a[x][y]; now.a[x][y]=t;
+		nowx=x+d; nowy=y;
+	} else {
+		nowx=x+d;
+		for (nowy=y; (!now.a[x+d][nowy-1])&&nowy>1; nowy--);
+		now.a[nowx][nowy]=now.a[x][y];
+		for (i=y; i<7; i++) now.a[x][i]=now.a[x][i+1];
+		now.a[x][7]=0;
+	}
+	check(now,x,y);
+	check(now,nowx,nowy);
+}
+bool dfs(int dep,node now,int x,int y,int d)
+{
+	int i,j;
+	change(now,x,y,d);
+	if (dep==n) {
+		if (now.left==0) return true; else return false;
+	}
+	bool find;
+	for (i=1; i<=5; i++)
+		for (j=1; j<=7; j++) 
+			if (now.a[i][j]) {
+				if (i!=5&&now.a[i+1][j]!=now.a[i][j]) {
+					save[dep+1].x=i-1; save[dep+1].y=j-1; save[dep+1].d=1;
+					find=dfs(dep+1,now,i,j,1);
+					if (find) return true;
+				}
+				if (i!=1&&now.a[i-1][j]!=now.a[i][j]&&now.a[i-1][j]==0) {
+					save[dep+1].x=i-1; save[dep+1].y=j-1; save[dep+1].d=-1;
+					find=dfs(dep+1,now,i,j,-1);
+					if (find) return true;
+				}
+				save[dep+1].x=0; save[dep+1].y=0; save[dep+1].d=0;
+			}
+	return false;
+}
+int main()
+{
+	int i,j,sum=0,x;
+	node now;
+	//freopen("mayan.in","r",stdin); freopen("mayan.out","w",stdout);
+	scanf("%d",&n);
+	for (i=1; i<=5; i++)
+		for (j=1; j<=8; j++) {
+			scanf("%d",&x);
+			if (!x) break;
+			now.a[i][j]=x;
+			now.left++;
+		}
+	bool find=false;
+	for (i=1; i<=5; i++) {
+		for (j=1; j<=7; j++) 
+			if (now.a[i][j]) {
+				if (i!=5&&now.a[i+1][j]!=now.a[i][j]) {
+					save[1].x=i-1; save[1].y=j-1; save[1].d=1;
+					find=dfs(1,now,i,j,1);
+					if (find) break;
+				}
+				if (i!=1&&now.a[i-1][j]!=now.a[i][j]&&now.a[i-1][j]==0) {
+					save[1].x=i-1; save[1].y=j-1; save[1].d=-1;
+					find=dfs(1,now,i,j,-1);
+					if (find) break;
+				}
+				save[1].x=0; save[1].y=0; save[1].d=0;
+			}
+		if (find) break;
+	}
+	if (!find) printf("-1
+"); else {
+		for (i=1; i<=n; i++) printf("%d %d %d
+",save[i].x,save[i].y,save[i].d);
+	}
+    return 0;
+}
+

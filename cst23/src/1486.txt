@@ -1,0 +1,45 @@
+#include <cstdio> 
+#include <cstring> 
+#include <iostream> 
+using namespace std; 
+  
+int T,n,ans1,tt,len,bl,tmp; 
+char S[10010000]; 
+  
+int main() 
+{ 
+      
+    for (scanf("%d",&T);T;T--) 
+    { 
+        scanf("%s",S);n=strlen(S); 
+        for (int i=0;i<n/2;i++) swap(S[i],S[n-i-1]); 
+        for (int i=0,j=1;j<n;) 
+        { 
+            for (int k=0;k<=n;k++) 
+            { 
+                if (k+j>=n || S[i+k]>S[j+k]) { tmp=i;i=j;j=max(i+1,tmp+k);break; } 
+                if (S[i+k]<S[j+k]) { j+=k+1;break; } 
+            } 
+            tt=i; 
+        } 
+        len=n-tt; 
+        while (S[tt-1]==S[tt+len-1]) tt--; 
+        bl=(n-tt)/len;tt=n-bl*len; 
+        for (int i=tt;i<tt+tt;i++) S[i]=S[i-tt]; 
+        ans1=tt; 
+        for (int i=0,j=1;j<ans1;) 
+        { 
+            for (int k=0;k<ans1;k++) 
+            { 
+                if (S[i+k]<S[j+k]) { j+=k+1;break; } 
+                if (S[i+k]>S[j+k]) { tmp=i;i=j;j=max(j+1,tmp+k);break; } 
+            } 
+            tt=i; 
+        } 
+        printf("%d %d
+",n-ans1,n-tt); 
+    } 
+      
+    return 0; 
+} 
+

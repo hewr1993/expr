@@ -1,0 +1,36 @@
+#include<cstdio>
+#include<cstdlib>
+#include<iostream>
+#include<cstring>
+using namespace std;
+char w[][7] = {"#.#.#","#.#.#","#.#.#","#.#.#",".#.#."};
+char y[][7] = {"#...#",".#.#.","..#..","..#..","..#.."};
+char s[][7] = {".####","#....",".###.","....#","####."};
+char l[][7] = {"#....","#....","#....","#....","#####"};
+char f[][7] = {"#####","#....","####.","#....","#...."};
+int main()
+{
+	char src[7]={};
+	cin>>src;
+	int len=strlen(src);
+	char t[7][40]={};
+	for(int j=0;j<5;j++)
+	{
+		for(int i=0;i<len-1;i++)
+		{
+			if(src[i]=='W'){cout<<w[j]<<".";}
+			if(src[i]=='Y'){cout<<y[j]<<".";}
+			if(src[i]=='S'){cout<<s[j]<<".";}
+			if(src[i]=='L'){cout<<l[j]<<".";}
+			if(src[i]=='F'){cout<<f[j]<<".";}
+		}
+		if(src[len-1]=='W'){cout<<w[j];}
+		if(src[len-1]=='Y'){cout<<y[j];}
+		if(src[len-1]=='S'){cout<<s[j];}
+		if(src[len-1]=='L'){cout<<l[j];}
+		if(src[len-1]=='F'){cout<<f[j];}
+		cout << endl;
+	}
+    system("pause");
+    return 0;
+}

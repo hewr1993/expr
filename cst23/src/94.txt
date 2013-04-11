@@ -1,0 +1,29 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+
+using namespace std;
+
+bool isprime(int i)
+{
+    int x; int q = sqrt((double)i);
+    for(x = 2 ;x <= q ;x++)
+    {
+        if (i % x == 0)
+        return false;
+    }
+    return true;
+}
+        
+int main()
+{
+    int P, k;
+    cin >> P;
+    for(k = P + 1; ; k++)
+     if(isprime(k)) break;
+    cout << k << endl;
+  //  system("pause");
+    return 0;
+}    
+   

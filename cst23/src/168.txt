@@ -1,0 +1,47 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstdio>
+
+using namespace std;
+
+void count()
+{
+int alphb[26] = {0};
+    char infile[1000];
+    cin >> infile;
+    ifstream fin;
+    fin.open(infile);
+    if(! fin)
+    {
+        cout << "error in opening file" << endl;
+    }
+    while(fin)
+    {
+        char line[1000];
+        fin.getline(line, 1000);
+        for(int i = 0; i < 1000; i++)
+        {
+            int lttr = line[i];
+            if(lttr == 0)
+            {
+                break;
+            }
+            if(lttr > 96)
+            {
+                lttr -= 32;
+            }
+            lttr -= 65;
+            alphb[lttr]++;
+        }
+    }
+    for(int i = 0; i < 26; i++)
+    {
+        if(alphb[i])
+        {
+            cout << char(i + 65) << " " << alphb[i] << endl;
+        }
+    }
+    fin.close();
+}
+

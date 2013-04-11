@@ -1,0 +1,30 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+using namespace std;
+int main()
+{
+    int n,m;
+    cin >> n >> m;
+    for (int i=(1 << n)-1; i>=1; i--)
+    {
+        int sum = 0;
+        for (int j=0; j<n; j++)
+        {    
+            if ((1<<j)>i) break;
+            if ((i&(1<<j))!=0)  sum++;
+        }
+        if (sum == m)
+        {
+            for (int j=n-1; j>=0; j--)
+            {    
+                 if ((1<<j)<=i) 
+                 if ((i&(1<<j))!=0)  cout << n-j << ' ';
+            }
+            cout << endl;
+        }
+    }
+    return 0;
+}
+

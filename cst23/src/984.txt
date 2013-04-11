@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct tagp
+{
+   int shu,fenshu;
+}p;
+
+int luqu(const void *a,const void *b)
+{
+ return (((p *)b)->fenshu*10000-((p *)b)->shu)-(((p *)a)->fenshu*10000-((p *)a)->shu);
+}
+int main()
+{
+ int m,n;
+ scanf("%d%d",&n,&m);
+ p a[5000];
+ for (int i=0;i<n;++i)
+   scanf("%d%d",&a[i].shu,&a[i].fenshu);
+ qsort(a,n,sizeof(p),luqu);
+  int s=m*3/2;
+while (a[s].fenshu==a[s-1].fenshu)
+    s++;
+ printf("%d %d
+",a[s-1].fenshu,s);
+  for (int i=0;i<s;++i)
+      printf("%d %d
+",a[i].shu,a[i].fenshu);
+ return 0;
+}
+

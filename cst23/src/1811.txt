@@ -1,0 +1,127 @@
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+ 
+using namespace std;
+ 
+const int Q = 1000003;
+ 
+int a[210000], b[210000], c[210000], d[210000], tmp[210000];
+int data[210000], rank[210000], sa[210000], height[210000];
+int log[210000], st[18][210000], len[21], start[21];
+int f[100002][21], g[100002][21], next[100001][21];
+ 
+bool cmp(const int &a, const int &b)
+  {
+    return data[a] < data[b];
+  }
+ 
+void Cal_SA(int len)
+  {
+    int *s1 = a, *s2 = b, *r1 = c, *r2 = d, i, j, p;
+    for (i = 1; i <= len; i ++) s1[i] = i;
+    sort(s1 + 1, s1 + len + 1, cmp);
+    for (r1[s1[1]] = 1, i = 2; i <= len; i ++)
+      r1[s1[i]] = r1[s1[i-1]] + (data[s1[i]] != data[s1[i-1]]);
+    for (j = 1; r1[s1[len]] < len; swap(s1, s2), swap(r1, r2), j *= 2)
+      {
+        for (i = 1; i <= len; i ++) tmp[r1[s1[i]]] = i;
+        for (i = len; i; i --)
+          if (s1[i] > j) s2[tmp[r1[s1[i]-j]] --] = s1[i] - j;
+        for (i = len - j + 1; i <= len; i ++) s2[tmp[r1[i]] --] = i;
+        for (r2[s2[1]] = 1, i = 2; i <= len; i ++)
+          if (r1[s2[i]] == r1[s2[i-1]] && r1[s2[i]+j] == r1[s2[i-1]+j])
+            r2[s2[i]] = r2[s2[i-1]];
+          else
+            r2[s2[i]] = r2[s2[i-1]] + 1;
+      }
+    for (i = 1; i <= len; i ++) sa[i] = s1[i], rank[i] = r1[i];
+    for (height[1] = p = 0, i = 1; i <= len; i ++)
+      if (rank[i] != 1)
+        {
+          if (p) p --;
+          for ( ; data[i+p] == data[sa[rank[i]-1]+p]; p ++);
+          height[rank[i]] = p;
+        }
+  }
+ 
+int LCP(int a, int b)
+  {
+    a = rank[a], b = rank[b];
+    if (a > b) swap(a, b);
+    int t = log[b-a];
+    return min(st[t][a+1], st[t][b-(1<<t)+1]);
+  }
+ 
+int main()
+  {
+    int n, m, k, i, j, tot, t, x, y;
+    int a, b, c, ans1, ans2, flag;
+    
+   	//freopen("voice.in", "r", stdin);
+    //freopen("voice.out", "w", stdout);
+    
+    scanf("%d%d%d", &n, &m, &k);
+    for (i = 1; i <= n; i ++) scanf("%d", &data[i]);
+    for (tot = n, i = 1; i <= m; i ++)
+      {
+        data[++ tot] = -i, start[i] = tot;
+        for (scanf("%d", &len[i]), t = len[i]; t; t --)
+          scanf("%d", &x), data[++ tot] = x;
+      }
+    data[++ tot] = -(m + 1), Cal_SA(tot);
+    
+    for (i = 1; i <= tot; i ++) st[0][i] = height[i];
+    for (i = 1; 1 << i <= tot; i ++)
+      for (j = 1; j + (1 << i) - 1 <= tot; j ++)
+        st[i][j] = min(st[i-1][j], st[i-1][j+(1<<i-1)]);
+    for (log[1] = 0, i = 2; i <= tot; i ++)
+      log[i] = log[i-1] + ((i & -i) == i);
+    
+    memset(next, -1, sizeof(next));
+    for (ans1 = ans2 = 0, i = 1; i <= m; ans1 += flag, i ++)
+      for (flag = 0, j = 1; j <= n; j ++)
+        {
+          x = j, y = 1, c = 0;
+          for ( ; c <= k && x <= n && y <= len[i]; )
+            {
+              t = LCP(x, start[i] + y);
+              x += t + 1, y += t, c ++;
+            }
+          if (y > len[i])
+            {
+              flag = 1, ans2 += min(n + 1, j + len[i] + k) - x + 2;
+              next[j][i] = x - 2;
+            }
+        }
+    printf("%d %d
+", ans1, ans2);
+    
+    for (i = 1; i <= m; i ++) f[n+1][i] = g[n+1][i] = 0;
+    for (g[n+1][1] = 1, i = n; i; i --)
+      for (j = 1; j <= m; j ++)
+        {
+          if (next[i][j] == -1)
+            f[i][j] = f[i+1][j], g[i][j] = g[i+1][j];
+          else
+            for (f[i][j] = 0, t = 1; t <= m; t ++)
+              if (f[next[i][j]+1][t] + 1 > f[i][j])
+                {
+                  f[i][j] = f[next[i][j]+1][t] + 1;
+                  g[i][j] = g[next[i][j]+1][t];
+                }
+              else
+                if (f[next[i][j]+1][t] + 1 == f[i][j])
+                  g[i][j] += g[next[i][j]+1][t], g[i][j] %= Q;
+        }
+    for (ans1 = 0, i = 1; i <= m; i ++)
+      if (f[1][i] > ans1)
+        ans1 = f[1][i], ans2 = g[1][i];
+      else
+        if (f[1][i] == ans1) ans2 += g[1][i], ans2 %= Q;
+    printf("%d %d
+", ans1, ans2);
+    
+    return 0;
+  }
+

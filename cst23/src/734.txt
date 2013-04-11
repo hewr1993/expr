@@ -1,0 +1,75 @@
+#include<cstdio>
+#include<cstring>
+const long long oo=19921107;
+int N,M,i,j,Num,x;
+int status[150];
+int Ans;
+int A[150],a[150],B[150][150],b[150][150],C[35][150][150];
+bool check(int x)
+{
+	int i;
+	if(N==1) return 1;
+	for(i=1;i<N;++i)
+		if((x&(1<<i))&&(x&(1<<i-1)))
+			return 0;
+	if((x&1)&&(x&(1<<N-1))) return 0;
+	return 1;
+}
+void Mul1(int x)
+{
+	int i,j;
+	memset(a,0,sizeof(a));
+	memcpy(B,C[x],sizeof(B));
+	for(i=1;i<=Num;++i) if(A[i])
+		for(j=1;j<=Num;++j) if(B[i][j])
+			a[j]=((long long)a[j]+(long long)A[i]*(long long)B[i][j])%oo;
+	memcpy(A,a,sizeof(A));
+}
+void Mul2()
+{
+	int i,j,k;
+	memset(b,0,sizeof(b));
+	for(i=1;i<=Num;++i)
+		for(j=1;j<=Num;++j) if(B[i][j])
+			for(k=1;k<=Num;++k) if(B[j][k])
+				b[i][k]=((long long)b[i][k]+(long long)B[i][j]*(long long)B[j][k])%oo;
+	memcpy(B,b,sizeof(B));
+}
+void Mul(int x)
+{
+	int i;
+	for(i=1;x;++i)
+	{
+		if(x&1) Mul1(i);
+		x/=2;
+	}
+}
+int main()
+{
+	scanf("%d%d",&N,&M);
+	for(i=0;i<1<<N;++i)
+		if(check(i))
+			status[++Num]=i;
+	for(i=1;i<=Num;++i)
+		for(j=1;j<=Num;++j)
+			if(!(status[i]&status[j]))
+				B[i][j]=1;
+	for(i=1,x=1;x<=M;++i)
+	{
+		memcpy(C[i],B,sizeof(C[i]));
+		Mul2(),x*=2;
+	}
+	for(i=1;i<=Num;++i)
+	{
+		for(j=1;j<=Num;++j) A[j]=0;
+		A[i]=1;
+		Mul(M-1);
+		for(j=1;j<=Num;++j)
+			if(M==1||!(status[i]&status[j]))
+				Ans=(Ans+A[j])%oo;
+	}
+	printf("%d
+",Ans);
+	return 0;
+}
+

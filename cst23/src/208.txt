@@ -1,0 +1,9 @@
+#include "stdio.h"
+
+int main()
+{
+    int iA, iB;
+	scanf("%d,%d", &iA, &iB);
+	printf("%d", iA*iB);
+	return 0;
+}

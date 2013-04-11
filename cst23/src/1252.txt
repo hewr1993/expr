@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <memory.h>
+
+int decompose(int n, int k, int ary[])
+{
+	int i, sum=0;
+	for (i=0; i<k-1; i++)
+		sum += ary[i];
+
+	if (sum==n)
+	{
+		printf("%d=", n);
+		for (i=0; i<k-2; i++)
+		{
+			printf("%d+", ary[i]);			
+		}
+		printf("%d
+", ary[k-2]);
+		return 0;
+	}
+	if (sum>n) return -1;
+	
+	for (i=1; i<=n; i++)
+	{
+		ary[k-1]=i;
+		decompose(n, k+1, ary);
+		ary[k-1]=0;
+	}
+	return 0;
+}
+
+int main()
+{
+	int n;
+	int ary[20];
+	scanf("%d", &n);
+	memset(ary, 0, sizeof(ary));
+	decompose(n, 1, ary);
+	
+	return 0;
+}
+

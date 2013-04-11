@@ -1,0 +1,53 @@
+#include <cstdlib>
+#include <iostream>
+#include <cstring>
+using namespace std;
+const long long r=1000000007;
+struct matrix{
+	long long a,b,c,d;
+}p,q;
+matrix operator *(matrix const &x,matrix const &y){
+	matrix res;
+	res.a=(x.a*y.a+x.b*y.c)%r;
+	res.b=(x.a*y.b+x.b*y.d)%r;
+	res.c=(x.c*y.a+x.d*y.c)%r;
+	res.d=(x.c*y.b+x.d*y.d)%r;
+	return res;
+}
+struct huge{
+	int dig[100],len;
+	huge(char s[]){
+		 len=strlen(s);
+		 for (int i=1;i<=len;i++)
+				dig[i]=s[len-i]-'0';
+	}
+};
+bool div(huge &t){
+	for (int i=t.len;i>0;i--){
+		if (t.dig[i]&1)t.dig[i-1]+=10;
+		t.dig[i]>>=1;
+	}
+	if (t.dig[t.len]==0)t.len--;
+	if (t.dig[0]==0)return 0;
+	t.dig[0]=0;return 1;
+}
+matrix ex(huge t){
+	if (t.len==0)return q;
+	bool k=div(t);
+	matrix tmp=ex(t);
+	if (k)return tmp*tmp*p;
+	else return tmp*tmp;
+}
+int main(int argc, char *argv[])
+{
+    q.a=1;q.b=0;q.c=0;q.d=1;
+	p.a=2;p.b=2;p.c=1;p.d=2;
+    char s[100];
+	cin>>s;
+    huge t=s;
+	matrix res=ex(t);
+	cout<<2*(res.a+res.b+res.c+res.d);
+	system("PAUSE");
+    return EXIT_SUCCESS;
+}
+

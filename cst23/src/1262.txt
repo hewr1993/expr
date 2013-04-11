@@ -1,0 +1,53 @@
+#include<iostream>
+using namespace std;
+
+bool hole[8][8];
+int safe[8][8];
+int Num[33],n;
+
+void dfs(int cpos, int i)
+{
+	if(cpos == n * n) return;
+	for( ; cpos < n * n; cpos++)
+	{
+		int x = cpos / n, y = cpos % n;
+		if((hole[x][y] != 0) && (safe[x][y] == 0))
+		{
+			int p,q;
+			for(q = y; q < n; q++)
+			{
+				if(hole[x][q] == 0) break;
+				if(safe[x][q] == 0) safe[x][q] = i;
+			}
+			for(p = x; p < n; p++)
+			{
+				if(hole[p][y] == 0) break;
+				if(safe[p][y] == 0) safe[p][y] = i;
+			}
+			Num[i]++;
+			dfs(cpos - y + q, i + 1);
+			//回溯 
+			for(q = q - 1; q >= y; q--)
+			{
+				if(safe[x][q] == i) safe[x][q] = 0;
+			}
+			for(p = p - 1; p >= x; p--)
+			{
+				if(safe[p][y] == i) safe[p][y] = 0;
+			}
+		}
+	}
+} 
+int main()
+{
+	int i,j;
+	cin >> n;
+	for(i = 0; i < n; i++)
+		for(j = 0; j < n; j++)
+			cin >> hole[i][j];
+	dfs(0, 1);
+	for(i = 1; Num[i] != 0; i++)
+		cout << Num[i] << endl;
+	return 0;
+}
+

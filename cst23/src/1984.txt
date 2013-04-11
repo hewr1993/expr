@@ -1,0 +1,38 @@
+#include <cstdlib>
+#include <iostream>
+#include<cstring>
+using namespace std;
+
+char  a[100000][20];
+
+int cmp(const void *a, const void *b)
+{
+    char *s1,*s2;
+    s1=(char*)a;
+    s2=(char*)b;
+    
+    if(strncmp(s1+6,s2+6,8)!=0)
+        return strncmp(s2+6,s1+6,8);
+    else 
+        return strcmp(s2,s1);
+}
+
+
+int main(int argc, char *argv[])
+{  
+    int n,i,j;
+    cin>>n; 
+
+    for(i=0;i<n;i++)
+        cin>>a[i];
+    
+    qsort (a,n,sizeof(a[0]),cmp);
+    
+
+     
+    for(i=0;i<n;i++)
+        cout<<a[i]<<endl;
+     
+    return EXIT_SUCCESS;
+}
+

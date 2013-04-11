@@ -1,0 +1,35 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+bool checkprime(int af)
+{
+     int i;
+     for(i=2;i<=sqrt(af);i++)
+     {
+                             if(af%i==0)
+                             return 0;
+     }
+     return 1;
+}
+int minnum(int x,int y)
+{ 
+    if(x<y) return x;
+    else return y;
+}
+int main()
+{
+    int a,b,j,s=0;
+    cin>>a>>b;
+    if((a%2==0)&&(b%2==0))
+    {cout<<"2 ";s++;}
+    if((a%3==0)&&(b%3==0))
+    {cout<<"3 ";s++;} 
+    for(j=5;j<=minnum(a,b);j++)
+    {
+                            if((checkprime(j))&&(a%j==0)&&(b%j==0))
+                            {cout<<j<<" ";s++;}
+    }
+   if(s==0)
+    {cout<<'0';}
+    return 0;
+}

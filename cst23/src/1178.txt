@@ -1,0 +1,26 @@
+#include<iostream>
+using namespace std;
+int n,f[10]={6,2,5,5,4,5,6,3,7,6};
+int c(int x)
+{
+    int sum=0;
+    if(x<10)return f[x];
+    while(x!=0)
+    {
+     sum+=f[x%10];
+     x/=10;
+     }
+    return sum;
+}
+int main()
+{
+    int i,j,ans=0;
+    cin>>n;
+    n=n-4;
+    for(i=0;i<=1000;i++)
+      for(j=0;j<=1000;j++)
+       if(c(i)+c(j)+c(i+j)==n)ans++;
+    cout<<ans;
+     return 0;
+}
+

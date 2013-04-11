@@ -1,0 +1,221 @@
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+ 
+using namespace std;
+ 
+const int inf = 2000000000;
+ 
+struct array
+  {
+    private :
+      int val[6];
+    public :
+      int& operator [] (const int &index) { return val[index]; }
+      const int& operator [] (const int &index) const { return val[index]; }
+  };
+ 
+int d_ll[1<<18][6][6], d_rr[1<<18][6][6], d_lr[1<<18][6][6], d_mm[1<<18][6][6], w[100000][6];
+ 
+bool Combine(int now, int mid)
+  {
+    int tmp1[6][6], tmp2[6], i, j, k, val;
+    bool flag = false;
+    for (i = 0; i < 6; i ++)
+      for (j = 0; j < 6; j ++)
+        tmp1[i][j] = min(d_rr[now*2][i][j] + w[mid][i] + w[mid][j], d_ll[now*2+1][i][j]);
+    for (k = 0; k < 6; k ++)
+      for (i = 0; i < 6; i ++)
+        for (j = 0; j < 6; j ++)
+          tmp1[i][j] = min(tmp1[i][j], tmp1[i][k] + tmp1[k][j] - w[mid][k]);
+    for (i = 0; i < 6; i ++)
+      for (j = 0; j < 6; j ++)
+        if (tmp1[i][j] != d_mm[now][i][j])
+          flag = true, d_mm[now][i][j] = tmp1[i][j];
+    for (i = 0; i < 6; i ++)
+      {
+        for (j = 0; j < 6; j ++)
+          for (tmp2[j] = inf, k = 0; k < 6; k ++)
+            tmp2[j] = min(tmp2[j], d_lr[now*2][i][k] + tmp1[k][j]);
+        for (j = 0; j < 6; j ++)
+          {
+            for (val = d_ll[now*2][i][j], k = 0; k < 6; k ++)
+              val = min(val, d_lr[now*2][j][k] + tmp2[k]);
+            if (val != d_ll[now][i][j]) flag = true, d_ll[now][i][j] = val;
+          }
+        for (j = 0; j < 6; j ++)
+          {
+            for (val = inf, k = 0; k < 6; k ++)
+              val = min(val, tmp2[k] + d_lr[now*2+1][k][j] - w[mid][k]);
+            if (val != d_lr[now][i][j]) flag = true, d_lr[now][i][j] = val;
+          }
+        for (j = 0; j < 6; j ++)
+          for (tmp2[j] = inf, k = 0; k < 6; k ++)
+            tmp2[j] = min(tmp2[j], d_lr[now*2+1][k][i] + tmp1[k][j] - w[mid][k]);
+        for (j = 0; j < 6; j ++)
+          {
+            for (val = d_rr[now*2+1][i][j], k = 0; k < 6; k ++)
+              val = min(val, tmp2[k] + d_lr[now*2+1][k][j] - w[mid][k]);
+            if (val != d_rr[now][i][j]) flag = true, d_rr[now][i][j] = val;
+          }
+      }
+    return flag;
+  }
+ 
+void Make_Tree(int now, int l, int r)
+  {
+    if (l + 1 == r)
+      {
+        int i, j, k, sum;
+        for (i = 0; i < 6; i ++)
+          for (j = 0; j < 6; j ++)
+            {
+              if (i <= j) for (sum = 0, k = i; k <= j; k ++) sum += w[l][k];
+              if (i > j) for (sum = 0, k = j; k <= i; k ++) sum += w[l][k];
+              d_ll[now][i][j] = d_rr[now][i][j] = d_lr[now][i][j] = d_mm[now][i][j] = sum;
+            }
+        return;
+      }
+    int mid = l + r >> 1;
+    Make_Tree(now * 2, l, mid), Make_Tree(now * 2 + 1, mid, r), Combine(now, mid);
+  }
+ 
+bool Change(int now, int l, int r, int x, int y, int c)
+  {
+    if (l + 1 == r)
+      {
+        w[y][x] = c;
+        int i, j, k, sum;
+        for (i = 0; i < 6; i ++)
+          for (j = 0; j < 6; j ++)
+            {
+              if (i <= j) for (sum = 0, k = i; k <= j; k ++) sum += w[l][k];
+              if (i > j) for (sum = 0, k = j; k <= i; k ++) sum += w[l][k];
+              d_ll[now][i][j] = d_rr[now][i][j] = d_lr[now][i][j] = d_mm[now][i][j] = sum;
+            }
+        return true;
+      }
+    int mid = l + r >> 1;
+    bool flag;
+    if (y < mid) flag = Change(now * 2, l, mid, x, y, c);
+    if (y >= mid) flag = Change(now * 2 + 1, mid, r, x, y, c);
+    if (flag) flag = Combine(now, mid);
+    return flag;
+  }
+ 
+void Update_LR_Left(int now, int mid, array &l, array &r)
+  {
+    int tmp[6], i, j;
+    for (i = 0; i < 6; i ++)
+      for (tmp[i] = inf, j = 0; j < 6; j ++)
+        tmp[i] = min(tmp[i], r[j] + d_mm[now][j][i]);
+    for (i = 0; i < 6; i ++)
+      for (j = 0; j < 6; j ++)
+        l[i] = min(l[i], d_lr[now*2][i][j] + tmp[j]);
+    for (i = 0; i < 6; i ++)
+      for (r[i] = inf, j = 0; j < 6; j ++)
+        r[i] = min(r[i], tmp[j] + d_lr[now*2+1][j][i] - w[mid][j]);
+  }
+ 
+void Update_LR_Right(int now, int mid, array &l, array &r)
+  {
+    int tmp[6], i, j;
+    for (i = 0; i < 6; i ++)
+      for (tmp[i] = inf, j = 0; j < 6; j ++)
+        tmp[i] = min(tmp[i], l[j] + d_mm[now][j][i] - w[mid][j]);
+    for (i = 0; i < 6; i ++)
+      for (j = 0; j < 6; j ++)
+        r[i] = min(r[i], tmp[j] + d_lr[now*2+1][j][i] - w[mid][j]);
+    for (i = 0; i < 6; i ++)
+      for (l[i] = inf, j = 0; j < 6; j ++)
+        l[i] = min(l[i], d_lr[now*2][i][j] + tmp[j]);
+  }
+ 
+void Cal_SLR_Dist(int now, int l, int r, int x, int y, array &s_l, array &s_r)
+  {
+    if (l + 1 == r)
+      {
+        for (int i = 0; i < 6; i ++)
+          s_l[i] = s_r[i] = d_mm[now][x][i];
+        return;
+      }
+    int mid = l + r >> 1;
+    if (y < mid)
+      {
+        Cal_SLR_Dist(now * 2, l, mid, x, y, s_l, s_r);
+        Update_LR_Left(now, mid, s_l, s_r);
+      }
+    else
+      {
+        Cal_SLR_Dist(now * 2 + 1, mid, r, x, y, s_l, s_r);
+        Update_LR_Right(now, mid, s_l, s_r);
+      }
+  }
+ 
+int Cal_ST_Dist(int now, int l, int r, int x1, int y1, int x2, int y2, array &s_l, array &s_r, array &t_l, array &t_r)
+  {
+    if (l + 1 == r)
+      {
+        for (int i = 0; i < 6; i ++)
+          s_l[i] = s_r[i] = d_mm[now][x1][i];
+        for (int i = 0; i < 6; i ++)
+          t_l[i] = t_r[i] = d_mm[now][x2][i];
+        return d_mm[now][x1][x2];
+      }
+    int mid = l + r >> 1, res = inf, i, j;
+    
+    if (y2 < mid)
+      {
+        res = Cal_ST_Dist(now * 2, l, mid, x1, y1, x2, y2, s_l, s_r, t_l, t_r);
+        for (i = 0; i < 6; i ++)
+          for (j = 0; j < 6; j ++)
+            res = min(res, s_r[i] + d_mm[now][i][j] + t_r[j]);
+        Update_LR_Left(now, mid, s_l, s_r), Update_LR_Left(now, mid, t_l, t_r);
+      }
+    
+    if (y1 >= mid)
+      {
+        res = Cal_ST_Dist(now * 2 + 1, mid, r, x1, y1, x2, y2, s_l, s_r, t_l, t_r);
+        for (i = 0; i < 6; i ++)
+          for (j = 0; j < 6; j ++)
+            res = min(res, s_l[i] + d_mm[now][i][j] + t_l[j] - w[mid][i] - w[mid][j]);
+        Update_LR_Right(now, mid, s_l, s_r), Update_LR_Right(now, mid, t_l, t_r);
+      }
+    
+    if (y1 < mid && mid <= y2)
+      {
+        Cal_SLR_Dist(now * 2, l, mid, x1, y1, s_l, s_r);
+        Cal_SLR_Dist(now * 2 + 1, mid, r, x2, y2, t_l, t_r);
+        for (i = 0; i < 6; i ++)
+          for (j = 0; j < 6; j ++)
+            res = min(res, s_r[i] + d_mm[now][i][j] + t_l[j] - w[mid][j]);
+        Update_LR_Left(now, mid, s_l, s_r), Update_LR_Right(now, mid, t_l, t_r);
+      }
+    
+    return res;
+  }
+ 
+int main()
+  {
+    int n, q, i, j, ctrl, x, y, c, x1, y1, x2, y2;
+    array t1, t2, t3, t4;
+  
+    scanf("%d", &n);
+    for (i = 0; i < 6; i ++)
+      for (j = 0; j < n; j ++)
+        scanf("%d", &w[j][i]);
+    
+    Make_Tree(1, 0, n);
+    for (scanf("%d", &q); q; q --)
+      if (scanf("%d", &ctrl), ctrl == 1)
+        scanf("%d%d%d", &x, &y, &c), Change(1, 0, n, x - 1, y - 1, c);
+      else
+        {
+          scanf("%d%d%d%d", &x1, &y1, &x2, &y2), x1 --, y1 --, x2 --, y2 --;
+          if (y1 > y2) swap(x1, x2), swap(y1, y2);
+          printf("%d
+", Cal_ST_Dist(1, 0, n, x1, y1, x2, y2, t1, t2, t3, t4));
+        }
+    
+    return 0;
+  }

@@ -1,0 +1,49 @@
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <utility>
+#include <set>
+#include <map>
+#include <cmath>
+#include <climits>
+#include <ctime>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#define mp make_pair
+#define pb push_back
+#define FOR(x,y,z) for(int x(y);x<=z;++x)
+#define ROF(x,y,z) for(int x(y);x>=z;--x)
+#define rep(i,n) for(int i(0);i<n;++i)
+#define clr(x,y) memset(x,y,sizeof(x))
+#define mcp(x,y) memcpy(x,y,sizeof(y))
+#define two(x) (1<<(x))
+#define contain(x,y) (x&two(y))
+#define low(x) ((x)&-(x))
+#define xx first
+#define yy second
+using namespace std;
+
+typedef pair<int,int> PII;
+typedef pair<PII,int> PIII;
+typedef long long ll;
+typedef unsigned int uint;
+typedef unsigned long long ull;
+
+const int inf=0x3f3f3f3f;
+const ll infLL=0x3f3f3f3f3f3f3f3fLL;
+const double eps=1e-8;
+const double PI=3.141592653589793238;
+
+template<class T> inline void chkmax(T&x,const T&y){ if (x<y) x=y; };
+template<class T> inline void chkmin(T&x,const T&y){ if (x>y) x=y; };
+
+int main() {
+	int result=0,n;
+	cin>>n;
+	while (n) n/=5, result+=n;
+	cout<<result<<endl;
+}
+

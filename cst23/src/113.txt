@@ -1,0 +1,29 @@
+#include<iostream>
+#include<iomanip>
+using namespace std;
+
+int main()
+{
+ int n,s;
+ cin>>n>>s;
+ int a[21][21];
+ for(int i1=1;i1<=s;i1++) a[i1][1]=n++;
+ for(int i2=2;i2<=s;i2++) a[s][i2]=n++;
+ for(int i3=s-1;i3>=1;i3--) a[i3][s]=n++;
+ for(int i4=s-1;i4>1;i4--) a[1][i4]=n++;
+ for(int i=1;i<=s;i++)
+ {
+  if((i==1)||(i==s))
+  { 
+   for(int ix=1;ix<s;ix++) cout<<setw(3)<<a[i][ix]<<' ';
+   cout<<a[i][s]<<endl;
+  }
+  else
+  {
+   cout<<setw(3)<<a[i][1]<<' ';
+   for(int jx=2;jx<s;jx++) cout<<"   ";
+   cout<<a[i][s]<<endl;
+  };
+ };
+ return 0;
+};

@@ -1,0 +1,59 @@
+#include<iostream>
+using namespace std;
+
+void maxmin_0(int a,int b,int c, int *p, int *q)
+{
+    if( a > b )
+    {
+        *p = a;
+        *q = b;
+    }
+    else
+    {
+        *p = b;
+        *q = a;
+    }
+    if( c > *p)
+    {
+        *p = c;
+    }
+    if( c < *q)
+    {
+        *q = c;
+    }
+}
+
+void maxmin_1(int a,int b,int c, int& max, int& min)
+{
+    if( a > b )
+    {
+        max = a;
+        min = b;
+    }
+    else
+    {
+        max = b;
+        min = a;
+    }
+    if( c > max)
+    {
+        max = c;
+    }
+    if( c < min)
+    {
+        min = c;
+    }
+}
+
+
+int main()
+{
+	int a, b, c, se, min, max;
+	cin >> a >> b >> c >> se;
+	if (se == 0)
+		maxmin_0(a, b, c, &max, &min);
+	else
+		maxmin_1(a, b, c, max, min);
+	cout << max << ' ' << min << endl;
+}
+

@@ -1,0 +1,40 @@
+var
+x: array[1..1000, 1..1000] of longint;
+v: array[1..1000] of longint;
+f: array[0..1000] of longint;
+n, m, p, i, j, iBuyRobot, k, r: longint;
+begin
+readln(n, m, p);
+for i := 1 to n do
+for j := 1 to m do
+read(x[i, j]);
+for i := 1 to n do
+read(v[i]);
+for j := 1 to m do
+// 依次计算每个单位时间最多能收集的金币数
+begin
+for i := 1 to n do
+// 试验机器人收集金币的终点，实质上是试验从哪个厂买机器人
+// 因为买机器人需要金币，所以倒着运行以方便把购买所需资金放在后面进行比较
+begin
+r := 0;
+iBuyRobot := i + 1;
+for k := j downto j-p+1 do
+// 试验设置机器人行走次数
+begin
+if k = 0 then
+// 退行到最开始即停止
+break;
+dec(iBuyRobot);
+if iBuyRobot = 0 then
+iBuyRobot := n;
+r := r + x[iBuyRobot, k]; // 机器人在这段路上收集的金币
+if r + f[k-1] - v[iBuyRobot] > f[j] then
+// 如果加上原有的金币再减去机器人的购买成本比原有方案更好的话就采用此方案
+f[j] := r + f[k-1] - v[iBuyRobot];
+end;
+end;
+end;
+writeln(f[m]);
+end.
+

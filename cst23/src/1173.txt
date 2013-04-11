@@ -1,0 +1,37 @@
+//明明的随机数 
+#include<iostream>
+#include<algorithm>
+
+using namespace std;
+
+//ifstream cin("random3.in");
+//ofstream cout("random3.out");
+ 
+const int maxn=105;
+
+int N;
+int a[maxn];
+int M;
+
+int main()
+{
+	cin>>N;
+	for(int i=0;i<N;++i)
+		cin>>a[i];
+	sort(a,a+N);
+	unique(a,a+N);
+
+	for(int i=0;i<N;++i)
+		if(a[i]>=a[i+1])
+		{
+			M=i+1;
+			break;
+		}
+	cout<<M<<endl;
+	for(int i=0;i<M;++i)
+		cout<<a[i]<<' ';
+	cout<<endl;
+			
+    return 0;
+}
+

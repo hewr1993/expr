@@ -1,0 +1,33 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+int main()
+{
+	
+	cout << "Test Case 1: " << endl;
+	cout << "Before setting some ios flag
+"
+		 << "9.9900 prints as: " << 9.9900
+		 << "
+9.9000 prints as: " << 9.9000
+		 << "
+9.0000 prints as: " << 9.0000
+		 << "
+
+After setting some ios flag
+";
+	
+	
+     cout << setiosflags(ios::fixed) << setprecision(5);
+
+
+
+	cout << "9.9900 prints as: " << 9.9900
+		 << "
+9.9000 prints as: " << 9.9000
+		 << "
+9.0000 prints as: " << 9.0000 << endl;
+	return 0;
+}

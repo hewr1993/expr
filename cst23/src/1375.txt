@@ -1,0 +1,108 @@
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const long long mod = 1000000007;
+
+class matrix
+{
+    public:
+        matrix() {}
+        matrix(long long a, long long b, long long c, long long d)
+        {
+            f[0][0] = a;
+            f[0][1] = b;
+            f[1][0] = c;
+            f[1][1] = d;
+        }
+
+        matrix operator *(const matrix& m)
+        {
+            matrix tmp;
+            tmp.f[0][0] = (f[0][0] * m.f[0][0] + f[0][1] * m.f[1][0]) % mod;
+            tmp.f[0][1] = (f[0][0] * m.f[0][1] + f[0][1] * m.f[1][1]) % mod;
+            tmp.f[1][0] = (f[1][0] * m.f[0][0] + f[1][1] * m.f[1][0]) % mod;
+            tmp.f[1][1] = (f[1][0] * m.f[0][1] + f[1][1] * m.f[1][1]) % mod;
+
+            return tmp;
+        }
+
+        long long f[2][2];
+};
+
+void dfs(vector<pair<int, int> >& pri, vector<long long>& list, int level, long long num)
+{
+    if (level == pri.size()) {
+        list.push_back(num);
+        return;
+    }
+
+    for (int i = 0; i <= pri[level].second; ++i)
+        dfs(pri, list, level + 1, num * pow(double(pri[level].first), i));
+}
+
+void factor(int n, vector<long long>& list)
+{
+    int ori(sqrt(n));
+    vector<pair<int, int> > pri;
+    for (int i = 2; i <= ori; ++i)
+        if (n % i == 0) {
+            int num(0);
+            while (n % i == 0) {
+                ++num;
+                n /= i;
+            }
+            pri.push_back(make_pair(i, num));
+        }
+    if (n != 1) pri.push_back(make_pair(n, 1));
+
+    dfs(pri, list, 0, 1);
+    sort(list.begin(), list.end());
+}
+
+long long calc_f(long long p, vector<matrix>& mul)
+{
+    matrix tmp(1, 0, 0, 1);
+    for (int i = 0; i < mul.size(); ++i)
+        if ((p - 1)&(1 << i)) tmp = tmp * mul[i];
+
+    return tmp.f[0][1];
+}
+
+pair<int, int> rev(long long x, long long y)
+{
+    if (y == 0) return make_pair(1, 0);
+
+    pair<int, int> t(rev(y, x % y));
+    return make_pair(t.second, ((t.first - t.second * (x / y)) % mod + mod) % mod);
+}
+
+int main()
+{
+    long long n, m;
+    cin >> n >> m;
+
+    matrix tmp(m - 2, m - 1, 1, 0);
+    vector<matrix> mul(1, tmp);
+    while ((1 << mul.size()) <= n) {
+        tmp = tmp * tmp;
+        mul.push_back(tmp);
+    }
+
+    vector<long long> list;
+    factor(n, list);
+
+    long long ans(0);
+    vector<long long> f;
+    for (int i = 0; i < list.size(); ++i) {
+        f.push_back(calc_f(list[i], mul));
+        for (int j = 0; j < i; ++j) if (list[i] % list[j] == 0) f[i] = (f[i] - f[j] + mod) % mod;
+        ans = (ans + f[i] * rev(list[i], mod).first) % mod;
+    }
+
+    cout << (ans * m) % mod << endl;
+    return 0;
+}
+

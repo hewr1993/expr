@@ -1,0 +1,184 @@
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <cstring>
+#include <string>
+#include <algorithm>
+#include <cassert>
+using namespace std;
+
+#define rep(i, n) for (int i = 0; i < (n); ++i)
+typedef long long LL;
+
+const int P = 51061;
+
+struct Zp {
+    const LL mod; const int pri;
+    Zp(LL module) : mod(module), pri( primitive() ){
+    }
+    Zp(LL module, int primitive) : mod(module), pri(primitive) {
+    }
+    LL add(LL a, LL b) {
+        if ( (a += b) >= mod ) a -= mod; return a;
+    }
+    LL sub(LL a, LL b) {
+        if ( (a -= b) < 0 ) a += mod; return a;
+    }
+    LL mul(LL a, LL b) {
+        if ( mod <= 1000000000 ) {
+            return a * b % mod;
+        } else {
+            LL t = (LL)( (double)a * (double)b / mod + 0.5 );
+            LL r = (a * b - t * mod) % mod;
+            return r >= 0 ? r : r + mod;
+        }
+    }
+    LL inv(LL a) {
+        return pow(a, mod - 2);
+    }
+    LL pow(LL a, LL b) {
+        LL r = 1;
+        for (;b;) {
+            if ( b & 1 ) r = mul(r, a);
+            if ( b >>= 1 ) a = mul(a, a);
+        }
+        return r;
+    }
+    void fft(int n, LL root, LL a[]) {
+        for (int m = n; m >= 2; m >>= 1) {
+            int mh = m >> 1; LL w = 1;
+            for (int i = 0; i < mh; ++i) {
+                for (int j = i; j < n; j += m) {
+                    int k = j + mh;
+                    LL t = sub(a[j], a[k]);
+                    a[j] = add(a[j], a[k]);
+                    a[k] = mul(w, t);
+                }
+                w = mul(w, root);
+            }
+            root = mul(root, root);
+        }
+        for (int j = 1, i = 0; j < n - 1; ++j){
+            for (int k = n >> 1; k > (i ^= k); k >>= 1);
+            if ( j < i ) swap(a[i], a[j]);
+        }
+    }
+    void dft(const LL a[], int an, LL b[], int n) {
+        LL root = pow( pri, mod / n );
+        copy(a, a + an, b); fill( b + an, b + n, 0 );
+        fft(n, root, b);
+    }
+    void nft(const LL a[], LL b[], int n) {
+        LL root = inv( pow( pri, mod / n ) );
+        copy(a, a + n, b); fft(n, root, b);
+        LL invn = inv(n);
+        rep(i, n) b[i] = mul(b[i], invn);
+    }
+    int primitive() {
+        LL n = mod - 1;
+        LL p[25], pcnt = 0;
+        for (LL i = 2; i * i <= n; ++i) {
+            if ( n % i == 0 ) {
+                do n /= i; while (n % i == 0);
+                p[pcnt++] = i;
+            }
+        }
+        if (n > 1) p[pcnt++] = n;
+        for (int g = 2; ;++g) {
+            int ok = 1;
+//            assert( pow(g, mod-1) == 1 );
+            for (int i = 0; i < pcnt; ++i) {
+                if ( pow(g, (mod-1)/p[i] ) == 1 ) {
+                    ok = 0; break;
+                }
+            }
+            if (ok) return g;
+        }
+    }
+} zp(50000000001507329LL, 3), zq(P, 2);
+
+struct Poly {
+    static const int maxn = P * 4;
+    LL a[maxn]; int n;
+    void init(LL a[], int n) {
+        this->n = n; copy(a, a + n, this->a);
+    }
+    friend void multiply(const Poly& x, const Poly& y, Poly& r) {
+        static LL xb[maxn], yb[maxn];
+        int n; for (n = 1; n < x.n + y.n; n *= 2);
+        LL root = zp.pow( zp.pri, zp.mod / n );
+        zp.dft( x.a, x.n, xb, n );
+        zp.dft( y.a, y.n, yb, n );
+        rep(i, n) xb[i] = zp.mul(xb[i], yb[i]);
+        zp.nft(xb, r.a, n);
+        r.n = n;
+        while ( r.n-1 >= P - 1) {
+            --r.n;
+            r.a[ r.n - (P-1) ] += r.a[ r.n ];
+        }
+        for (int i = 0; i < r.n; ++i) r.a[ i ] %= 29;
+    }
+} poly[11];
+
+LL powG[P];
+int ind[P];
+LL indFact[P];
+
+void init(){
+    powG[0] = 1; ind[1] = 0;
+    for (int i = 1; i < P - 1; ++i)
+        ind[ powG[i] = zq.mul( powG[i-1], zq.pri ) ] = i;
+    indFact[0] = indFact[1] = ind[1];
+    for (int i = 2; i < P; ++i)
+        indFact[i] = indFact[i-1] + ind[i];
+}
+
+void solve(const char s[]) {
+    LL n[15] = {0};
+    int tot = 0, up = 0;
+    for (const char *ptr = s; *ptr; ++ptr) {
+        int v = *ptr - '0';
+        tot = ( tot * 10 + v ) % 29;
+        for (int i = 0; i <= up; ++i) n[i] *= 10;
+        n[0] += v;
+        for (int i = 0; i <= up; ++i) {
+            if ( n[i] >= P ) {
+                n[i+1] += n[i] / P; n[i] %= P;
+                up = max(up, i + 1);
+            }
+        }
+    }
+    ++tot;
+    for (int i = 0; i <= up; ++i) {
+        static LL a[P];
+        memset(a, 0, sizeof a);
+        for (int j = 0; j <= n[i]; ++j) {
+            LL ind = indFact[ n[i] ] - indFact[ j ] - indFact[ n[i]-j ];
+            ind %= P - 1;
+            if ( ind < 0 ) ind += P - 1; // of importance
+            ++a[ind];
+            if ( a[ind] == 29 ) a[ind] = 0;
+        }
+        poly[i].init(a, P - 1);
+    }
+    for (int i = 1; i <= up; ++i)
+        multiply( poly[0], poly[i], poly[0] );
+    LL ans[P];
+    LL totnonezero = 0;
+    for (int i = 0; i < P - 1; ++i) {
+        ans[ powG[i] ] = poly[0].a[i] % 29;
+        totnonezero +=  ans[ powG[i] ];
+    }
+    ans[0] = ( (tot - totnonezero) % 29 + 29 ) % 29;
+    for (int i = 0; i < P; ++i) {
+        putchar( ans[i]["0123456789ABCDEFGHIJKLMNOPQRS"] );
+    }
+    puts("");
+}
+
+int main(){
+    char n[55]; LL p;
+    for (init(); cin >> n >> p; solve(n)) assert(p == P);
+}
+

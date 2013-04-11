@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <memory.h>
+
+const int maxn = 100000 + 5;
+const int maxm = 100000 + 5;
+
+const int q = 10000;
+
+//±ŸËã·šÊµŒùžŽÔÓ¶ÈÎªO(n+m)£¬ÊµŒÊÉÏ£¬ÀûÓÃÅÅÐò+ÀëÉ¢¿ÉÒÔ×öµœO(mlogm)£¬ÀûÓÃhash»òÕß£š»ùÊýÅÅÐò+ÀëÉ¢£©¶Œ¿ÉÒÔ×öµœO(m)
+
+int n, m;
+long long ans;
+
+int P[maxm];		//0<=P[i]<=n-1
+int L[maxm];		//Ç°×ºº¯Êý
+int Link[maxm], Children[maxm];		//TÊ÷£¬¶ù×ÓÐòÁÐ
+int Qnow[maxn], Change[maxm];	//ChangeŒÇÂŒÔöÁ¿
+long long Z[maxm], b[maxm], y[maxm];
+int Z0;
+
+void KMP(){		//KMPËã·šµÚÒ»²œ£¬ÇóÇ°×ºº¯Êý
+	int k = 0;
+	L[0] = L[1] = 0;
+	for (int i = 2; i < m; i++){
+		for (;(k > 0) && (P[k + 1] != P[i]); k = L[k]);
+		if (P[k + 1] == P[i]) k++;
+		L[i] = k;
+	}
+}
+
+void BuildTree(){		//žùŸÝLiœšÊ÷
+	memset(Link, 0, sizeof(Link));
+	int i;
+	for (i = 1; i < m; i++) Link[L[i]]++;
+	for (i = 1; i < m; i++) Link[i] += Link[i - 1];
+	for (i = 1; i < m; i++)	Children[--Link[L[i]]] = i;
+}
+
+void getZ(){			//ÇóZi=n-1-Di,i
+	int i;
+	for (i = 0; i < m; i++) Z[i] = (Z0 + 1) % q;
+	for (i = 1; i < m; i++)
+		if (P[i] != P[i + 1]){
+			Z[i] = Z0; break;
+		}
+}
+
+void Try(int i = 0){		//dfsÇóÔöÁ¿
+	int Temp = Qnow[P[i + 1]];
+	Change[i] = Temp;
+	Qnow[P[i + 1]] = i + 1;
+	for (int j = Link[i]; j < Link[i + 1]; j++) Try(Children[j]);
+	Qnow[P[i + 1]] = Temp;
+}
+
+void calc(){		//ŒÆËãœá¹û
+	b[0] = 1; y[0] = 0; ans = 0;
+	for (int i = 1; i < m; i++){
+		y[i] = (y[i - 1] + b[i - 1]) % q;
+		b[i] = (b[L[i]] + Z[i] * y[i] - (Z[L[i]] * y[L[i]] % q) + q) % q;					//µÚÒ»Ïî
+		if (Change[i] <= L[i] - 1) b[i] = (b[i] + y[Change[i]]) % q;						//µÚ¶þÏî
+		if ((Z[L[i]] == Z0) && (L[i] != Change[i])) b[i] = (b[i] - y[L[i]] + q) % q;		//µÚÈýÏî1
+		if ((L[i] + 1 < i) && (L[i] + 1 != Change[i])) b[i] = (b[i] - y[L[i] + 1] + q) % q;	//µÚÈýÏî2
+	}
+	ans = n * (y[m - 1] + b[m - 1]) % q;
+}
+
+int main(){
+	int T, I, J;
+	
+
+	scanf("%d%d", &n, &T);
+	Z0 = (n - 2 + q) % q;
+
+	for (I = 1; I <= T; I++){
+		scanf("%d", &m);
+		for (J = 1; J <= m; J++){
+			scanf("%d", &P[J]); P[J]--;
+		}
+		
+		KMP(); BuildTree(); getZ(); Try(); calc();		//Ëã·šµÄ5žö²œÖè
+
+		printf("%04d
+", ans);
+	}
+}

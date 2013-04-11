@@ -1,0 +1,163 @@
+#include<cstdio>
+#include<set>
+#include<algorithm>
+using namespace std;
+typedef pair<int,int> PII;
+#define lb lower_bound
+#define mp make_pair
+#define fi first
+#define se second
+#define INF 1000000007
+#define N 100010
+class Treap
+{
+private:
+	struct nd
+	{
+		int v,w,s,sz;nd*c[2];
+		nd(int V=0,nd*n=0):v(V),w(rand()%INF),s(V),sz(1){c[0]=c[1]=n;}
+		void rz(){s=c[0]->s+c[1]->s+v,sz=c[0]->sz+c[1]->sz+1;}
+	}*h,*u;
+	void rt(nd*&x,bool t)
+	{
+		nd*y=x->c[t];
+		x->c[t]=y->c[!t],y->c[!t]=x,x->rz(),y->rz(),x=y;
+	}
+	void ins(nd*&x,int y)
+	{
+		if(x==u){x=new nd(y,u);return;}
+		int t=y>=x->v;ins(x->c[t],y);
+		if(x->c[t]->w<x->w)rt(x,t);else x->rz();
+	}
+	void del(nd*&x,int y)
+	{
+		if(x==u)return;
+		if(x->v==y)
+		{
+			int t=x->c[0]->w>x->c[1]->w;
+			if(x->c[t]==u){delete x;x=u;return;}
+			rt(x,t),del(x->c[!t],y);
+		}else del(x->c[x->v<=y],y);
+		x->rz();
+	}
+	int ask(nd*x,int y)
+	{
+		if(y<=0)return 0;
+		if(x==u)return -N;
+		if(x->c[0]->s+y<=0)return ask(x->c[0],y);
+		return x->c[0]->sz+1+ask(x->c[1],y+x->c[0]->s+x->v);
+	}
+public:
+	Treap(){u=new nd();u->s=u->sz=0,u->w=INF,h=u;}
+	void ins(int x){ins(h,x);}
+	void del(int x){del(h,x);}
+	int ask(int x){return max(ask(h,x),-1);}
+}*T;
+int a[N],n,m,S,f[N*4],g[N*4];set<PII> A;
+typedef set<PII>::iterator sit;
+void blt(int p,int l,int r)
+{
+	if(l==r-1){f[p]=g[p]=a[l];return;}
+	int mid=(l+r)/2;
+	blt(p*2+1,l,mid),blt(p*2+2,mid,r),
+	f[p]=max(f[p*2+1],f[p*2+2]),
+	g[p]=g[p*2+1]+g[p*2+2];
+}
+int askm(int p,int l,int r,int L,int R)
+{
+	if(L<=l&&r<=R)return f[p];
+	int mid=(l+r)/2,S=-INF;
+	if(L<mid)S=max(S,askm(p*2+1,l,mid,L,R));
+	if(mid<R)S=max(S,askm(p*2+2,mid,r,L,R));
+	return S;
+}
+int asks(int p,int l,int r,int L,int R)
+{
+	if(L<=l&&r<=R)return g[p];
+	int mid=(l+r)/2,S=0;
+	if(L<mid)S+=asks(p*2+1,l,mid,L,R);
+	if(mid<R)S+=asks(p*2+2,mid,r,L,R);
+	return S;
+}
+void upd(int p,int l,int r,int x,int y)
+{
+	if(l==r-1){f[p]=g[p]=y;return;}
+	int mid=(l+r)/2;
+	if(x<mid)upd(p*2+1,l,mid,x,y);
+	else upd(p*2+2,mid,r,x,y);
+	f[p]=max(f[p*2+1],f[p*2+2]),
+	g[p]=g[p*2+1]+g[p*2+2];
+}
+void ins(int x,int y)
+{
+	if(x!=1&&y!=n)T->ins(asks(0,1,n,x,y)-askm(0,1,n,x,y));
+	A.insert(mp(x,y));
+}
+void del(int x,int y)
+{
+	if(x!=1&&y!=n)T->del(asks(0,1,n,x,y)-askm(0,1,n,x,y));
+	A.erase(mp(x,y));
+}
+#define updx() upd(0,1,n,x,a[x]+y)
+void upd(int x,int y)
+{
+	if(a[x]>0&&a[x]+y>0)S+=y;else
+	if(a[x]>0&&a[x]+y<=0)
+	{
+		S-=a[x];sit p=A.lb(mp(x,0));PII w=*p;
+		if(p!=A.begin())
+		{
+			sit p2=p;PII w2=*--p2;
+			if(w2.se==x&&w.fi==x+1)del(w.fi,w.se),del(w2.fi,w2.se),updx(),ins(w2.fi,w.se);else
+			if(w2.se==x&&w.fi!=x+1)del(w2.fi,w2.se),updx(),ins(w2.fi,x+1);else
+			if(w2.se!=x&&w.fi==x+1)del(w.fi,w.se),updx(),ins(x,w.se);else updx(),ins(x,x+1);
+		}else
+		if(w.fi==x+1)del(w.fi,w.se),updx(),ins(x,w.se);
+		else updx(),ins(x,x+1);
+	}else
+	if(a[x]<=0&&a[x]+y>0)
+	{
+		S+=a[x]+y;sit p=A.lb(mp(x+1,0));PII w=*--p;
+		del(w.fi,w.se),upd(0,1,n,x,a[x]+y);
+		if(w.fi==x&&w.se!=x+1)ins(w.fi+1,w.se);else
+		if(w.fi!=x&&w.se==x+1)ins(w.fi,w.se-1);
+		else if(w.se-w.fi>1)ins(w.fi,x),ins(x+1,w.se);
+	}else
+	if(a[x]<=0&&a[x]+y<=0)
+	{
+		sit p=A.lb(mp(x+1,0));PII w=*--p;
+		del(w.fi,w.se),upd(0,1,n,x,a[x]+y),ins(w.fi,w.se);
+	}
+	a[x]+=y;
+}
+int main()
+{
+	int _;scanf("%d",&_);
+	while(_--)
+	{
+		scanf("%d%d",&n,&m);
+		for(int i=0;i<n;i++)scanf("%d",a+i);
+		S=0;for(int i=n-1;i;i--)a[i]-=a[i-1],S+=max(a[i],0);
+		T=new Treap(),A.clear(),blt(0,1,n);
+		for(int i=1,j;i<n;i=j)
+		{
+			for(;i<n&&a[i]>0;i++);
+			if(i==n)break;
+			for(j=i;j<n&&a[j]<=0;j++);
+			ins(i,j);
+		}
+		while(m--)
+		{
+			int x;scanf("%d",&x);
+			if(x==1)printf("%d %d
+",S,T->ask(S));else
+			{
+				int l,r,z;
+				scanf("%d%d%d",&l,&r,&z),--l;
+				if(l)upd(l,z);
+				if(r!=n)upd(r,-z);
+			}
+		}
+	}
+	return 0;
+}

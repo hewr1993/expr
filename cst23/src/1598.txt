@@ -1,0 +1,38 @@
+program yysc(input,output);
+var
+	a,b,c,d,tmp1,tmp2:real;
+	i:longint;
+function getf(x:real):real;
+begin
+	exit(a*x*x*x+b*x*x+c*x+d);
+end;
+function getans(l,r:real;ok:boolean):real;
+var
+	mid:real;
+begin
+	if ok then
+	while abs(r-l)>1e-3 do begin
+	mid:=(l+r)/2;
+	if getf(mid)<0 then l:=mid
+	else r:=mid;
+	end else
+	while abs(r-l)>1e-3 do begin
+	mid:=(l+r)/2;
+	if getf(mid)<0 then r:=mid
+	else l:=mid;
+	end;
+	exit(l);
+end;
+begin
+	readln(a,b,c,d);
+	for i:=-100 to 99 do begin
+	tmp1:=getf(i); tmp2:=getf(i+1);
+	if abs(tmp1)<1e-3 then begin
+	write(i,'.00 ');
+	continue;
+	end;
+	if tmp1*tmp2+1e-5<0 then
+	if tmp1<tmp2 then write(getans(i,i+1,true):0:2,' ')
+	else write(getans(i,i+1,false):0:2,' ');
+	end;
+end.

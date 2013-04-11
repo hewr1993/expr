@@ -1,0 +1,57 @@
+//#include "stdafx.h"
+
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+#include <cstdio>
+#include <utility>
+using namespace std;
+
+int n;
+int n1,n2;
+const double pi = 3.1415926535897932;
+struct Coor{
+	double x,y;
+	Coor(){ x=0;y=0;}
+};
+Coor* v;
+
+Coor calCenter(){
+	double angle=(abs(n2-n1))*2*pi/n;
+	double c=cos(angle);
+	double s=sin(angle);
+	double m=(v[n1].x-v[n2].x)/2 + s*(v[n1].y-v[n2].y)/2/(1-c);
+	double n=(v[n1].y-v[n2].y)/2 - (1+c)*(v[n1].x-v[n2].x)/2/s;
+	Coor r;
+	r.x=v[n1].x-m;
+	r.y=v[n1].y-n;
+	return r;
+}
+int main(){
+	
+	cin>>n>>n1>>n2;
+	--n1;--n2;
+	v = new Coor[n];
+	cin>>v[n1].x>>v[n1].y>>v[n2].x>>v[n2].y;
+	if(n1>n2)
+		swap(n1,n2);
+	Coor center = calCenter();
+	//printf("%.6f,%.6f",center.x,center.y);
+	double dx=v[n1].x-center.x;
+	double dy=v[n1].y-center.y;
+	
+	for(int i=0;i<n;++i){
+		if(i!=n1 || i!=n2){
+			double angle=(i-n1)*2*pi/n;
+			v[i].x = dx*cos(angle) + dy*sin(angle) +center.x;
+			v[i].y = dy*cos(angle) - dx*sin(angle) +center.y;
+		}
+		if(abs(v[i].x)<0.000001)
+			v[i].x=0;
+		if(abs(v[i].y)<0.000001)
+			v[i].y=0;
+		printf("%.6f %.6f
+",v[i].x,v[i].y);
+	}
+	//system("pause");
+}

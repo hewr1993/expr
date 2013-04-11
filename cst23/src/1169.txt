@@ -1,0 +1,35 @@
+#include<iostream>
+#include<cstdio>
+
+using namespace std;
+
+int n, x, y;
+int p[510][2];
+bool m[110][110];
+
+bool check(int i, int j){
+	x=p[j][0]-p[i][0];
+	y=p[j][1]-p[i][1];
+	int px=p[i][0]+y, py=p[i][1]-x, qx=p[j][0]+y, qy=p[j][1]-x;
+	if (px<0 || px>100 || py<0 || py>100 || qx<0 || qx>100 || qy<0 || qy>100) return false;
+	if (m[px][py] && m[qx][qy]) return true;
+	return false;
+}
+
+int main(){
+	cin>>n;
+	for (int i=0; i<n; i++){
+		cin>>x>>y;
+		p[i][0]=x; p[i][1]=y;
+		m[x][y]=true;
+	}
+	int ans=0;
+	for (int i=0; i<n; i++)
+		for (int j=1; j<n; j++){
+			if (i==j) continue;
+			if (check(i, j)) ans++;
+		}
+	cout<<ans/4<<endl;
+	return 0;
+}
+

@@ -1,0 +1,54 @@
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
+
+using namespace std;
+
+struct dian
+{
+	int x, y, s;
+};
+bool cmp(dian a, dian b)
+{
+	if (a.s > b.s)
+		return true;
+	return false;
+}
+int main(int argc, char *argv[])
+{
+	int n, m, t, in, l, s = 0, sum = 0;
+	dian a[10000];
+	scanf("%d%d%d", &n, &m, &t);
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= m; j++)
+		{
+			scanf("%d", &in);
+			if (in != 0)
+			{
+				a[++s].x = i;
+				a[s].y = j;
+				a[s].s = in;
+			}
+		}
+	sort(a + 1, a + s + 1, cmp);
+	a[0].x = 0;
+	a[0].y = a[1].y;
+	for (int i = 1; i <= s; i++)
+	{
+		if (a[i].s == 0)
+			break;
+		l = abs(a[i - 1].x - a[i].x) + abs(a[i - 1].y - a[i].y) + 1;
+		if (t >= l + a[i].x)
+		{
+			t -= l;
+			sum += a[i].s;
+		}
+		else
+			break;
+	}
+	printf("%d
+", sum);
+	//system("PAUSE");
+	return EXIT_SUCCESS;
+}
+ 

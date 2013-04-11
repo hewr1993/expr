@@ -1,0 +1,14 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+
+using namespace std;
+
+int exp(int a, int b, int m)
+{
+    int c=0;
+    if (b==0) {return 1%m;}
+    else if(b%2==0){c=exp(a,b/2,m);return (c*c)%m;}
+    else{c=exp(a,b-1,m);return (c*a)%m;}
+}
+

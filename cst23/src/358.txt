@@ -1,0 +1,91 @@
+program syj;
+
+const
+  maxn=15005;
+  maxk=35;
+
+var
+  f:array[0..maxn*4,0..maxk]of longint;
+  h2,next2,point2,w2:array[0..maxn*2]of longint;
+  h,next,point,from,w:array[0..maxn*8]of longint;
+  g:array[0..maxk]of longint;
+  v:array[0..maxn]of boolean;
+  nn,n,m,i,j,k,l,e,e2,ans,tmp:longint;
+
+procedure link2(x,y,z:longint);
+begin
+  inc(e2); next2[e2]:=h2[x];point2[e2]:=y;w2[e2]:=z;h2[x]:=e2;
+  inc(e2); next2[e2]:=h2[y];point2[e2]:=x;w2[e2]:=z;h2[y]:=e2;
+end;
+
+procedure link(x,y,z:longint);
+begin
+  inc(e); next[e]:=h[x];point[e]:=y;from[e]:=x;w[e]:=z;h[x]:=e;
+  inc(e); next[e]:=h[y];point[e]:=x;from[e]:=y;w[e]:=z;h[y]:=e;
+end;
+
+procedure dfs(i:longint);
+var j,k,l:longint;
+begin
+  j:=h2[i];v[i]:=true;l:=i;
+  while j<>0 do begin
+    k:=point2[j];
+    if not v[k] then begin
+      inc(nn); link(l,nn,0); link(nn,k,w2[j]); l:=nn;
+      dfs(k);
+    end;
+    j:=next2[j];
+  end;
+end;
+
+procedure work(u:longint);
+var p,i,j,k,l,r,tmp:longint;
+begin
+  if f[u,0]>-1 then exit;
+  p:=from[u];i:=point[u];j:=h[i];r:=-1;
+  fillchar(f[u],sizeof(f[u]),0);
+  while j<>0 do begin
+    k:=point[j];
+    if k<>p then begin
+      work(j);
+      for r:=m downto 0 do begin
+        tmp:=maxlongint;
+        for l:=0 to r do
+          if f[j,l]+f[u,r-l]<tmp then tmp:=f[j,l]+f[u,r-l];
+        f[u,r]:=tmp;
+      end;
+    end;
+    j:=next[j];
+  end;
+  inc(f[u,0],2*w[u]);
+  for l:=1 to m do inc(f[u,l],l*w[u]);
+end;
+
+begin
+  
+    readln(n,m); nn:=n;
+    for i:=1 to n-1 do begin
+      readln(j,k,l);
+      link2(j,k,l);
+    end;
+    dfs(1);
+    fillchar(f,sizeof(f),);
+    for i:=1 to n do begin
+      j:=h[i]; k:=-1;
+      fillchar(g,sizeof(g),0);
+      while j<>0 do begin
+        work(j);
+        for k:=m downto 0 do begin
+          tmp:=maxlongint;
+          for l:=0 to k do if f[j,l]+g[k-l]<tmp then tmp:=f[j,l]+g[k-l];
+          g[k]:=tmp;
+        end;
+        j:=next[j];
+      end;
+      tmp:=maxlongint;
+      for j:=0 to m do if g[j]<tmp then tmp:=g[j];
+      writeln(tmp);
+    end;
+  
+end.
+

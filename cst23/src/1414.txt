@@ -1,0 +1,84 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
+#include <cmath>
+
+using namespace std;
+
+struct t{
+       int x1, y1, x2, y2, z, v;
+} sq[101];
+
+int xx[101], yy[101];
+int n;
+int mark[100][100];
+int stx[10001],sty[10001];
+int size;
+long long area, ans;
+
+bool cmp(const t q,const t w)
+{
+     if(q.z < w.z) return true;
+     return false;
+}
+
+int main()
+{
+    scanf("%d", &n);
+    int a, b, c, x, y, z;
+    int num = 0;
+    for(int i = 0; i < n; i++)
+    {
+            scanf("%d %d %d %d %d %d", &a, &b, &c, &x, &y, &z);
+            sq[++num].x1 = a + 5000;
+            sq[num].y1 = b + 5000;
+            sq[num].x2 = x + 5000;
+            sq[num].y2 = y + 5000;
+            sq[num].z = c;
+            sq[num].v = 1;
+            sq[++num].x1 = a + 5000;
+            sq[num].y1 = b + 5000;
+            sq[num].x2 = x + 5000;
+            sq[num].y2 = y + 5000;
+            sq[num].z = z;
+            sq[num].v = -1;
+            xx[++size]=a + 5000;
+            yy[size]=b + 5000;
+            xx[++size]=x + 5000;
+            yy[size]=y + 5000;
+    }
+    sort(sq + 1, sq + 1 + num, cmp);
+    sort(xx + 1, xx + 1 + size);
+    sort(yy + 1, yy + 1 + size);
+    for(int i = 1; i <= size; i++)
+    {
+            stx[xx[i]] = i;
+            sty[yy[i]] = i;
+    }
+    for(int i = 1; i < num; i++)
+    {
+            if(stx[sq[i].x1] != stx[sq[i].x2])
+            for(int j = stx[sq[i].x1]; j < stx[sq[i].x2]; j++)
+            {
+                    if(sty[sq[i].y1] != sty[sq[i].y2])
+                    for(int k = sty[sq[i].y1]; k < sty[sq[i].y2]; k++)
+                    {
+                            mark[j][k] += sq[i].v;
+                            if(sq[i].v == -1 && mark[j][k] == 0)
+                            {
+                             area -= (xx[j + 1] - xx[j]) * (yy[k + 1] - yy[k]);
+                            }
+                            else if(sq[i].v == 1 && mark[j][k] == 1)
+                            {
+                             area += (xx[j + 1] - xx[j]) * (yy[k + 1] - yy[k]);
+                            }
+                    }
+            }
+            ans += area * (sq[i + 1].z - sq[i].z);
+    }
+    cout<<ans;
+    return 0;
+}
+

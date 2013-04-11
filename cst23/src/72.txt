@@ -1,0 +1,98 @@
+#include <iostream>
+#include <cstring>
+#include <memory>
+#include <algorithm>
+using namespace std;
+int check(char letter[40],char letter1[40])
+{    
+     int sum=0;
+    if(strlen(letter)==strlen(letter1))
+    {
+                                       for(int i=0;i<strlen(letter);i++)
+                                       {
+                                               if(letter[i]==letter1[i])
+                                               sum++;
+                                       }
+                                       if(sum==strlen(letter))
+                                       return 1;
+                                       else 
+                                       return 0;
+    }
+    else
+    return 0;
+}
+int main()
+{
+    char let[40];
+    cin>>let;
+    int n,total=0,sum=0,t=0;
+    cin>>n;
+    char let1[101][40];
+    for(int i=1;i<(n+1);i++)
+    cin>>let1[i];
+    for(int i=1;i<(n+1);i++)
+     if(check(let,let1[i])==1)
+            {
+                                  cout<<let;
+                                  system("pause");
+                                  return 0;
+            }
+    
+    for(int i=1;i<(n+1);i++)
+    {
+            if(strlen(let)==strlen(let1[i]))
+            {
+                                         for(int j=0;j<strlen(let);j++)
+                                         {
+                                                 if(let[j]==let1[i][j])
+                                                 sum++;
+                                         }
+                                         if(sum==(strlen(let)-1))
+                                         {
+                                                             cout<<let1[i];
+                                                             system("pause");
+                                                             return 0;
+                                         }
+            }
+            sum=0;t=0;
+            if((strlen(let)-strlen(let1[i]))==1)
+            {
+                                               while(let[t]==let1[i][t])
+                                               {t++;sum++;}
+                                               for(int j=t;j<strlen(let1[i]);j++)
+                                               {
+                                                       if(let[j+1]==let1[i][j])
+                                                       sum++;
+                                               }
+                                               if(sum==strlen(let1[i]))
+                                               {
+                                                                    cout<<let1[i];
+                                                                    system("pause");
+                                                                    return 0;
+                                               }
+            }
+            sum=0;t=0; 
+            if((strlen(let1[i])-strlen(let))==1)
+            {
+                                               while(let[t]==let1[i][t])
+                                               {t++;sum++;}
+                                               for(int j=t;j<strlen(let);j++)
+                                               {
+                                                       if(let1[i][j+1]==let[j])
+                                                       sum++;
+                                               }
+                                               if(sum==strlen(let))
+                                               {
+                                                                    cout<<let1[i];
+                                                                    system("pause");
+                                                                    return 0;
+                                               }
+            } 
+            total++;
+    }
+    if(total==n)
+    cout<<"NOANSWER";
+    
+    return 0;
+}
+

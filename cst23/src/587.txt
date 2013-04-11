@@ -1,0 +1,54 @@
+/* 
+ * File:   q1.cpp
+ * Author: zhuxw
+ *
+ * Created on 2009年10月24日, 下午11:29
+ */
+
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+using namespace std;
+
+/*
+ * 
+ */
+int main() {
+    char s[100], *p, ch, var;
+    cin>>s;
+    strcat(s, "=");
+    p = &s[0];
+    int num = 0, a = 0, b = 0, flag = 1, symbol=1;
+    while (*p) {
+        ch = *p;
+        if (ch=='+') {
+            b += flag*symbol*num;
+            symbol = 1;
+            num = 0;
+        }
+        else if (ch=='-') {
+            b += flag*symbol*num;
+            symbol = -1;
+            num = 0;
+        }
+        else if (ch=='=') {
+            b += flag*symbol*num;
+            flag = -1;
+            symbol = 1;
+            num = 0;
+        }
+        else if (ch>='0' && ch<='9') num = num*10+(ch-'0');
+        else if (isalpha(ch)) {
+            if (!num) num = 1;
+            a += flag*symbol*num;
+            num = 0;
+            var = ch;
+        }
+        p++;
+    }
+    cout<<setiosflags(ios::fixed);
+    cout<<var<<'='<<setprecision(3)<<-b*1.0/a+1e-7<<endl;
+    return 0;
+}
+

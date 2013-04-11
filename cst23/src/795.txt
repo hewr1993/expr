@@ -1,0 +1,19 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+	char he;
+	for(he = 'A';he <= 'E';he++)
+	{
+		bool a1 = (he != 'A' && he != 'B');
+		bool a2 = (he == 'C' || he == 'F');
+		bool a3 = (he != 'A');
+		bool a4 = (he == 'D');
+		bool a5 = (he == 'A');
+		if(a1 + a2 + a3 + a4 + a5 == 1)
+		cout << he;
+	}
+	//system("pause");
+	return 0;
+}
+

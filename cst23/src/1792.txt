@@ -1,0 +1,213 @@
+#include<iostream>
+#include<cstring>
+#include<string>
+#include<cstdio>
+
+using namespace std;
+
+const int maxn = 1000010;
+
+struct tree {
+	int par , ch[2] , dir;
+	int mark , maxs , data;
+};
+tree node[maxn];
+int tot , let[maxn][26] , lem[maxn] , lep[maxn] , rt[maxn];
+
+int task , n , m , ans;
+int value[maxn] , id[maxn];
+string data[maxn] , com , str;
+
+void link( int par , int t , int dir ) {
+	if ( par != 0 ) node[par].ch[dir] = t;
+	node[t].par = par;
+	node[t].dir = dir;
+}
+
+void release( int t ) {
+	if ( node[t].mark ) {
+		node[t].data += node[t].mark;
+		node[t].maxs += node[t].mark;
+		int lch = node[t].ch[0] , rch = node[t].ch[1];
+		if ( lch != 0 ) node[lch].mark += node[t].mark;
+		if ( rch != 0 ) node[rch].mark += node[t].mark;
+		node[t].mark = 0;
+	}
+}
+
+void update( int t ) {
+	node[t].maxs = node[t].data;
+	int lch = node[t].ch[0] , rch = node[t].ch[1];
+	if ( lch != 0 ) release( lch ) , node[t].maxs = max( node[t].maxs , node[lch].maxs );
+	if ( rch != 0 ) release( rch ) , node[t].maxs = max( node[t].maxs , node[rch].maxs );
+}
+
+void rotate( int t ) {
+	int par = node[t].par;
+	release( par );
+	release( t );
+	int dir = node[t].dir;
+	link( node[par].par , t , node[par].dir );
+	link( par , node[t].ch[!dir] , dir );
+	link( t , par , !dir );
+	update( par );
+}
+
+void splay( int anc , int t ) {
+	release( t );
+	while ( node[t].par != anc ) {
+		int par = node[t].par;
+		if ( node[par].par == anc ) rotate( t ); else {
+			if ( node[par].dir == node[t].dir ) rotate( par );
+				else rotate( t );
+			rotate( t );
+		}
+	}
+	update( t );
+}
+
+int caln( int t , int dir ) {
+	if ( node[t].ch[dir] != 0 ) {
+		t = node[t].ch[dir];
+		while ( node[t].ch[!dir] != 0 )
+			t = node[t].ch[!dir];
+		return t;
+	}
+	while ( t != 0 && node[t].dir == dir )
+		t = node[t].par;
+	if ( t != 0 ) t = node[t].par;
+	if ( t == 0 ) t = 2 + dir;
+	return t;
+}
+
+int build( string str , int p ) {
+	int t = 1 , len = str.length() , fath = 0 , born = 0;
+	for ( int i = 0 ; i < len ; i++ ) {
+		int c = str[i] - 'a';
+		
+		if ( let[t][c] == 0 ) {
+			let[t][c] = ++tot;
+			lem[t] = max( lem[t] , c );
+			lep[tot] = t;
+			if ( born == 0 ) {
+				fath = t;
+				born = tot;
+			}
+		}
+		t = let[t][c];
+	}
+	
+	if ( born != 0 ) {
+		int pre = fath , suf = 3;
+		rt[t] = t;
+		for ( int i = len - 1 , s = t; i >= 0 ; i-- ) {
+			int c = str[i] - 'a' , tmp = s;
+			s = lep[s];
+			if ( lem[s] != c ) {
+				for ( int j = 25 ; j >= 0 ; j-- )
+					if ( let[s][j] != 0 ) {
+						if ( let[s][j] == tmp ) break;
+						suf = let[s][j];
+					}
+				break;
+			}
+			rt[s] = t;
+		}
+		for ( int i = 0 ; i < 26 ; i++ )
+			if ( let[fath][i] != 0 ) {
+				if ( let[fath][i] == born ) break;
+				pre = rt[let[fath][i]];
+			}
+		
+		splay( 0 , fath );
+		node[born].mark = node[fath].data;
+		splay( 0 , pre );
+		splay( pre , suf );
+		link( pre , suf , 1 );
+		link( suf , born , 0 );
+		for ( int i = born ; i < tot ; i++ )
+			link( i , i + 1 , 1 );
+		node[tot].mark += p;
+		splay( 0 , tot );
+	} else {
+		int pre = caln( t , 0 ) , suf = caln( rt[t] , 1 );
+		splay( 0 , pre );
+		splay( pre , suf );
+		link( pre , suf , 1 );
+		int s = node[suf].ch[0];
+		node[s].mark += p;
+		splay( 0 , s );
+	}
+	
+	return t;
+}
+
+void input() {
+	tot = 3;
+	link( 1 , 2 , 0 );
+	link( 1 , 3 , 1 );
+	memset( lem , -1 , sizeof( lem ) );
+	
+	scanf( "%d%d%d" , &task , &n , &m );
+	
+	for ( int i = 1 ; i <= n ; i++ )
+		cin >> data[i];
+	for ( int i = 1 ; i <= n ; i++ ) {
+		scanf( "%d" , &value[i] );
+		if ( value[i] < 0 ) value[i] = 0;
+		id[i] = build( data[i] , value[i] );
+	}
+}
+
+void solve() {
+	for ( int T = 1 ; T <= m ; T++ ) {
+		cin >> com;
+		
+		if ( com == "Q" ) {
+			splay( 0 , 1 );
+			ans = node[1].maxs;
+			printf( "%d
+" , ans );
+		} else
+		if ( com == "Cv" ) {
+			int i , p; scanf( "%d%d" , &i , &p );
+			if ( task == 2 ) p = min( 1000 , p + ans % 1000 );
+			if ( p < 0 ) p = 0;
+			
+			int t = id[i] , pre = caln( t , 0 ) , suf = caln( rt[t] , 1 );
+			splay( 0 , pre );
+			splay( pre , suf );
+			link( pre , suf , 1 );
+			t = node[suf].ch[0];
+			node[t].mark += p - value[i];
+			splay( 0 , t );
+			value[i] = p;
+		} else
+		if ( com == "Cs" ) {
+			int i; scanf( "%d" , &i );
+			cin >> str;
+			if ( task == 2 ) {
+				for ( int i = 0 , len = str.length() ; i < len ; i++ )
+					str[i] = ( str[i] - 'a' + ans ) % 26 + 'a';
+			}
+			
+			int t = id[i] , pre = caln( t , 0 ) , suf = caln( rt[t] , 1 );
+			splay( 0 , pre );
+			splay( pre , suf );
+			link( pre , suf , 1 );
+			t = node[suf].ch[0];
+			node[t].mark += -value[i];
+			splay( 0 , t );
+			
+			id[i] = build( str , value[i] );
+		}
+	}
+}
+
+int main() {
+	input();
+	solve();
+	
+	return 0;
+}
+
